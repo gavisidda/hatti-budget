@@ -644,55 +644,92 @@ const PINS_DEFAULT = {Gavi:'1234', Uma:'5678'};
 function getStoredConfig(){
   try{ return JSON.parse(localStorage.getItem('fb_cfg') || 'null'); } catch(e){ return null; }
 }
-async function initFirebase(cfg){
+
+function initFirebase(cfg){
+  // Just initialise — do NOT do any network call here.
+  // Firebase SDK is already loaded via ESM import at top of module.
   try {
     const app = initializeApp(cfg);
     db = getFirestore(app);
-    // quick test
-    await getDoc(doc(db,'settings','income'));
     return true;
   } catch(e) {
-    console.error('Firebase init error:', e);
+    console.error('Firebase initializeApp error:', e);
     return false;
   }
 }
+
 window.saveFirebaseConfig = async function(){
-  const cfg = {
-    apiKey:       document.getElementById('cfgApiKey').value.trim(),
-    authDomain:   document.getElementById('cfgAuthDomain').value.trim(),
-    projectId:    document.getElementById('cfgProjectId').value.trim(),
-    appId:        document.getElementById('cfgAppId').value.trim(),
-    storageBucket: document.getElementById('cfgProjectId').value.trim() + '.appspot.com',
-    messagingSenderId: '0'
+  const raw = {
+    apiKey:            document.getElementById('cfgApiKey').value.trim(),
+    authDomain:        document.getElementById('cfgAuthDomain').value.trim(),
+    projectId:         document.getElementById('cfgProjectId').value.trim(),
+    appId:             document.getElementById('cfgAppId').value.trim(),
   };
-  if(!cfg.apiKey || !cfg.projectId){ document.getElementById('setupErr').textContent='Please fill in all fields.'; return; }
-  document.getElementById('setupErr').textContent = 'Connecting…';
-  const ok = await initFirebase(cfg);
+  // storageBucket and messagingSenderId are optional — fill sensible defaults
+  raw.storageBucket        = raw.projectId + '.firebasestorage.app';
+  raw.messagingSenderId    = raw.messagingSenderId || '000000000000';
+
+  if(!raw.apiKey || !raw.projectId || !raw.appId){
+    document.getElementById('setupErr').textContent = 'Please fill apiKey, projectId and appId.';
+    return;
+  }
+  document.getElementById('setupErr').textContent = 'Saving…';
+  const ok = initFirebase(raw);
   if(ok){
-    localStorage.setItem('fb_cfg', JSON.stringify(cfg));
-    document.getElementById('setupErr').textContent='';
+    localStorage.setItem('fb_cfg', JSON.stringify(raw));
+    document.getElementById('setupErr').textContent = '';
     hide('setupScreen');
+    await loadSettings();
     showLogin();
   } else {
-    document.getElementById('setupErr').textContent='Connection failed. Check your config values.';
+    document.getElementById('setupErr').textContent = 'Init failed — double-check your values.';
   }
 };
+
 window.reconfigFirebase = function(){
-  show('setupScreen');
+  // fill existing values back into the form
+  const cfg = getStoredConfig();
+  if(cfg){
+    document.getElementById('cfgApiKey').value     = cfg.apiKey     || '';
+    document.getElementById('cfgAuthDomain').value = cfg.authDomain || '';
+    document.getElementById('cfgProjectId').value  = cfg.projectId  || '';
+    document.getElementById('cfgAppId').value      = cfg.appId      || '';
+  }
   hide('appShell');
+  show('setupScreen');
 };
 
 /* ══════════════════════════════════════
-   STARTUP
+   STARTUP  — runs once when module loads
 ══════════════════════════════════════ */
 async function startup(){
-  setTxt('loadTxt', L('Connecting to Firebase…','Firebase ಸಂಪರ್ಕ…'));
+  setTxt('loadTxt', 'Loading…');
   const cfg = getStoredConfig();
-  if(!cfg){ hide('loading'); show('setupScreen'); return; }
-  const ok = await initFirebase(cfg);
+  if(!cfg){
+    // First time — show setup screen
+    hide('loading');
+    show('setupScreen');
+    return;
+  }
+  // Init SDK (no network call)
+  const ok = initFirebase(cfg);
+  if(!ok){
+    hide('loading');
+    show('setupScreen');
+    return;
+  }
+  // Try to load settings from Firestore (with timeout so it never hangs)
+  try {
+    await Promise.race([
+      loadSettings(),
+      new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 6000))
+    ]);
+  } catch(e) {
+    // Settings load failed or timed out — that's fine, use defaults and continue
+    console.warn('loadSettings fallback:', e.message);
+    settingsCache = { income:{salary:0,rent:0,uma:0}, limits:{} };
+  }
   hide('loading');
-  if(!ok){ show('setupScreen'); return; }
-  await loadSettings();
   showLogin();
 }
 
@@ -787,12 +824,18 @@ function setDot(on){ document.getElementById('syncDot').className='sync-dot'+(on
    SETTINGS (Firestore)
 ══════════════════════════════════════ */
 async function loadSettings(){
+  const defaults = { income:{salary:0,rent:0,uma:0}, limits:{} };
   try {
-    const d1 = await getDoc(doc(db,'settings','income'));
-    const d2 = await getDoc(doc(db,'settings','limits'));
-    settingsCache.income = d1.exists()?d1.data():{salary:50000,rent:0,uma:0};
-    settingsCache.limits = d2.exists()?d2.data():{};
-  } catch(e){ settingsCache={income:{salary:50000,rent:0,uma:0},limits:{}}; }
+    const [d1, d2] = await Promise.all([
+      getDoc(doc(db,'settings','income')),
+      getDoc(doc(db,'settings','limits'))
+    ]);
+    settingsCache.income = (d1 && d1.exists()) ? d1.data() : defaults.income;
+    settingsCache.limits = (d2 && d2.exists()) ? d2.data() : defaults.limits;
+  } catch(e) {
+    console.warn('loadSettings error (using defaults):', e);
+    settingsCache = { ...defaults };
+  }
 }
 async function saveSettings(key,data){
   await setDoc(doc(db,'settings',key),data);
