@@ -2,368 +2,356 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>ಹಟ್ಟಿ ಕುಟುಂಬ ಬಜೆಟ್</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- ════════════════════════════════════════
-     FIREBASE SETUP INSTRUCTIONS (READ FIRST)
-     ════════════════════════════════════════
-  1. Go to https://console.firebase.google.com
-  2. Click "Add project" → name it "Hatti-Budget"
-  3. Go to Project Settings → General → scroll down
-  4. Click "</> Web" to add web app → copy firebaseConfig
-  5. Paste your config values in the FIREBASE CONFIG section below
-  6. In Firebase console: Build → Firestore Database → Create database
-     Choose "Start in test mode" → pick nearest location (asia-south1)
-  7. Done! Upload this file to GitHub Pages.
-════════════════════════════════════════ -->
-
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:       #070b14;
-  --s1:       #0e1422;
-  --s2:       #141c30;
-  --s3:       #1c263e;
-  --s4:       #253050;
-  --gold:     #f0b429;
-  --gold2:    #fcd34d;
-  --teal:     #2dd4bf;
-  --rose:     #fb7185;
-  --violet:   #a78bfa;
-  --sky:      #38bdf8;
-  --green:    #4ade80;
-  --orange:   #fb923c;
-  --text:     #eef2ff;
-  --text2:    #8892b0;
-  --text3:    #4a5568;
-  --r:        16px;
-  --font:     'Baloo Tamma 2','Noto Sans Kannada',sans-serif;
-  --glow:     0 0 24px rgba(240,180,41,0.18);
+:root{
+  --bg:#070b14;--s1:#0e1422;--s2:#141c30;--s3:#1c263e;--s4:#253050;
+  --gold:#f0b429;--teal:#2dd4bf;--rose:#fb7185;--green:#4ade80;
+  --violet:#a78bfa;--sky:#38bdf8;--orange:#fb923c;
+  --text:#eef2ff;--text2:#8892b0;--text3:#4a5568;
+  --font:'Baloo Tamma 2',sans-serif;
+  --r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
-body{font-family:var(--font);background:var(--bg);color:var(--text);position:relative}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden}
 
-/* ── STARFIELD BG ── */
-body::before{
-  content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 10%,rgba(42,99,160,0.15) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(167,139,250,0.08) 0%,transparent 60%);
-  pointer-events:none;z-index:0;
+/* ─── LOADING ─── */
+#loading{
+  position:fixed;inset:0;z-index:999;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+}
+.spin{width:42px;height:42px;border:3px solid var(--s3);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loadMsg{font-size:15px;color:var(--text2);font-weight:600}
+
+/* ─── LOGIN ─── */
+#loginScreen{
+  position:fixed;inset:0;z-index:50;background:var(--bg);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;overflow-y:auto;
+  background:radial-gradient(ellipse 80% 50% at 30% 20%,rgba(42,99,160,.18) 0%,transparent 60%);
+}
+.login-logo{font-size:64px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 36px rgba(240,180,41,.9))}}
+.login-title{font-size:28px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
+.login-sub{font-size:14px;color:var(--text2);margin-bottom:28px;text-align:center}
+.user-cards{display:flex;gap:14px;margin-bottom:24px;width:100%;max-width:360px}
+.ucard{
+  flex:1;background:var(--s1);border:2px solid var(--s3);border-radius:18px;
+  padding:18px 10px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.ucard.sel{border-color:var(--gold);background:var(--s2);box-shadow:0 0 24px rgba(240,180,41,.22)}
+.ucard .av{font-size:38px;margin-bottom:6px}
+.ucard .un{font-size:15px;font-weight:700}
+.ucard .ur{font-size:11px;color:var(--text2)}
+.pin-lbl{font-size:13px;color:var(--text2);margin-bottom:10px}
+.pdots{display:flex;gap:16px;margin-bottom:20px}
+.pd{width:18px;height:18px;border-radius:50%;background:var(--s3);border:2px solid var(--s4);transition:all .15s}
+.pd.on{background:var(--gold);border-color:var(--gold);transform:scale(1.3)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:300px}
+.nb{
+  background:var(--s1);color:var(--text);border:1.5px solid var(--s3);
+  border-radius:14px;font-family:var(--font);font-size:24px;font-weight:700;
+  height:68px;cursor:pointer;transition:all .12s;width:100%;
+}
+.nb:active{background:var(--s3);transform:scale(.92)}
+.nb.ok{background:var(--gold);color:#000;border-color:var(--gold);font-size:15px}
+.lerr{color:var(--rose);font-size:13px;margin-top:12px;min-height:20px}
+
+/* ─── LANG BTN ─── */
+.lang-btn{
+  position:fixed;top:14px;right:14px;z-index:9999;
+  background:var(--s2);color:var(--gold);border:1.5px solid var(--s3);
+  border-radius:20px;padding:6px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;
 }
 
-/* ════ SCREENS ════ */
-.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
-.screen.hidden{display:none}
+/* ─── APP SHELL ─── */
+#app{
+  position:fixed;inset:0;z-index:40;
+  display:none;flex-direction:column;
+  /* On desktop: centered column, max 520px */
+}
+/* Desktop wrapper */
+@media(min-width:600px){
+  #app{
+    left:50%;transform:translateX(-50%);
+    width:520px;
+    border-left:1px solid var(--s2);border-right:1px solid var(--s2);
+    box-shadow:0 0 60px rgba(0,0,0,.6);
+  }
+  html,body{background:#040810}
+}
 
-/* ── SETUP SCREEN ── */
-#setupScreen{background:var(--bg)}
-.setup-card{background:var(--s1);border:1px solid var(--s3);border-radius:20px;padding:24px;width:100%;max-width:420px;margin:0 auto}
-.setup-logo{font-size:56px;text-align:center;margin-bottom:6px;filter:drop-shadow(0 0 16px rgba(240,180,41,0.5))}
-.setup-title{font-size:22px;font-weight:800;color:var(--gold);text-align:center;margin-bottom:4px}
-.setup-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px}
-.setup-step{background:var(--s2);border:1px solid var(--s3);border-radius:12px;padding:14px;margin-bottom:10px}
-.setup-step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--gold);color:#000;border-radius:50%;font-size:11px;font-weight:800;margin-right:8px;flex-shrink:0}
-.setup-step-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center}
-.setup-step p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
-.code-block{background:var(--bg);border:1px solid var(--s4);border-radius:8px;padding:10px;font-family:monospace;font-size:11px;color:var(--teal);white-space:pre-wrap;word-break:break-all;margin-bottom:8px}
-.setup-input{width:100%;background:var(--s3);color:var(--text);border:1.5px solid var(--s4);border-radius:10px;padding:10px 12px;font-family:var(--font);font-size:13px;outline:none;margin-bottom:6px;transition:border .2s}
-.setup-input:focus{border-color:var(--gold)}
-.setup-btn{width:100%;background:var(--gold);color:#000;border:none;border-radius:12px;padding:14px;font-family:var(--font);font-size:16px;font-weight:800;cursor:pointer;margin-top:8px;transition:opacity .15s}
-.setup-btn:active{opacity:.85}
-.setup-error{color:var(--rose);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
-.setup-note{font-size:11px;color:var(--text3);text-align:center;margin-top:10px;line-height:1.6}
-
-/* ── LOGIN SCREEN ── */
-#loginScreen{background:var(--bg)}
-.login-wrap{width:100%;max-width:360px;text-align:center}
-.login-logo{font-size:60px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(240,180,41,0.45));animation:pulse 3s ease-in-out infinite}
-@keyframes pulse{0%,100%{filter:drop-shadow(0 0 20px rgba(240,180,41,.45))}50%{filter:drop-shadow(0 0 32px rgba(240,180,41,.75))}}
-.login-title{font-size:26px;font-weight:800;color:var(--gold);line-height:1.2;margin-bottom:2px}
-.login-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
-.user-cards{display:flex;gap:12px;margin-bottom:22px}
-.user-card{flex:1;background:var(--s1);border:2px solid var(--s3);border-radius:var(--r);padding:14px 8px;cursor:pointer;transition:all .2s;text-align:center}
-.user-card.sel{border-color:var(--gold);background:var(--s2);box-shadow:var(--glow)}
-.user-card .av{font-size:32px;margin-bottom:4px}
-.user-card .un{font-size:13px;font-weight:700}
-.user-card .ur{font-size:10px;color:var(--text2)}
-.pin-label{font-size:12px;color:var(--text2);margin-bottom:8px}
-.pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:18px}
-.pd{width:16px;height:16px;border-radius:50%;background:var(--s3);border:2px solid var(--s4);transition:all .15s}
-.pd.on{background:var(--gold);border-color:var(--gold);transform:scale(1.25)}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:270px;margin:0 auto}
-.npb{background:var(--s1);color:var(--text);border:1.5px solid var(--s3);border-radius:13px;font-family:var(--font);font-size:22px;font-weight:700;height:60px;cursor:pointer;transition:all .12s}
-.npb:active{background:var(--s3);transform:scale(.92)}
-.npb.ok{background:var(--gold);color:#000;border-color:var(--gold);font-size:14px}
-.login-err{color:var(--rose);font-size:12px;margin-top:10px;min-height:18px;text-align:center}
-.lang-fab{position:fixed;top:14px;right:14px;z-index:999;background:var(--s2);color:var(--gold);border:1.5px solid var(--s3);border-radius:20px;padding:5px 13px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
-
-/* ════ MAIN APP ════ */
-#appShell{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
-#appShell.hidden{display:none}
-
-/* topbar */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;background:var(--s1);border-bottom:1px solid var(--s2);flex-shrink:0;z-index:50}
+/* ─── TOPBAR ─── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 10px;background:var(--s1);border-bottom:1px solid var(--s2);
+  flex-shrink:0;
+}
 .tb-left{display:flex;align-items:center;gap:10px}
-.tb-logo{font-size:24px}
-.tb-title{font-size:17px;font-weight:800;color:var(--gold)}
+.tb-logo{font-size:26px}
+.tb-title{font-size:18px;font-weight:800;color:var(--gold)}
 .tb-right{display:flex;align-items:center;gap:8px}
-.tb-user{font-size:11px;color:var(--text2);font-weight:600}
-.tb-btn{background:var(--s2);color:var(--text);border:1px solid var(--s3);border-radius:8px;padding:4px 9px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:4px;flex-shrink:0;animation:blink 2s infinite}
-.sync-dot.off{background:var(--rose);animation:none}
+.tb-user{font-size:12px;color:var(--text2);font-weight:600}
+.tb-btn{
+  background:var(--s2);color:var(--text);border:1px solid var(--s3);
+  border-radius:9px;padding:5px 11px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;
+}
+.sdot{width:9px;height:9px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0}
+.sdot.off{background:var(--rose);animation:none}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* pages */
-.pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:72px;position:relative;z-index:1}
-.page{display:none;padding:14px}
+/* ─── PAGES ─── */
+.pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:76px}
+.page{display:none;padding:16px}
 .page.on{display:block}
 
-/* bottom nav */
-.bnav{position:absolute;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--s2);display:flex;flex-shrink:0;z-index:50;padding-bottom:env(safe-area-inset-bottom,0)}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 4px 6px;cursor:pointer;transition:all .12s}
-.ni.on .nico{transform:scale(1.18)}
+/* ─── BOTTOM NAV ─── */
+.bnav{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--s1);border-top:1px solid var(--s2);display:flex;
+  padding-bottom:env(safe-area-inset-bottom,0);flex-shrink:0;
+}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 4px 8px;cursor:pointer;transition:all .12s}
+.ni.on .nico{transform:scale(1.2)}
 .ni.on .nlbl{color:var(--gold)}
-.nico{font-size:20px;margin-bottom:1px}
-.nlbl{font-size:9px;font-weight:700;color:var(--text2);letter-spacing:.3px}
+.nico{font-size:22px;margin-bottom:3px;transition:transform .15s}
+.nlbl{font-size:10px;font-weight:700;color:var(--text2)}
 
-/* ── PAGE STYLES ── */
-.pg-head{font-size:20px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.sub-head{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;margin-top:16px}
+/* ─── SECTION HELPERS ─── */
+.sh{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px}
+.ph{font-size:22px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
-/* hero card */
-.hero{background:linear-gradient(135deg,#0a2240 0%,#071830 100%);border:1px solid rgba(56,189,248,.15);border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
-.hero::after{content:'₹';position:absolute;right:-8px;top:-18px;font-size:110px;color:rgba(255,255,255,.03);font-weight:900;line-height:1;pointer-events:none}
-.hero-lbl{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px}
-.hero-bal{font-size:38px;font-weight:800;color:#fff;line-height:1;margin-bottom:14px}
-.hero-bal sup{font-size:18px;font-weight:700}
-.hero-row{display:flex;gap:10px}
-.hstat{flex:1}
-.hstat-lbl{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:1px}
-.hstat-val{font-size:16px;font-weight:800}
-.hstat-val.g{color:var(--green)}
-.hstat-val.r{color:var(--rose)}
-.hstat-val.v{color:var(--violet)}
+/* ─── HERO CARD ─── */
+.hero{
+  background:linear-gradient(135deg,#0a2240,#071830);
+  border:1px solid rgba(56,189,248,.15);border-radius:20px;
+  padding:20px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.hero::after{content:'₹';position:absolute;right:-10px;top:-20px;font-size:120px;color:rgba(255,255,255,.03);font-weight:900;pointer-events:none}
+.hlbl{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:3px}
+.hbal{font-size:42px;font-weight:800;color:#fff;line-height:1;margin-bottom:16px}
+.hbal sup{font-size:20px}
+.hrow{display:flex;gap:12px}
+.hs{flex:1}
+.hslbl{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:2px}
+.hsval{font-size:18px;font-weight:800}
 
-/* income split */
-.inc-split{display:flex;gap:10px;margin-bottom:14px}
-.inc-card{flex:1;background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px;text-align:center}
-.inc-icon{font-size:22px;margin-bottom:4px}
-.inc-src{font-size:10px;color:var(--text2);font-weight:600;margin-bottom:2px}
-.inc-amt{font-size:17px;font-weight:800;color:var(--green)}
+/* ─── INCOME SPLIT ─── */
+.inc-split{display:flex;gap:12px;margin-bottom:16px}
+.ic{flex:1;background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px;text-align:center}
+.ic-ico{font-size:26px;margin-bottom:6px}
+.ic-lbl{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:3px}
+.ic-amt{font-size:19px;font-weight:800;color:var(--green)}
 
-/* stat grid */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.sc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
-.sc-ico{font-size:20px;margin-bottom:4px}
-.sc-lbl{font-size:10px;color:var(--text2);margin-bottom:1px}
-.sc-val{font-size:18px;font-weight:800}
+/* ─── STAT GRID ─── */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sc{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px}
+.sc-ico{font-size:22px;margin-bottom:6px}
+.sc-lbl{font-size:11px;color:var(--text2);margin-bottom:2px}
+.sc-val{font-size:20px;font-weight:800}
 
-/* charts */
-.chart-box{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px;margin-bottom:12px}
-.chart-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)}
-.catbar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.catbar-lbl{font-size:11px;font-weight:600;width:72px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.catbar-track{flex:1;background:var(--s3);border-radius:6px;height:9px;overflow:hidden}
-.catbar-fill{height:100%;border-radius:6px;transition:width .7s ease}
-.catbar-amt{font-size:11px;font-weight:700;width:58px;text-align:right;flex-shrink:0}
-canvas{width:100%!important;border-radius:8px}
+/* ─── CHART BOX ─── */
+.cbox{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:14px}
+.ctitle{font-size:14px;font-weight:700;margin-bottom:12px}
+.cbrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cblbl{font-size:12px;font-weight:600;width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbtrack{flex:1;background:var(--s3);border-radius:6px;height:10px;overflow:hidden}
+.cbfill{height:100%;border-radius:6px;transition:width .7s}
+.cbamt{font-size:12px;font-weight:700;width:64px;text-align:right;flex-shrink:0}
+canvas{width:100%!important;border-radius:6px;display:block}
 
-/* warn */
-.warn{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;color:#fca5a5;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+/* ─── WARN ─── */
+.warn{
+  background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);
+  border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;
+  color:#fca5a5;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
 
-/* tx list */
-.tx{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--s2);border-radius:13px;padding:11px 12px;margin-bottom:7px;animation:fadeUp .3s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.tx-ico{font-size:24px;width:32px;text-align:center;flex-shrink:0}
-.tx-inf{flex:1;min-width:0}
-.tx-cat{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tx-meta{font-size:10px;color:var(--text2)}
-.tx-amt{font-size:15px;font-weight:800;flex-shrink:0}
-.tx-amt.g{color:var(--green)}
-.tx-amt.r{color:var(--rose)}
-.tx-del{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:4px;flex-shrink:0}
+/* ─── TX LIST ─── */
+.tx{
+  display:flex;align-items:center;gap:12px;background:var(--s1);
+  border:1px solid var(--s2);border-radius:14px;padding:13px 14px;
+  margin-bottom:8px;animation:fu .3s ease;
+}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.txico{font-size:26px;width:34px;text-align:center;flex-shrink:0}
+.txinf{flex:1;min-width:0}
+.txcat{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txmeta{font-size:11px;color:var(--text2)}
+.txamt{font-size:16px;font-weight:800;flex-shrink:0}
+.txdel{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 6px;flex-shrink:0}
 
-.empty{text-align:center;padding:36px 16px;color:var(--text2)}
-.empty .big{font-size:44px;margin-bottom:8px}
-.empty p{font-size:13px}
+.empty{text-align:center;padding:40px 16px;color:var(--text2)}
+.empty .big{font-size:48px;margin-bottom:10px}
+.empty p{font-size:14px}
 
-/* ADD FORM */
-.type-row{display:flex;gap:9px;margin-bottom:14px}
-.type-btn{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:12px;padding:10px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
-.type-btn.exp.on{border-color:var(--rose);background:rgba(251,113,133,.12);color:var(--rose)}
-.type-btn.inc.on{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
-.fcard{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:16px;margin-bottom:12px}
-.flbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
-.finp{width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:10px;padding:11px 12px;font-family:var(--font);font-size:14px;font-weight:600;margin-bottom:10px;outline:none;transition:border .2s;-webkit-appearance:none}
-.finp:focus{border-color:var(--gold)}
-.finp option{background:var(--s2)}
-.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
-.cbtn{background:var(--s2);border:1.5px solid var(--s3);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;transition:all .12s;color:var(--text);font-family:var(--font);display:flex;flex-direction:column;align-items:center;gap:2px}
+/* ─── FORM ─── */
+.trow{display:flex;gap:10px;margin-bottom:16px}
+.tbtn{
+  flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);
+  border-radius:13px;padding:12px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;
+}
+.tbtn.exp.on{border-color:var(--rose);background:rgba(251,113,133,.12);color:var(--rose)}
+.tbtn.inc.on{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
+.fc{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:18px;margin-bottom:14px}
+.fl{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
+.fi{
+  width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;
+  border-radius:11px;padding:13px 14px;font-family:var(--font);font-size:15px;font-weight:600;
+  margin-bottom:12px;outline:none;transition:border .2s;-webkit-appearance:none;
+}
+.fi:focus{border-color:var(--gold)}
+.fi option{background:var(--s2)}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.cbtn{
+  background:var(--s2);border:1.5px solid var(--s3);border-radius:11px;
+  padding:9px 4px;cursor:pointer;text-align:center;color:var(--text);
+  font-family:var(--font);display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .12s;
+}
 .cbtn.on{border-color:var(--gold);background:rgba(240,180,41,.12)}
-.cbtn .cico{font-size:18px}
-.cbtn .cnm{font-size:9px;font-weight:700;line-height:1.1}
-.inc-src-row{display:flex;gap:8px;margin-bottom:10px}
-.isrc-btn{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:10px;padding:8px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
-.isrc-btn.on{border-color:var(--teal);background:rgba(45,212,191,.12);color:var(--teal)}
-.submit-btn{width:100%;background:var(--gold);color:#000;border:none;border-radius:13px;padding:15px;font-family:var(--font);font-size:16px;font-weight:800;cursor:pointer;transition:all .15s;margin-top:4px;letter-spacing:.2px}
-.submit-btn:active{transform:scale(.97);opacity:.9}
+.cbtn .ci{font-size:20px}
+.cbtn .cn{font-size:9px;font-weight:700;line-height:1.2}
+.isrow{display:flex;gap:10px;margin-bottom:12px}
+.isbtn{
+  flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);
+  border-radius:11px;padding:10px;font-family:var(--font);font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.isbtn.on{border-color:var(--teal);background:rgba(45,212,191,.12);color:var(--teal)}
+.sbtn{
+  width:100%;background:var(--gold);color:#000;border:none;border-radius:14px;
+  padding:17px;font-family:var(--font);font-size:17px;font-weight:800;cursor:pointer;margin-top:6px;
+}
+.sbtn:active{transform:scale(.97);opacity:.9}
 
-/* GOALS */
-.gcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px;margin-bottom:10px}
-.gh{display:flex;align-items:center;gap:10px;margin-bottom:9px}
-.gico{font-size:26px}
+/* ─── GOALS ─── */
+.gcrd{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:12px}
+.gh{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.gico{font-size:28px}
 .ginf{flex:1}
-.gname{font-size:14px;font-weight:700}
-.gsub{font-size:10px;color:var(--text2)}
-.gpct{font-size:14px;font-weight:800;color:var(--gold)}
-.gtrack{background:var(--s3);border-radius:6px;height:9px;overflow:hidden;margin-bottom:6px}
-.gfill{height:100%;border-radius:6px;transition:width .8s ease}
-.gamts{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}
+.gname{font-size:15px;font-weight:700}
+.gsub{font-size:11px;color:var(--text2)}
+.gpct{font-size:15px;font-weight:800;color:var(--gold)}
+.gtrack{background:var(--s3);border-radius:6px;height:10px;overflow:hidden;margin-bottom:8px}
+.gfill{height:100%;border-radius:6px;transition:width .8s}
+.gamts{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
 .gamts strong{color:var(--text)}
-.add-goal-btn{width:100%;background:transparent;color:var(--gold);border:2px dashed rgba(240,180,41,.25);border-radius:14px;padding:12px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px}
+.agbtn{
+  width:100%;background:transparent;color:var(--gold);
+  border:2px dashed rgba(240,180,41,.3);border-radius:16px;
+  padding:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px;
+}
 
-/* HISTORY */
-.frow{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch}
+/* ─── FILTER CHIPS ─── */
+.frow{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
 .frow::-webkit-scrollbar{display:none}
-.fchip{background:var(--s2);border:1.5px solid var(--s3);border-radius:18px;padding:5px 12px;font-family:var(--font);font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;flex-shrink:0}
+.fchip{
+  background:var(--s2);border:1.5px solid var(--s3);border-radius:20px;
+  padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;
+  color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;flex-shrink:0;
+}
 .fchip.on{background:var(--gold);color:#000;border-color:var(--gold)}
 
-/* REPORTS */
-.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.rep-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
-.rep-label{font-size:11px;color:var(--text2);margin-bottom:3px}
-.rep-val{font-size:20px;font-weight:800}
-.rep-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;margin-top:3px;display:inline-block}
-.tag-g{background:rgba(74,222,128,.15);color:var(--green)}
-.tag-r{background:rgba(251,113,133,.15);color:var(--rose)}
+/* ─── REPORTS ─── */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.rcrd{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px}
+.rlbl{font-size:12px;color:var(--text2);margin-bottom:4px}
+.rval{font-size:21px;font-weight:800}
 
-/* SETTINGS */
-.set-sec{margin-bottom:18px}
-.set-item{background:var(--s1);border:1px solid var(--s2);border-radius:12px;padding:13px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
-.si-left{display:flex;align-items:center;gap:10px}
-.si-ico{font-size:20px}
-.si-txt{font-size:13px;font-weight:600}
-.si-sub{font-size:10px;color:var(--text2)}
-.irow{display:flex;gap:7px;align-items:center;margin-bottom:8px}
-.iinp{flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:9px;padding:8px 11px;font-family:var(--font);font-size:14px;font-weight:700;outline:none;transition:border .2s}
+/* ─── SETTINGS ─── */
+.irow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.iinp{
+  flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;
+  border-radius:10px;padding:10px 13px;font-family:var(--font);font-size:15px;font-weight:700;outline:none;transition:border .2s;
+}
 .iinp:focus{border-color:var(--gold)}
-.isave{background:var(--gold);color:#000;border:none;border-radius:9px;padding:8px 13px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.isave{
+  background:var(--gold);color:#000;border:none;border-radius:10px;
+  padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;
+}
 
-/* MODAL */
-.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;justify-content:center}
-.moverlay.open{display:flex}
-.modal{background:var(--s1);border-radius:20px 20px 0 0;padding:22px 18px 32px;width:100%;max-width:480px;animation:slideUp .22s ease}
-@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-title{font-size:17px;font-weight:800;margin-bottom:14px}
-.mclose{float:right;background:var(--s3);border:none;color:var(--text);border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;line-height:28px;text-align:center;margin-top:-2px}
+/* ─── MODAL ─── */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:flex-end;justify-content:center}
+.mo.open{display:flex}
+.modal{
+  background:var(--s1);border-radius:22px 22px 0 0;padding:24px 20px 36px;
+  width:100%;max-width:520px;animation:su .22s ease;
+}
+@keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtitle{font-size:18px;font-weight:800;margin-bottom:16px}
+.mclose{float:right;background:var(--s3);border:none;color:var(--text);border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;line-height:30px;text-align:center;margin-top:-2px}
 
-/* TOAST */
-.toast{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);
+  background:var(--s1);border:1px solid var(--green);color:var(--green);
+  border-radius:22px;padding:10px 24px;font-size:14px;font-weight:700;
+  z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap;
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:var(--rose);color:var(--rose)}
 
-/* LOADING */
-.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-.loading-overlay.gone{display:none}
-.spinner{width:40px;height:40px;border:3px solid var(--s3);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:14px;color:var(--text2);font-weight:600}
-
-/* SCROLLBAR */
+/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
 </style>
 </head>
 <body>
 
-<!-- ════ LOADING ════ -->
-<div class="loading-overlay" id="loading">
-  <div style="font-size:52px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
-  <div class="spinner"></div>
-  <div class="loading-txt" id="loadTxt">Loading…</div>
+<!-- LOADING -->
+<div id="loading">
+  <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(240,180,41,.5))">🏡</div>
+  <div class="spin"></div>
+  <div id="loadMsg" class="msg" style="font-size:15px;color:var(--text2);font-weight:600">Starting…</div>
 </div>
 
-<!-- ════ FIREBASE SETUP SCREEN ════ -->
-<div class="screen hidden" id="setupScreen">
-  <div class="setup-card">
-    <div class="setup-logo">🔥</div>
-    <div class="setup-title">Firebase Setup</div>
-    <div class="setup-sub">One-time setup to connect your budget to Firebase</div>
+<button class="lang-btn" onclick="toggleLang()">ಕ/EN</button>
 
-    <div class="setup-step">
-      <div class="setup-step-title"><span class="setup-step-num">1</span>Create Firebase Project</div>
-      <p>Go to <strong style="color:var(--gold)">console.firebase.google.com</strong> → Add project → Name: <strong>Hatti-Budget</strong></p>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">🏡</div>
+  <div class="login-title">Hatti Family Budget</div>
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
+  <div class="user-cards">
+    <div class="ucard sel" onclick="selUser(0)" id="uc0">
+      <div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div>
     </div>
-
-    <div class="setup-step">
-      <div class="setup-step-title"><span class="setup-step-num">2</span>Enable Firestore</div>
-      <p>Build → Firestore Database → Create database → Test mode → Select <strong>asia-south1</strong> (Mumbai)</p>
+    <div class="ucard" onclick="selUser(1)" id="uc1">
+      <div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div>
     </div>
-
-    <div class="setup-step">
-      <div class="setup-step-title"><span class="setup-step-num">3</span>Get Web Config</div>
-      <p>Project Settings → General → Your apps → Click &lt;/&gt; → Register app → Copy config</p>
-    </div>
-
-    <div class="setup-step">
-      <div class="setup-step-title"><span class="setup-step-num">4</span>Paste Config Values Below</div>
-      <input class="setup-input" id="cfgApiKey"       placeholder="apiKey: AIzaSy...">
-      <input class="setup-input" id="cfgAuthDomain"   placeholder="authDomain: hatti-budget.firebaseapp.com">
-      <input class="setup-input" id="cfgProjectId"    placeholder="projectId: hatti-budget">
-      <input class="setup-input" id="cfgAppId"        placeholder="appId: 1:1234567890:web:...">
-    </div>
-
-    <button class="setup-btn" onclick="saveFirebaseConfig()">🚀 Connect &amp; Continue</button>
-    <div class="setup-error" id="setupErr"></div>
-    <div class="setup-note">Your config is saved in this device's localStorage.<br>You'll only need to do this once per device.</div>
   </div>
-</div>
-
-<!-- ════ LOGIN SCREEN ════ -->
-<button class="lang-fab" onclick="toggleLang()" id="langFab">ಕ/EN</button>
-<div class="screen hidden" id="loginScreen">
-  <div class="login-wrap">
-    <div class="login-logo">🏡</div>
-    <div class="login-title" data-en="Hatti Family Budget" data-kn="ಹಟ್ಟಿ ಕುಟುಂಬ ಬಜೆಟ್">Hatti Family Budget</div>
-    <div class="login-sub" data-en="Gavi · Uma · Rachana · Sanchita" data-kn="ಗವಿ · ಉಮಾ · ರಚನಾ · ಸಂಚಿತ">Gavi · Uma · Rachana · Sanchita</div>
-    <div class="user-cards">
-      <div class="user-card sel" onclick="selUser(0)" id="uc0">
-        <div class="av">👨</div>
-        <div class="un" data-en="Gavi" data-kn="ಗವಿ">Gavi</div>
-        <div class="ur" data-en="Admin" data-kn="ನಿರ್ವಾಹಕ">Admin</div>
-      </div>
-      <div class="user-card" onclick="selUser(1)" id="uc1">
-        <div class="av">👩</div>
-        <div class="un" data-en="Uma" data-kn="ಉಮಾ">Uma</div>
-        <div class="ur" data-en="Member" data-kn="ಸದಸ್ಯ">Member</div>
-      </div>
-    </div>
-    <div class="pin-label" data-en="Enter your 4-digit PIN" data-kn="ನಿಮ್ಮ 4 ಅಂಕಿ PIN ನಮೂದಿಸಿ">Enter your 4-digit PIN</div>
-    <div class="pin-dots">
-      <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
-      <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
-    </div>
-    <div class="numpad">
-      <button class="npb" onclick="pk('1')">1</button><button class="npb" onclick="pk('2')">2</button><button class="npb" onclick="pk('3')">3</button>
-      <button class="npb" onclick="pk('4')">4</button><button class="npb" onclick="pk('5')">5</button><button class="npb" onclick="pk('6')">6</button>
-      <button class="npb" onclick="pk('7')">7</button><button class="npb" onclick="pk('8')">8</button><button class="npb" onclick="pk('9')">9</button>
-      <button class="npb" onclick="pdel()">⌫</button><button class="npb" onclick="pk('0')">0</button><button class="npb ok" onclick="pok()">OK</button>
-    </div>
-    <div class="login-err" id="loginErr"></div>
+  <div class="pin-lbl">Enter 4-digit PIN</div>
+  <div class="pdots">
+    <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
+    <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
   </div>
+  <div class="numpad">
+    <button class="nb" onclick="pk('1')">1</button>
+    <button class="nb" onclick="pk('2')">2</button>
+    <button class="nb" onclick="pk('3')">3</button>
+    <button class="nb" onclick="pk('4')">4</button>
+    <button class="nb" onclick="pk('5')">5</button>
+    <button class="nb" onclick="pk('6')">6</button>
+    <button class="nb" onclick="pk('7')">7</button>
+    <button class="nb" onclick="pk('8')">8</button>
+    <button class="nb" onclick="pk('9')">9</button>
+    <button class="nb" onclick="pdel()">⌫</button>
+    <button class="nb" onclick="pk('0')">0</button>
+    <button class="nb ok" onclick="pok()">OK</button>
+  </div>
+  <div class="lerr" id="lerr"></div>
 </div>
 
-<!-- ════ APP SHELL ════ -->
-<div id="appShell" class="hidden">
+<!-- APP -->
+<div id="app">
   <div class="topbar">
     <div class="tb-left">
       <span class="tb-logo">🏡</span>
-      <span class="tb-title" data-en="Hatti Budget" data-kn="ಹಟ್ಟಿ ಬಜೆಟ್">Hatti Budget</span>
-      <span class="sync-dot" id="syncDot" title="Firebase connected"></span>
+      <span class="tb-title">Hatti Budget</span>
+      <span class="sdot" id="sdot"></span>
     </div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
@@ -372,859 +360,632 @@ canvas{width:100%!important;border-radius:8px}
     </div>
   </div>
 
-  <div class="pages" id="pages">
-    <!-- ── DASHBOARD ── -->
+  <div class="pages">
+
+    <!-- DASHBOARD -->
     <div class="page on" id="pgDash">
       <div id="warnBox"></div>
       <div class="hero">
-        <div class="hero-lbl" data-en="Balance this month" data-kn="ಈ ತಿಂಗಳ ಉಳಿಕೆ">Balance this month</div>
-        <div class="hero-bal"><sup>₹</sup><span id="hBal">0</span></div>
-        <div class="hero-row">
-          <div class="hstat"><div class="hstat-lbl" data-en="Total Income" data-kn="ಒಟ್ಟು ಆದಾಯ">Total Income</div><div class="hstat-val g" id="hInc">₹0</div></div>
-          <div class="hstat"><div class="hstat-lbl" data-en="Total Spent" data-kn="ಒಟ್ಟು ಖರ್ಚು">Total Spent</div><div class="hstat-val r" id="hSpent">₹0</div></div>
-          <div class="hstat"><div class="hstat-lbl" data-en="Saved %" data-kn="ಉಳಿತಾಯ %">Saved %</div><div class="hstat-val v" id="hPct">0%</div></div>
+        <div class="hlbl">Balance this month</div>
+        <div class="hbal"><sup>₹</sup><span id="hBal">0</span></div>
+        <div class="hrow">
+          <div class="hs"><div class="hslbl">Total Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
+          <div class="hs"><div class="hslbl">Total Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
+          <div class="hs"><div class="hslbl">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
         </div>
       </div>
-
-      <!-- Dual income split -->
-      <div class="sub-head" data-en="Income Sources" data-kn="ಆದಾಯ ಮೂಲಗಳು">Income Sources</div>
+      <div class="sh">Income Sources</div>
       <div class="inc-split">
-        <div class="inc-card"><div class="inc-icon">💼</div><div class="inc-src" data-en="Salary (Bangalore)" data-kn="ಸಂಬಳ (ಬೆಂಗಳೂರು)">Salary</div><div class="inc-amt" id="iSalary">₹0</div></div>
-        <div class="inc-card"><div class="inc-icon">🏠</div><div class="inc-src" data-en="Rent (Ginigera)" data-kn="ಬಾಡಿಗೆ (ಗಿನಿಗೇರ)">Rent Income</div><div class="inc-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary · Bangalore</div><div class="ic-amt" id="iSal">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
       </div>
-
-      <div class="sub-head" data-en="Key Expenses" data-kn="ಪ್ರಮುಖ ಖರ್ಚುಗಳು">Key Expenses</div>
-      <div class="stat-grid" id="topStats"></div>
-
-      <div class="chart-box">
-        <div class="chart-title" data-en="📊 Spending by Category" data-kn="📊 ವರ್ಗದ ಪ್ರಕಾರ ಖರ್ಚು">📊 Spending by Category</div>
+      <div class="sh">Key Expenses</div>
+      <div class="sgrid" id="topStats"></div>
+      <div class="cbox">
+        <div class="ctitle">📊 Spending by Category</div>
         <div id="catBars"></div>
       </div>
-
-      <div class="chart-box">
-        <div class="chart-title" data-en="📈 6-Month Trend" data-kn="📈 6 ತಿಂಗಳ ಟ್ರೆಂಡ್">📈 6-Month Trend</div>
-        <canvas id="trendC" height="155"></canvas>
+      <div class="cbox">
+        <div class="ctitle">📈 6-Month Trend</div>
+        <canvas id="trendC" height="160"></canvas>
       </div>
-
-      <div class="sub-head" data-en="Recent Transactions" data-kn="ಇತ್ತೀಚಿನ ವ್ಯವಹಾರಗಳು">Recent Transactions</div>
+      <div class="sh">Recent Transactions</div>
       <div id="recentTx"></div>
     </div>
 
-    <!-- ── ADD ── -->
+    <!-- ADD -->
     <div class="page" id="pgAdd">
-      <div class="pg-head">➕ <span data-en="Add Transaction" data-kn="ವ್ಯವಹಾರ ಸೇರಿಸಿ">Add Transaction</span></div>
-      <div class="type-row">
-        <button class="type-btn exp on" id="btnExp" onclick="setTyp('expense')" data-en="💸 Expense" data-kn="💸 ಖರ್ಚು">💸 Expense</button>
-        <button class="type-btn inc" id="btnInc" onclick="setTyp('income')" data-en="💵 Income" data-kn="💵 ಆದಾಯ">💵 Income</button>
+      <div class="ph">➕ Add Transaction</div>
+      <div class="trow">
+        <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
+        <button class="tbtn inc" id="btnInc" onclick="setTyp('income')">💵 Income</button>
       </div>
-
-      <!-- Income source (shown only for income) -->
-      <div id="incSrcRow" style="display:none">
-        <div class="fcard">
-          <div class="flbl" data-en="Income Source" data-kn="ಆದಾಯ ಮೂಲ">Income Source</div>
-          <div class="inc-src-row">
-            <button class="isrc-btn on" id="isSalary" onclick="setIncSrc('salary')" data-en="💼 Salary" data-kn="💼 ಸಂಬಳ">💼 Salary</button>
-            <button class="isrc-btn" id="isRent" onclick="setIncSrc('rent')" data-en="🏠 Ginigera Rent" data-kn="🏠 ಗಿನಿಗೇರ ಬಾಡಿಗೆ">🏠 Ginigera Rent</button>
+      <div id="incSrcBox" style="display:none">
+        <div class="fc">
+          <div class="fl">Income Source</div>
+          <div class="isrow">
+            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
+            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Ginigera Rent</button>
           </div>
         </div>
       </div>
-
-      <div class="fcard">
-        <label class="flbl" data-en="Amount (₹)" data-kn="ಮೊತ್ತ (₹)">Amount (₹)</label>
-        <input class="finp" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-        <label class="flbl" data-en="Who?" data-kn="ಯಾರು?">Who?</label>
-        <select class="finp" id="fWho">
-          <option value="Gavi">Gavi</option>
-          <option value="Uma">Uma</option>
-        </select>
-        <label class="flbl" data-en="Date" data-kn="ದಿನಾಂಕ">Date</label>
-        <input class="finp" type="date" id="fDate">
-        <label class="flbl" data-en="Note (optional)" data-kn="ಟಿಪ್ಪಣಿ">Note</label>
-        <input class="finp" type="text" id="fNote" placeholder="e.g. Rachana's books">
+      <div class="fc">
+        <label class="fl">Amount (₹)</label>
+        <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
+        <label class="fl">Who?</label>
+        <select class="fi" id="fWho"><option>Gavi</option><option>Uma</option></select>
+        <label class="fl">Date</label>
+        <input class="fi" type="date" id="fDate">
+        <label class="fl">Note (optional)</label>
+        <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
       </div>
-
-      <div class="fcard" id="catSection">
-        <div class="flbl" data-en="Category" data-kn="ವರ್ಗ">Category</div>
-        <div class="cat-grid" id="catGrid"></div>
+      <div class="fc" id="catBox">
+        <div class="fl">Category</div>
+        <div class="cgrid" id="catGrid"></div>
       </div>
-
-      <button class="submit-btn" onclick="doAddTx()" data-en="✅ Save Transaction" data-kn="✅ ಉಳಿಸಿ">✅ Save Transaction</button>
+      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
     </div>
 
-    <!-- ── GOALS ── -->
+    <!-- GOALS -->
     <div class="page" id="pgGoals">
-      <div class="pg-head">🎯 <span data-en="Savings Goals" data-kn="ಉಳಿತಾಯ ಗುರಿಗಳು">Savings Goals</span></div>
+      <div class="ph">🎯 Savings Goals</div>
       <div id="goalList"></div>
-      <button class="add-goal-btn" onclick="openGoalModal()" data-en="+ Add New Goal" data-kn="+ ಹೊಸ ಗುರಿ ಸೇರಿಸಿ">+ Add New Goal</button>
+      <button class="agbtn" onclick="openGM()">+ Add New Goal</button>
     </div>
 
-    <!-- ── HISTORY ── -->
+    <!-- HISTORY -->
     <div class="page" id="pgHistory">
-      <div class="pg-head">📜 <span data-en="History" data-kn="ಇತಿಹಾಸ">History</span></div>
+      <div class="ph">📜 History</div>
       <div class="frow" id="filterRow"></div>
       <div id="histList"></div>
     </div>
 
-    <!-- ── REPORTS ── -->
+    <!-- REPORTS -->
     <div class="page" id="pgReports">
-      <div class="pg-head">📊 <span data-en="Reports" data-kn="ವರದಿಗಳು">Reports</span></div>
-      <div class="sub-head" data-en="This Month Summary" data-kn="ಈ ತಿಂಗಳ ಸಾರಾಂಶ">This Month Summary</div>
-      <div class="rep-grid" id="repGrid"></div>
-      <div class="chart-box">
-        <div class="chart-title" data-en="Who Spent What" data-kn="ಯಾರು ಎಷ್ಟು ಖರ್ಚು ಮಾಡಿದರು">Who Spent What</div>
-        <canvas id="whoChart" height="160"></canvas>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title" data-en="Monthly Income vs Expense (1 Year)" data-kn="ಮಾಸಿಕ ಆದಾಯ vs ಖರ್ಚು">Monthly Income vs Expense (1 Year)</div>
-        <canvas id="yearChart" height="160"></canvas>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title" data-en="Income Sources Split" data-kn="ಆದಾಯ ಮೂಲ ವಿಭಜನೆ">Income Sources Split</div>
-        <canvas id="incSrcChart" height="160"></canvas>
-      </div>
+      <div class="ph">📊 Reports</div>
+      <div class="sh">This Month Summary</div>
+      <div class="rgrid" id="repGrid"></div>
+      <div class="cbox"><div class="ctitle">Who Spent What</div><canvas id="whoC" height="160"></canvas></div>
+      <div class="cbox"><div class="ctitle">12-Month Trend</div><canvas id="yearC" height="160"></canvas></div>
     </div>
 
-    <!-- ── SETTINGS ── -->
+    <!-- SETTINGS -->
     <div class="page" id="pgSettings">
-      <div class="pg-head">⚙️ <span data-en="Settings" data-kn="ಸೆಟ್ಟಿಂಗ್ಸ್">Settings</span></div>
-
-      <div class="set-sec">
-        <div class="sub-head" data-en="Monthly Income Setup" data-kn="ಮಾಸಿಕ ಆದಾಯ ಹೊಂದಿಸಿ">Monthly Income Setup</div>
-        <div class="fcard">
-          <label class="flbl" data-en="💼 Gavi's Salary (₹)" data-kn="💼 ಗವಿ ಸಂಬಳ (₹)">💼 Gavi's Salary (₹)</label>
-          <div class="irow"><input class="iinp" type="number" id="iGaviSal" inputmode="numeric"><button class="isave" onclick="savInc('salary')" data-en="Save" data-kn="ಉಳಿಸಿ">Save</button></div>
-          <label class="flbl" data-en="🏠 Ginigera House Rent (₹/month)" data-kn="🏠 ಗಿನಿಗೇರ ಮನೆ ಬಾಡಿಗೆ (₹/ತಿಂಗಳು)">🏠 Ginigera House Rent (₹/month)</label>
-          <div class="irow"><input class="iinp" type="number" id="iGaviRent" inputmode="numeric"><button class="isave" onclick="savInc('rent')" data-en="Save" data-kn="ಉಳಿಸಿ">Save</button></div>
-          <label class="flbl" data-en="👩 Uma's Income (₹, if any)" data-kn="👩 ಉಮಾ ಆದಾಯ (₹)">👩 Uma's Income (₹)</label>
-          <div class="irow"><input class="iinp" type="number" id="iUmaInc" inputmode="numeric"><button class="isave" onclick="savInc('uma')" data-en="Save" data-kn="ಉಳಿಸಿ">Save</button></div>
-        </div>
+      <div class="ph">⚙️ Settings</div>
+      <div class="sh">Monthly Income</div>
+      <div class="fc">
+        <label class="fl">💼 Gavi Salary (₹)</label>
+        <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
+        <label class="fl" style="margin-top:8px">🏠 Ginigera Rent Income (₹/month)</label>
+        <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
+        <label class="fl" style="margin-top:8px">👩 Uma Income (₹)</label>
+        <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
       </div>
-
-      <div class="set-sec">
-        <div class="sub-head" data-en="Monthly Budget Limits" data-kn="ಮಾಸಿಕ ಬಜೆಟ್ ಮಿತಿ">Monthly Budget Limits</div>
-        <div class="fcard" id="limitsForm"></div>
+      <div class="sh">Budget Limits (₹/month)</div>
+      <div class="fc" id="limForm"></div>
+      <div class="sh">Change PINs</div>
+      <div class="fc">
+        <label class="fl">Gavi PIN (4 digits)</label>
+        <div class="irow"><input class="iinp" type="password" id="pinG" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Gavi')">Save</button></div>
+        <label class="fl" style="margin-top:8px">Uma PIN (4 digits)</label>
+        <div class="irow"><input class="iinp" type="password" id="pinU" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Uma')">Save</button></div>
       </div>
-
-      <div class="set-sec">
-        <div class="sub-head" data-en="Change PINs" data-kn="PIN ಬದಲಾಯಿಸಿ">Change PINs</div>
-        <div class="fcard">
-          <label class="flbl">Gavi PIN</label>
-          <div class="irow"><input class="iinp" type="password" id="pinGavi" placeholder="4 digits" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Gavi')">Save</button></div>
-          <label class="flbl" style="margin-top:6px">Uma PIN</label>
-          <div class="irow"><input class="iinp" type="password" id="pinUma" placeholder="4 digits" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Uma')">Save</button></div>
-        </div>
-      </div>
-
-      <div class="set-sec">
-        <div class="sub-head" data-en="Firebase" data-kn="ಫೈರ್‌ಬೇಸ್">Firebase</div>
-        <div class="fcard" style="text-align:center">
-          <button onclick="reconfigFirebase()" style="background:var(--s3);color:var(--text);border:1px solid var(--s4);border-radius:9px;padding:10px 20px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">🔥 Re-configure Firebase</button>
-          <div style="font-size:11px;color:var(--text2)" data-en="Connected Project:" data-kn="ಸಂಪರ್ಕಿತ ಪ್ರಾಜೆಕ್ಟ್:">Connected Project: <strong id="connectedProject" style="color:var(--teal)"></strong></div>
-        </div>
-      </div>
-
-      <div class="set-sec">
-        <div class="fcard" style="text-align:center">
-          <button onclick="clearLocal()" style="background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.25);border-radius:9px;padding:10px 20px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer" data-en="🗑️ Clear Local Cache" data-kn="🗑️ ಸ್ಥಳೀಯ ಕ್ಯಾಶ್ ತೆರವು">🗑️ Clear Local Cache</button>
-          <div style="font-size:10px;color:var(--text3);margin-top:6px" data-en="Firebase data stays safe" data-kn="Firebase ಡೇಟಾ ಸುರಕ್ಷಿತ">Firebase data stays safe</div>
-        </div>
+      <div class="sh">Firebase</div>
+      <div class="fc" style="text-align:center;color:var(--text2);font-size:14px">
+        Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
+        <span id="fbStatus" style="font-size:12px;margin-top:6px;display:block"></span>
       </div>
     </div>
 
   </div><!-- /pages -->
 
   <div class="bnav">
-    <div class="ni on" onclick="goPage('Dash',this)"><div class="nico">🏠</div><div class="nlbl" data-en="Home" data-kn="ಮನೆ">Home</div></div>
-    <div class="ni" onclick="goPage('Add',this)"><div class="nico">➕</div><div class="nlbl" data-en="Add" data-kn="ಸೇರಿಸಿ">Add</div></div>
-    <div class="ni" onclick="goPage('Goals',this)"><div class="nico">🎯</div><div class="nlbl" data-en="Goals" data-kn="ಗುರಿ">Goals</div></div>
-    <div class="ni" onclick="goPage('History',this)"><div class="nico">📜</div><div class="nlbl" data-en="History" data-kn="ಇತಿಹಾಸ">History</div></div>
-    <div class="ni" onclick="goPage('Reports',this)"><div class="nico">📊</div><div class="nlbl" data-en="Reports" data-kn="ವರದಿ">Reports</div></div>
-    <div class="ni" onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl" data-en="Settings" data-kn="ಸೆಟ್ಟಿಂಗ್ಸ್">Settings</div></div>
+    <div class="ni on" onclick="goPage('Dash',this)"><div class="nico">🏠</div><div class="nlbl">Home</div></div>
+    <div class="ni" onclick="goPage('Add',this)"><div class="nico">➕</div><div class="nlbl">Add</div></div>
+    <div class="ni" onclick="goPage('Goals',this)"><div class="nico">🎯</div><div class="nlbl">Goals</div></div>
+    <div class="ni" onclick="goPage('History',this)"><div class="nico">📜</div><div class="nlbl">History</div></div>
+    <div class="ni" onclick="goPage('Reports',this)"><div class="nico">📊</div><div class="nlbl">Reports</div></div>
+    <div class="ni" onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl">Settings</div></div>
   </div>
 </div>
 
-<!-- Goal Modal -->
-<div class="moverlay" id="goalModal">
+<!-- GOAL MODAL -->
+<div class="mo" id="gModal">
   <div class="modal">
-    <button class="mclose" onclick="closeGoalModal()">✕</button>
-    <div class="modal-title" data-en="New Savings Goal" data-kn="ಹೊಸ ಉಳಿತಾಯ ಗುರಿ">New Savings Goal</div>
-    <label class="flbl" data-en="Goal Name" data-kn="ಗುರಿ ಹೆಸರು">Goal Name</label>
-    <input class="finp" id="gName" placeholder="e.g. Rachana's Education">
-    <label class="flbl" data-en="For (Person)" data-kn="ಯಾರಿಗಾಗಿ">For</label>
-    <select class="finp" id="gFor">
-      <option>Family</option><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option>
+    <button class="mclose" onclick="closeGM()">✕</button>
+    <div class="mtitle">New Savings Goal</div>
+    <label class="fl">Goal Name</label>
+    <input class="fi" id="gName" placeholder="e.g. Rachana Education">
+    <label class="fl">For</label>
+    <select class="fi" id="gFor">
+      <option>Family</option><option>Gavi</option><option>Uma</option>
+      <option>Rachana</option><option>Sanchita</option>
     </select>
-    <label class="flbl" data-en="Target (₹)" data-kn="ಗುರಿ ಮೊತ್ತ (₹)">Target (₹)</label>
-    <input class="finp" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
-    <label class="flbl" data-en="Already Saved (₹)" data-kn="ಈಗಾಗಲೇ ಉಳಿಸಿದ (₹)">Already Saved (₹)</label>
-    <input class="finp" type="number" id="gSaved" placeholder="0" inputmode="numeric">
-    <label class="flbl">Icon</label>
-    <input class="finp" id="gIcon" placeholder="🎓" maxlength="2">
-    <button class="submit-btn" onclick="doSaveGoal()" data-en="✅ Save Goal" data-kn="✅ ಗುರಿ ಉಳಿಸಿ">✅ Save Goal</button>
+    <label class="fl">Target Amount (₹)</label>
+    <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
+    <label class="fl">Already Saved (₹)</label>
+    <input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Icon (emoji)</label>
+    <input class="fi" id="gIcon" placeholder="🎓" maxlength="2">
+    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- ════════════════════════════════════════
-     FIREBASE SDK
-════════════════════════════════════════ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, getDocs, deleteDoc, doc,
-  onSnapshot, query, orderBy, setDoc, getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<!-- FIREBASE COMPAT SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-/* ══════════════════════════════════════
-   CONSTANTS & STATE
-══════════════════════════════════════ */
-const CATEGORIES = [
-  // Food & Daily
-  {id:'Food',       ico:'🍽️', en:'Food',      kn:'ಆಹಾರ',        color:'#ef4444', limit:10000},
-  {id:'Groceries',  ico:'🛒', en:'Groceries', kn:'ದಿನಸಿ',        color:'#22c55e', limit:8000},
-  {id:'Vegetables', ico:'🥦', en:'Vegetables',kn:'ತರಕಾರಿ',      color:'#4ade80', limit:3000},
-  {id:'Milk',       ico:'🥛', en:'Milk',      kn:'ಹಾಲು',         color:'#e0f2fe', limit:2000},
-  // Education
-  {id:'School',     ico:'🎓', en:'School',    kn:'ಶಾಲೆ',         color:'#38bdf8', limit:8000},
-  {id:'Books',      ico:'📚', en:'Books',     kn:'ಪುಸ್ತಕ',       color:'#818cf8', limit:2000},
-  {id:'Tuition',    ico:'✏️', en:'Tuition',   kn:'ಟ್ಯೂಷನ್',    color:'#a78bfa', limit:3000},
-  // Transport
-  {id:'Rent_Blr',   ico:'🏙️', en:'BLR Rent', kn:'ಬೆಂಗಳೂರು ಬಾಡಿಗೆ',color:'#fb923c', limit:15000},
-  {id:'Travel',     ico:'🚗', en:'Travel',    kn:'ಪ್ರಯಾಣ',      color:'#f59e0b', limit:3000},
-  {id:'Petrol',     ico:'⛽', en:'Petrol',    kn:'ಪೆಟ್ರೋಲ್',   color:'#fbbf24', limit:2000},
-  {id:'Auto_Bus',   ico:'🚌', en:'Auto/Bus',  kn:'ಆಟೋ/ಬಸ್',   color:'#facc15', limit:1500},
-  // Utilities
-  {id:'Electricity',ico:'💡', en:'Electricity',kn:'ವಿದ್ಯುತ್',  color:'#fde047', limit:2000},
-  {id:'Water',      ico:'💧', en:'Water',     kn:'ನೀರು',         color:'#7dd3fc', limit:500},
-  {id:'Internet',   ico:'📡', en:'Internet',  kn:'ಇಂಟರ್ನೆಟ್',  color:'#6ee7b7', limit:1000},
-  {id:'Phone',      ico:'📱', en:'Phone',     kn:'ಫೋನ್',         color:'#86efac', limit:500},
-  {id:'Gas_LPG',    ico:'🔥', en:'Gas/LPG',   kn:'ಗ್ಯಾಸ್',      color:'#fdba74', limit:1000},
-  // Health
-  {id:'Medical',    ico:'🏥', en:'Medical',   kn:'ವೈದ್ಯಕೀಯ',  color:'#f87171', limit:2000},
-  {id:'Medicine',   ico:'💊', en:'Medicine',  kn:'ಔಷಧಿ',        color:'#fca5a5', limit:1000},
-  // Family
-  {id:'Clothing',   ico:'👕', en:'Clothing',  kn:'ಬಟ್ಟೆ',       color:'#ec4899', limit:3000},
-  {id:'Children',   ico:'👧', en:'Children',  kn:'ಮಕ್ಕಳು',     color:'#f9a8d4', limit:3000},
-  {id:'Festival',   ico:'🪔', en:'Festival',  kn:'ಹಬ್ಬ',         color:'#fcd34d', limit:5000},
-  // Savings & Investment
-  {id:'Savings',    ico:'🏦', en:'Savings',   kn:'ಉಳಿತಾಯ',    color:'#2dd4bf', limit:0},
-  {id:'Investment', ico:'📈', en:'Investment',kn:'ಹೂಡಿಕೆ',    color:'#34d399', limit:0},
-  {id:'Insurance',  ico:'🛡️', en:'Insurance', kn:'ವಿಮೆ',        color:'#6ee7b7', limit:2000},
-  // Property
-  {id:'Ginigera_Maint',ico:'🔧',en:'House Maint',kn:'ಮನೆ ನಿರ್ವಹಣೆ',color:'#94a3b8',limit:2000},
-  {id:'PropertyTax',ico:'📋', en:'Prop Tax',  kn:'ಆಸ್ತಿ ತೆರಿಗೆ',color:'#64748b', limit:2000},
-  // Other
-  {id:'Hotel_Eating',ico:'🍜',en:'Eating Out',kn:'ಹೊರಗೆ ತಿನ್ನುವಿಕೆ',color:'#fb7185',limit:2000},
-  {id:'Entertainment',ico:'🎬',en:'Entertainment',kn:'ಮನರಂಜನೆ',color:'#c084fc',limit:1000},
-  {id:'Haircut',    ico:'✂️', en:'Haircut',   kn:'ಹೇರ್‌ಕಟ್',  color:'#a3e635', limit:500},
-  {id:'Other',      ico:'📦', en:'Other',     kn:'ಇತರ',         color:'#94a3b8', limit:0},
-];
-
-let lang  = localStorage.getItem('fb_lang') || 'en';
-let curUser = null;
-let curType = 'expense';
-let curCat  = 'Food';
-let curIncSrc = 'salary';
-let filterCat = 'All';
-let txCache   = [];
-let goalsCache = [];
-let settingsCache = {};
-
-let db = null;
-let unsubTx = null;
-let unsubGoals = null;
-let unsubSettings = null;
-
-const PINS_DEFAULT = {Gavi:'1234', Uma:'5678'};
-
-/* ══════════════════════════════════════
-   FIREBASE CONFIG — hardcoded
-══════════════════════════════════════ */
-const FIREBASE_CONFIG = {
+<script>
+/* ══ FIREBASE ══ */
+firebase.initializeApp({
   apiKey:            "AIzaSyDj1REJooFa7GRbQaVSC-AXRipQzmtN05M",
   authDomain:        "hatti-budget.firebaseapp.com",
   projectId:         "hatti-budget",
   appId:             "1:760721015497:web:51980c2d7df610d5594318",
   storageBucket:     "hatti-budget.firebasestorage.app",
   messagingSenderId: "760721015497"
-};
+});
+const db = firebase.firestore();
 
-function initFirebase(){
-  try {
-    const app = initializeApp(FIREBASE_CONFIG);
-    db = getFirestore(app);
-    return true;
-  } catch(e) {
-    console.error('Firebase init error:', e);
-    return false;
-  }
-}
+/* ══ STATE ══ */
+let lang='en',curUser=null,curType='expense',curCat='Food',curIS='salary',filtCat='All';
+let txCache=[],goalCache=[],settings={income:{salary:0,rent:0,uma:0},limits:{}};
+let unsubTx,unsubGoals;
+const PINS={Gavi:'1234',Uma:'5678'};
 
-// Setup screen no longer needed — config is hardcoded
-window.saveFirebaseConfig = function(){};
-window.reconfigFirebase = function(){
-  showToast('Project: hatti-budget (hardcoded)');
-};
+/* ══ CATEGORIES ══ */
+const CATS=[
+  {id:'Food',       i:'🍽️',en:'Food',        kn:'ಆಹಾರ',        c:'#ef4444',lim:10000},
+  {id:'Groceries',  i:'🛒', en:'Groceries',   kn:'ದಿನಸಿ',        c:'#22c55e',lim:8000},
+  {id:'Vegetables', i:'🥦', en:'Vegetables',  kn:'ತರಕಾರಿ',      c:'#4ade80',lim:3000},
+  {id:'Milk',       i:'🥛', en:'Milk',        kn:'ಹಾಲು',         c:'#bfdbfe',lim:2000},
+  {id:'School',     i:'🎓', en:'School',      kn:'ಶಾಲೆ',         c:'#38bdf8',lim:8000},
+  {id:'Books',      i:'📚', en:'Books',       kn:'ಪುಸ್ತಕ',       c:'#818cf8',lim:2000},
+  {id:'Tuition',    i:'✏️', en:'Tuition',     kn:'ಟ್ಯೂಷನ್',    c:'#a78bfa',lim:3000},
+  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',    kn:'ಬೆಂಗಳೂರು ಬಾಡಿಗೆ',c:'#fb923c',lim:20000},
+  {id:'Travel',     i:'🚗', en:'Travel',      kn:'ಪ್ರಯಾಣ',      c:'#f59e0b',lim:3000},
+  {id:'Petrol',     i:'⛽', en:'Petrol',      kn:'ಪೆಟ್ರೋಲ್',   c:'#fbbf24',lim:2000},
+  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',    kn:'ಆಟೋ/ಬಸ್',   c:'#facc15',lim:1500},
+  {id:'Electricity',i:'💡', en:'Electricity', kn:'ವಿದ್ಯುತ್',   c:'#fde047',lim:2000},
+  {id:'Water',      i:'💧', en:'Water',       kn:'ನೀರು',         c:'#7dd3fc',lim:500},
+  {id:'Internet',   i:'📡', en:'Internet',    kn:'ಇಂಟರ್ನೆಟ್',  c:'#6ee7b7',lim:1000},
+  {id:'Phone',      i:'📱', en:'Phone',       kn:'ಫೋನ್',         c:'#86efac',lim:500},
+  {id:'Gas_LPG',    i:'🔥', en:'Gas/LPG',     kn:'ಗ್ಯಾಸ್',      c:'#fdba74',lim:1000},
+  {id:'Medical',    i:'🏥', en:'Medical',     kn:'ವೈದ್ಯಕೀಯ',  c:'#f87171',lim:2000},
+  {id:'Medicine',   i:'💊', en:'Medicine',    kn:'ಔಷಧಿ',        c:'#fca5a5',lim:1000},
+  {id:'Clothing',   i:'👕', en:'Clothing',    kn:'ಬಟ್ಟೆ',        c:'#ec4899',lim:3000},
+  {id:'Children',   i:'👧', en:'Children',    kn:'ಮಕ್ಕಳು',      c:'#f9a8d4',lim:3000},
+  {id:'Festival',   i:'🪔', en:'Festival',    kn:'ಹಬ್ಬ',         c:'#fcd34d',lim:5000},
+  {id:'Savings',    i:'🏦', en:'Savings',     kn:'ಉಳಿತಾಯ',    c:'#2dd4bf',lim:0},
+  {id:'Investment', i:'📈', en:'Investment',  kn:'ಹೂಡಿಕೆ',    c:'#34d399',lim:0},
+  {id:'Insurance',  i:'🛡️',en:'Insurance',   kn:'ವಿಮೆ',        c:'#6ee7b7',lim:2000},
+  {id:'HouseMaint', i:'🔧', en:'House Maint', kn:'ಮನೆ ನಿರ್ವಹಣೆ',c:'#94a3b8',lim:2000},
+  {id:'PropertyTax',i:'📋', en:'Prop Tax',    kn:'ಆಸ್ತಿ ತೆರಿಗೆ',c:'#64748b',lim:2000},
+  {id:'EatingOut',  i:'🍜', en:'Eating Out',  kn:'ಹೊರಗೆ ತಿನ್ನುವಿಕೆ',c:'#fb7185',lim:2000},
+  {id:'EntertainMt',i:'🎬', en:'Entertainment',kn:'ಮನರಂಜನೆ',  c:'#c084fc',lim:1000},
+  {id:'Haircut',    i:'✂️', en:'Haircut',     kn:'ಹೇರ್‌ಕಟ್',  c:'#a3e635',lim:500},
+  {id:'Other',      i:'📦', en:'Other',       kn:'ಇತರ',         c:'#94a3b8',lim:0},
+];
 
-/* ══════════════════════════════════════
-   STARTUP
-══════════════════════════════════════ */
+/* ══ LANG ══ */
+function L(en,kn){return lang==='kn'?kn:en}
+function toggleLang(){lang=lang==='en'?'kn':'en';localStorage.setItem('hb_lang',lang);renderAll();buildCatGrid()}
+lang=localStorage.getItem('hb_lang')||'en';
+
+/* ══ STARTUP ══ */
 async function startup(){
-  setTxt('loadTxt', 'Connecting to Firebase…');
-  const ok = initFirebase();
-  if(!ok){
-    setTxt('loadTxt', '❌ Firebase error — check console.');
-    return;
-  }
-  try {
-    await Promise.race([
-      loadSettings(),
-      new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 8000))
+  document.getElementById('loadMsg').textContent='Connecting to Firebase…';
+  try{
+    const[d1,d2]=await Promise.all([
+      db.collection('settings').doc('income').get(),
+      db.collection('settings').doc('limits').get()
     ]);
-  } catch(e) {
-    console.warn('Settings timeout — using defaults:', e.message);
-    settingsCache = { income:{salary:0,rent:0,uma:0}, limits:{} };
+    settings.income=d1.exists?d1.data():{salary:0,rent:0,uma:0};
+    settings.limits=d2.exists?d2.data():{};
+    document.getElementById('fbStatus').textContent='✅ Connected';
+  }catch(e){
+    console.warn('Firestore:',e.message);
+    document.getElementById('fbStatus').textContent='⚠️ Check Firestore Rules';
+    settings={income:{salary:0,rent:0,uma:0},limits:{}};
   }
-  hide('loading');
-  hide('setupScreen');
-  showLogin();
+  document.getElementById('loading').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
 }
-
-function showLogin(){
-  show('loginScreen');
-  applyLang();
-}
-
 startup();
 
-/* ══════════════════════════════════════
-   LANGUAGE
-══════════════════════════════════════ */
-function L(en,kn){ return lang==='kn'?kn:en; }
-function applyLang(){
-  document.querySelectorAll('[data-en]').forEach(el=>{
-    if(!el.hasAttribute('data-kn')) return;
-    el.textContent = el.getAttribute('data-'+lang) || el.getAttribute('data-en');
-  });
+/* ══ LOGIN ══ */
+let pinBuf='',selIdx=0;
+function selUser(i){
+  selIdx=i;
+  document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',i===j));
+  pinBuf='';updateDots();document.getElementById('lerr').textContent='';
 }
-window.toggleLang = function(){
-  lang = lang==='en'?'kn':'en';
-  localStorage.setItem('fb_lang',lang);
-  applyLang();
-  buildCatGrid();
-  renderAll();
-};
-
-/* ══════════════════════════════════════
-   LOGIN / PIN
-══════════════════════════════════════ */
-let pinBuf = '', selUserIdx = 0;
-window.selUser = function(i){
-  selUserIdx = i;
-  document.querySelectorAll('.user-card').forEach((c,j)=>c.classList.toggle('sel',i===j));
-  resetPin();
-};
-function resetPin(){ pinBuf=''; updateDots(); document.getElementById('loginErr').textContent=''; }
-function updateDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
-window.pk = k=>{ if(pinBuf.length>=4) return; pinBuf+=k; updateDots(); if(pinBuf.length===4) setTimeout(window.pok,100); };
-window.pdel = ()=>{ pinBuf=pinBuf.slice(0,-1); updateDots(); };
-window.pok = ()=>{
-  const user = selUserIdx===0?'Gavi':'Uma';
-  const correct = localStorage.getItem('fb_pin_'+user) || PINS_DEFAULT[user];
-  if(pinBuf===correct){ curUser=user; doLogin(); }
-  else { document.getElementById('loginErr').textContent=L('Wrong PIN. Try again.','ತಪ್ಪು PIN. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.'); pinBuf=''; updateDots(); }
-};
-async function doLogin(){
-  hide('loginScreen');
-  show('appShell');
+function updateDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length)}
+function pk(k){if(pinBuf.length>=4)return;pinBuf+=k;updateDots();if(pinBuf.length===4)setTimeout(pok,100)}
+function pdel(){pinBuf=pinBuf.slice(0,-1);updateDots()}
+function pok(){
+  const user=selIdx===0?'Gavi':'Uma';
+  const pin=localStorage.getItem('hb_pin_'+user)||PINS[user];
+  if(pinBuf===pin){curUser=user;doLogin()}
+  else{document.getElementById('lerr').textContent=L('Wrong PIN, try again','ತಪ್ಪು PIN, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ');pinBuf='';updateDots()}
+}
+function doLogin(){
+  document.getElementById('loginScreen').style.display='none';
+  const app=document.getElementById('app');
+  app.style.display='flex';app.style.flexDirection='column';
   document.getElementById('tbUser').textContent=(curUser==='Gavi'?'👨 ':'👩 ')+curUser;
-  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
-  subscribeRealtime();
-  buildCatGrid();
-  applyLang();
-  renderSettings();
+  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+  buildCatGrid();subscribeRT();renderSettings();
 }
-window.doLogout = function(){
-  if(unsubTx) unsubTx();
-  if(unsubGoals) unsubGoals();
-  hide('appShell');
-  showLogin();
-  resetPin();
-  pinBuf='';
-  txCache=[];
-};
+function doLogout(){
+  if(unsubTx)unsubTx();if(unsubGoals)unsubGoals();
+  txCache=[];goalCache=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  pinBuf='';updateDots();document.getElementById('lerr').textContent='';
+}
 
-/* ══════════════════════════════════════
-   FIRESTORE REALTIME LISTENERS
-══════════════════════════════════════ */
-function subscribeRealtime(){
-  // Transactions
-  if(unsubTx) unsubTx();
-  const qTx = query(collection(db,'transactions'), orderBy('ts','desc'));
-  unsubTx = onSnapshot(qTx, snap=>{
-    txCache = snap.docs.map(d=>({id:d.id,...d.data()}));
+/* ══ REALTIME ══ */
+function subscribeRT(){
+  if(unsubTx)unsubTx();
+  unsubTx=db.collection('transactions').orderBy('ts','desc').onSnapshot(snap=>{
+    txCache=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderAll();
-    setDot(true);
-  }, err=>{ setDot(false); console.error(err); });
-
-  // Goals
-  if(unsubGoals) unsubGoals();
-  unsubGoals = onSnapshot(collection(db,'goals'), snap=>{
-    goalsCache = snap.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById('sdot').className='sdot';
+  },err=>{console.error(err);document.getElementById('sdot').className='sdot off'});
+  if(unsubGoals)unsubGoals();
+  unsubGoals=db.collection('goals').onSnapshot(snap=>{
+    goalCache=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderGoals();
-  }, err=>console.error(err));
+  },err=>console.error(err));
 }
 
-function setDot(on){ document.getElementById('syncDot').className='sync-dot'+(on?'':' off'); }
-
-/* ══════════════════════════════════════
-   SETTINGS (Firestore)
-══════════════════════════════════════ */
-async function loadSettings(){
-  const defaults = { income:{salary:0,rent:0,uma:0}, limits:{} };
-  try {
-    const [d1, d2] = await Promise.all([
-      getDoc(doc(db,'settings','income')),
-      getDoc(doc(db,'settings','limits'))
-    ]);
-    settingsCache.income = (d1 && d1.exists()) ? d1.data() : defaults.income;
-    settingsCache.limits = (d2 && d2.exists()) ? d2.data() : defaults.limits;
-  } catch(e) {
-    console.warn('loadSettings error (using defaults):', e.message || e);
-    // Common cause: Firestore rules expired (test mode lasts 30 days)
-    // Fix: Firebase Console → Firestore → Rules → change "allow read, write: if false" to "if true" and publish
-    settingsCache = { ...defaults };
-  }
-}
-async function saveSettings(key,data){
-  await setDoc(doc(db,'settings',key),data);
-  if(key==='income') settingsCache.income=data;
-  if(key==='limits') settingsCache.limits=data;
-}
-window.savInc = async function(src){
-  const inc = {...(settingsCache.income||{})};
-  if(src==='salary') inc.salary=Number(document.getElementById('iGaviSal').value)||0;
-  if(src==='rent')   inc.rent  =Number(document.getElementById('iGaviRent').value)||0;
-  if(src==='uma')    inc.uma   =Number(document.getElementById('iUmaInc').value)||0;
-  await saveSettings('income',inc);
-  showToast(L('✅ Income saved!','✅ ಆದಾಯ ಉಳಿಸಲಾಗಿದೆ!'));
-  renderAll();
-};
-window.savPin = function(who){
-  const v=document.getElementById('pin'+who).value;
-  if(v.length!==4||isNaN(v)){showToast(L('PIN must be 4 digits','4 ಅಂಕಿ PIN'),true);return;}
-  localStorage.setItem('fb_pin_'+who,v);
-  showToast(L('✅ PIN updated!','✅ PIN ನವೀಕರಿಸಲಾಗಿದೆ!'));
-};
-window.clearLocal = function(){
-  if(confirm(L('Clear local cache? Firebase data is safe.','ಕ್ಯಾಶ್ ತೆರವು ಮಾಡಬೇಕೇ?'))){
-    localStorage.removeItem('fb_lang');
-    showToast(L('Cache cleared','ಕ್ಯಾಶ್ ತೆರವಾಗಿದೆ'));
-  }
-};
-
-/* ══════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════ */
-window.goPage = function(name,el){
+/* ══ NAV ══ */
+function goPage(name,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   document.getElementById('pg'+name).classList.add('on');
   el.classList.add('on');
-  if(name==='Reports') renderReports();
-  if(name==='Settings') renderSettings();
-  if(name==='Goals') renderGoals();
-  if(name==='History') renderHistory();
-};
+  if(name==='Reports')renderReports();
+  if(name==='Goals')renderGoals();
+  if(name==='History')renderHistory();
+  if(name==='Settings')renderSettings();
+}
+function renderAll(){renderDash();renderHistory()}
 
-/* ══════════════════════════════════════
-   RENDER ALL
-══════════════════════════════════════ */
-function renderAll(){ applyLang(); renderDash(); renderHistory(); }
-
-/* ══════════════════════════════════════
-   DASHBOARD
-══════════════════════════════════════ */
+/* ══ DASHBOARD ══ */
 function renderDash(){
-  const now = new Date();
-  const mm = now.getMonth(), yy = now.getFullYear();
-  const inc = settingsCache.income||{salary:0,rent:0,uma:0};
-  const baseInc = (inc.salary||0)+(inc.rent||0)+(inc.uma||0);
+  const now=new Date(),mm=now.getMonth(),yy=now.getFullYear();
+  const inc=settings.income||{};
+  const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
+  const mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy});
+  const addlInc=mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const totalInc=baseInc+addlInc;
+  const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const bal=totalInc-totalExp;
+  const pct=totalInc>0?Math.round(bal/totalInc*100):0;
+  setText('hBal',fmt(bal));setText('hInc','₹'+fmt(totalInc));setText('hSpent','₹'+fmt(totalExp));setText('hPct',pct+'%');
+  setText('iSal','₹'+fmt(+inc.salary||0));setText('iRent','₹'+fmt(+inc.rent||0));
 
-  const mTx = txCache.filter(t=>{ if(!t.date) return false; const d=new Date(t.date); return d.getMonth()===mm&&d.getFullYear()===yy; });
-  const addlInc = mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const totalInc = baseInc+addlInc;
-  const totalExp = mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  const bal = totalInc - totalExp;
-  const pct = totalInc>0?Math.round((bal/totalInc)*100):0;
+  /* warnings */
+  const lims={...Object.fromEntries(CATS.map(c=>[c.id,c.lim])),...(settings.limits||{})};
+  const catExp={};CATS.forEach(c=>catExp[c.id]=0);
+  mTx.filter(t=>t.type==='expense').forEach(t=>{if(catExp[t.category]!==undefined)catExp[t.category]+=t.amount});
+  const wb=document.getElementById('warnBox');wb.innerHTML='';
+  CATS.forEach(c=>{if(lims[c.id]>0&&catExp[c.id]>lims[c.id])wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${L(c.en,c.kn)} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`});
 
-  setTxt('hBal', fmt(bal));
-  setTxt('hInc', '₹'+fmt(totalInc));
-  setTxt('hSpent','₹'+fmt(totalExp));
-  setTxt('hPct', pct+'%');
-
-  // Income split cards
-  const salaryThis = (inc.salary||0)+mTx.filter(t=>t.type==='income'&&t.incSrc==='salary').reduce((s,t)=>s+t.amount,0);
-  const rentThis   = (inc.rent||0)+mTx.filter(t=>t.type==='income'&&t.incSrc==='rent').reduce((s,t)=>s+t.amount,0);
-  setTxt('iSalary','₹'+fmt(salaryThis));
-  setTxt('iRent','₹'+fmt(rentThis));
-
-  // Warnings
-  const lims = {...Object.fromEntries(CATEGORIES.map(c=>[c.id,c.limit])), ...(settingsCache.limits||{})};
-  const catExp = {};
-  CATEGORIES.forEach(c=>catExp[c.id]=0);
-  mTx.filter(t=>t.type==='expense').forEach(t=>{ if(catExp[t.category]!==undefined) catExp[t.category]+=t.amount; });
-  const wb = document.getElementById('warnBox');
-  wb.innerHTML='';
-  CATEGORIES.forEach(c=>{ if(lims[c.id]&&catExp[c.id]>lims[c.id]) wb.innerHTML+=`<div class="warn">⚠️ ${c.ico} ${L(c.en,c.kn)} ${L('budget exceeded!','ಬಜೆಟ್ ಮೀರಿದೆ!')} ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`; });
-
-  // Top 4 stats
-  const topCats=[{id:'Rent_Blr',ico:'🏙️'},{id:'School',ico:'🎓'},{id:'Food',ico:'🍽️'},{id:'Medical',ico:'🏥'}];
-  const sg=document.getElementById('topStats');
-  sg.innerHTML=topCats.map(c=>{
-    const cat=CATEGORIES.find(x=>x.id===c.id);
-    return `<div class="sc"><div class="sc-ico">${c.ico}</div><div class="sc-lbl">${L(cat.en,cat.kn)}</div><div class="sc-val" style="color:${cat.color}">₹${fmt(catExp[c.id]||0)}</div></div>`;
+  /* top 4 stat cards */
+  const top4=[{id:'BLR_Rent',i:'🏙️'},{id:'School',i:'🎓'},{id:'Food',i:'🍽️'},{id:'Medical',i:'🏥'}];
+  document.getElementById('topStats').innerHTML=top4.map(x=>{
+    const c=CATS.find(q=>q.id===x.id);
+    return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${L(c.en,c.kn)}</div><div class="sc-val" style="color:${c.c}">₹${fmt(catExp[x.id]||0)}</div></div>`;
   }).join('');
 
-  // Category bars
+  /* category bars */
+  const expCats=CATS.filter(c=>c.id!=='Savings'&&c.id!=='Investment').map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
+  const maxA=Math.max(...expCats.map(c=>c.amt),1);
   const cb=document.getElementById('catBars');
-  const expCats=CATEGORIES.filter(c=>c.id!=='Savings'&&c.id!=='Investment').map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
-  const maxAmt=Math.max(...expCats.map(c=>c.amt),1);
-  cb.innerHTML=expCats.length?expCats.map(c=>`
-    <div class="catbar-row">
-      <div class="catbar-lbl">${c.ico} ${L(c.en,c.kn)}</div>
-      <div class="catbar-track"><div class="catbar-fill" style="width:${Math.round(c.amt/maxAmt*100)}%;background:${c.color}"></div></div>
-      <div class="catbar-amt" style="color:${c.color}">₹${fmt(c.amt)}</div>
-    </div>`).join(''):`<div style="color:var(--text2);font-size:12px;text-align:center;padding:8px">${L('No expenses this month','ಈ ತಿಂಗಳು ಖರ್ಚಿಲ್ಲ')}</div>`;
+  cb.innerHTML=expCats.length?expCats.slice(0,10).map(c=>`
+    <div class="cbrow">
+      <div class="cblbl">${c.i} ${L(c.en,c.kn)}</div>
+      <div class="cbtrack"><div class="cbfill" style="width:${Math.round(c.amt/maxA*100)}%;background:${c.c}"></div></div>
+      <div class="cbamt" style="color:${c.c}">₹${fmt(c.amt)}</div>
+    </div>`).join(''):`<div style="color:var(--text2);font-size:13px;text-align:center;padding:10px">${L('No expenses this month','ಈ ತಿಂಗಳು ಖರ್ಚಿಲ್ಲ')}</div>`;
 
-  drawTrend();
-
-  // Recent 6
-  const recent=txCache.slice(0,6);
+  drawTrend(baseInc);
   const rl=document.getElementById('recentTx');
-  rl.innerHTML=recent.length?recent.map(txHTML).join(''):`<div class="empty"><div class="big">💸</div><p>${L('No transactions yet','ಇನ್ನೂ ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
+  rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')||`<div class="empty"><div class="big">💸</div><p>${L('No transactions yet','ಇನ್ನೂ ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
 }
 
-/* ══════════════════════════════════════
-   TREND CHART
-══════════════════════════════════════ */
-function drawTrend(){
-  const canvas=document.getElementById('trendC');
-  if(!canvas) return;
-  const ctx=canvas.getContext('2d');
-  const now=new Date();
-  const shortM=lang==='kn'?['ಜ','ಫೆ','ಮಾ','ಏ','ಮೇ','ಜೂ','ಜು','ಆ','ಸೆ','ಅ','ನ','ಡಿ']:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+/* ══ TREND CHART ══ */
+function drawTrend(baseInc){
+  const canvas=document.getElementById('trendC');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),now=new Date();
+  const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const labels=[],incD=[],expD=[];
-  const inc=settingsCache.income||{salary:0,rent:0,uma:0};
-  const baseInc=(inc.salary||0)+(inc.rent||0)+(inc.uma||0);
   for(let i=5;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    labels.push(shortM[d.getMonth()]);
+    labels.push(sM[d.getMonth()]);
     const m=d.getMonth(),y=d.getFullYear();
-    const mTx=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y;});
-    incD.push(baseInc+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
+    const mTx=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y});
+    incD.push((baseInc||0)+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
     expD.push(mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0));
   }
-  drawLineChart(canvas,ctx,labels,incD,expD,'#4ade80','#fb7185',L('Income','ಆದಾಯ'),L('Expense','ಖರ್ಚು'));
+  drawLine2(canvas,ctx,labels,incD,expD,'#4ade80','#fb7185','Income','Expense');
 }
-
-function drawLineChart(canvas,ctx,labels,d1,d2,c1,c2,l1,l2){
-  const W=canvas.parentElement.offsetWidth-28,H=155;
+function drawLine2(canvas,ctx,labels,d1,d2,c1,c2,l1,l2){
+  const W=canvas.parentElement.clientWidth-32,H=160;
   canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  const p={t:16,r:12,b:28,l:46},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const p={t:16,r:14,b:28,l:48},cW=W-p.l-p.r,cH=H-p.t-p.b;
   const maxV=Math.max(...d1,...d2,1);
-  const step=cW/(labels.length-1);
+  const step=cW/(labels.length-1||1);
   ctx.clearRect(0,0,W,H);
-  // grid
   for(let i=0;i<=4;i++){
-    const y=p.t+(cH/4)*i;
-    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+    const y=p.t+cH/4*i;
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
-    const v=maxV-(maxV/4)*i;
-    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font=`10px sans-serif`;ctx.textAlign='right';
+    const v=maxV-maxV/4*i;
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';
     ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
   }
-  function line(data,color,fill){
+  [[d1,c1],[d2,c2]].forEach(([data,color])=>{
     const pts=data.map((v,i)=>({x:p.l+step*i,y:p.t+cH-(v/maxV)*cH}));
-    if(fill){
-      ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-      pts.forEach(p2=>ctx.lineTo(p2.x,p2.y));
-      ctx.lineTo(pts[pts.length-1].x,p.t+cH);ctx.lineTo(pts[0].x,p.t+cH);ctx.closePath();
-      const g=ctx.createLinearGradient(0,p.t,0,p.t+cH);
-      g.addColorStop(0,color+'35');g.addColorStop(1,color+'00');
-      ctx.fillStyle=g;ctx.fill();
-    }
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));
+    ctx.lineTo(pts[pts.length-1].x,p.t+cH);ctx.lineTo(pts[0].x,p.t+cH);ctx.closePath();
+    const g=ctx.createLinearGradient(0,p.t,0,p.t+cH);
+    g.addColorStop(0,color+'38');g.addColorStop(1,color+'00');
+    ctx.fillStyle=g;ctx.fill();
     ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.lineJoin='round';
-    ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p2=>ctx.lineTo(p2.x,p2.y));ctx.stroke();
-    pts.forEach(p2=>{ctx.beginPath();ctx.arc(p2.x,p2.y,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();});
-  }
-  line(d1,c1,true);line(d2,c2,true);
+    ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));ctx.stroke();
+    pts.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()});
+  });
   ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='11px sans-serif';ctx.textAlign='center';
   labels.forEach((l,i)=>ctx.fillText(l,p.l+step*i,H-5));
-  ctx.fillStyle=c1;ctx.fillRect(W-88,6,10,4);
-  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10px sans-serif';ctx.textAlign='left';ctx.fillText(l1,W-74,13);
-  ctx.fillStyle=c2;ctx.fillRect(W-88,18,10,4);ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillText(l2,W-74,25);
+  [[c1,l1],[c2,l2]].forEach(([c,l],i)=>{
+    ctx.fillStyle=c;ctx.fillRect(W-90,6+i*13,10,4);
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='10px sans-serif';ctx.textAlign='left';
+    ctx.fillText(l,W-76,12+i*13);
+  });
 }
 
-/* ══════════════════════════════════════
-   ADD TRANSACTION
-══════════════════════════════════════ */
-window.setTyp = function(t){
+/* ══ ADD ══ */
+function setTyp(t){
   curType=t;
   document.getElementById('btnExp').classList.toggle('on',t==='expense');
   document.getElementById('btnInc').classList.toggle('on',t==='income');
-  document.getElementById('incSrcRow').style.display=t==='income'?'block':'none';
-  document.getElementById('catSection').style.display=t==='expense'?'block':'none';
-};
-window.setIncSrc = function(s){
-  curIncSrc=s;
-  document.getElementById('isSalary').classList.toggle('on',s==='salary');
+  document.getElementById('incSrcBox').style.display=t==='income'?'block':'none';
+  document.getElementById('catBox').style.display=t==='expense'?'block':'none';
+}
+function setIS(s){
+  curIS=s;
+  document.getElementById('isSal').classList.toggle('on',s==='salary');
   document.getElementById('isRent').classList.toggle('on',s==='rent');
-};
+}
 function buildCatGrid(){
-  const g=document.getElementById('catGrid');
-  if(!g) return;
+  const g=document.getElementById('catGrid');if(!g)return;
   g.innerHTML='';
-  CATEGORIES.forEach(c=>{
+  CATS.forEach(c=>{
     const b=document.createElement('button');
     b.className='cbtn'+(c.id===curCat?' on':'');
-    b.innerHTML=`<span class="cico">${c.ico}</span><span class="cnm">${L(c.en,c.kn)}</span>`;
-    b.onclick=()=>{ curCat=c.id; buildCatGrid(); };
+    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${L(c.en,c.kn)}</span>`;
+    b.onclick=()=>{curCat=c.id;buildCatGrid()};
     g.appendChild(b);
   });
 }
-window.doAddTx = async function(){
+async function doAdd(){
   const amt=Number(document.getElementById('fAmt').value);
-  if(!amt||amt<=0){showToast(L('Enter a valid amount','ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ'),true);return;}
-  const tx={
-    type:curType, amount:amt,
-    category: curType==='expense'?curCat:(curIncSrc==='salary'?'Salary':'Ginigera Rent'),
-    incSrc: curType==='income'?curIncSrc:null,
-    who: document.getElementById('fWho').value,
-    date: document.getElementById('fDate').value||new Date().toISOString().split('T')[0],
-    note: document.getElementById('fNote').value.trim(),
-    ts: Date.now()
-  };
+  if(!amt||amt<=0){showToast(L('Enter a valid amount','ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ'),true);return}
   try{
-    await addDoc(collection(db,'transactions'),tx);
+    await db.collection('transactions').add({
+      type:curType,amount:amt,
+      category:curType==='expense'?curCat:(curIS==='salary'?'Salary_Income':'Rent_Income'),
+      incSrc:curType==='income'?curIS:null,
+      who:document.getElementById('fWho').value,
+      date:document.getElementById('fDate').value||new Date().toISOString().split('T')[0],
+      note:document.getElementById('fNote').value.trim(),
+      ts:Date.now()
+    });
     document.getElementById('fAmt').value='';
     document.getElementById('fNote').value='';
-    showToast(L('✅ Saved to Firebase!','✅ Firebase ಗೆ ಉಳಿಸಲಾಗಿದೆ!'));
-  }catch(e){ showToast(L('Error saving!','ಉಳಿಸಲು ದೋಷ!'),true); }
-};
-window.deleteTx = async function(id){
-  if(!confirm(L('Delete this transaction?','ಈ ವ್ಯವಹಾರ ಅಳಿಸಬೇಕೇ?'))) return;
-  await deleteDoc(doc(db,'transactions',id));
+    showToast(L('✅ Saved!','✅ ಉಳಿಸಲಾಗಿದೆ!'));
+  }catch(e){showToast('Error: '+e.message,true)}
+}
+async function deleteTx(id){
+  if(!confirm(L('Delete this?','ಅಳಿಸಬೇಕೇ?')))return;
+  await db.collection('transactions').doc(id).delete();
   showToast(L('Deleted','ಅಳಿಸಲಾಗಿದೆ'));
-};
+}
 
-/* ══════════════════════════════════════
-   GOALS
-══════════════════════════════════════ */
+/* ══ GOALS ══ */
 function renderGoals(){
-  const gl=document.getElementById('goalList');
-  if(!gl) return;
-  if(!goalsCache.length){ gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>${L('No goals yet','ಇನ್ನೂ ಗುರಿಗಳಿಲ್ಲ')}</p></div>`; return; }
-  const colors=['#4ade80','#2dd4bf','#a78bfa','#f0b429','#fb923c','#38bdf8'];
-  gl.innerHTML=goalsCache.map((g,i)=>{
-    const pct=Math.min(100,Math.round((g.saved/g.target)*100));
+  const gl=document.getElementById('goalList');if(!gl)return;
+  if(!goalCache.length){gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>${L('No goals yet','ಇನ್ನೂ ಗುರಿಗಳಿಲ್ಲ')}</p></div>`;return}
+  const cols=['#4ade80','#2dd4bf','#a78bfa','#f0b429','#fb923c','#38bdf8'];
+  gl.innerHTML=goalCache.map((g,i)=>{
+    const pct=Math.min(100,Math.round(g.saved/g.target*100));
     return `<div class="gcrd">
       <div class="gh"><div class="gico">${g.icon||'🎯'}</div><div class="ginf"><div class="gname">${g.name}</div><div class="gsub">${L('For','ಯಾರಿಗಾಗಿ')}: ${g.forPerson||'Family'}</div></div><div class="gpct">${pct}%</div></div>
-      <div class="gtrack"><div class="gfill" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="gtrack"><div class="gfill" style="width:${pct}%;background:${cols[i%cols.length]}"></div></div>
       <div class="gamts"><span>${L('Saved','ಉಳಿಸಿದ')}: <strong>₹${fmt(g.saved)}</strong></span><span>${L('Target','ಗುರಿ')}: <strong>₹${fmt(g.target)}</strong></span></div>
     </div>`;
   }).join('');
 }
-window.openGoalModal = ()=>document.getElementById('goalModal').classList.add('open');
-window.closeGoalModal = ()=>document.getElementById('goalModal').classList.remove('open');
-window.doSaveGoal = async function(){
+function openGM(){document.getElementById('gModal').classList.add('open')}
+function closeGM(){document.getElementById('gModal').classList.remove('open')}
+async function doSaveGoal(){
   const name=document.getElementById('gName').value.trim();
   const target=Number(document.getElementById('gTarget').value);
-  if(!name||!target){showToast(L('Fill all fields','ಎಲ್ಲ ಮಾಹಿತಿ ನಮೂದಿಸಿ'),true);return;}
-  await addDoc(collection(db,'goals'),{name,forPerson:document.getElementById('gFor').value,target,saved:Number(document.getElementById('gSaved').value)||0,icon:document.getElementById('gIcon').value||'🎯',ts:Date.now()});
-  closeGoalModal();
-  showToast(L('✅ Goal saved!','✅ ಗುರಿ ಉಳಿಸಲಾಗಿದೆ!'));
-  ['gName','gTarget','gSaved','gIcon'].forEach(id=>document.getElementById(id).value='');
-};
+  if(!name||!target){showToast(L('Fill all fields','ಎಲ್ಲ ಮಾಹಿತಿ ನಮೂದಿಸಿ'),true);return}
+  try{
+    await db.collection('goals').add({
+      name,forPerson:document.getElementById('gFor').value,
+      target,saved:Number(document.getElementById('gSaved').value)||0,
+      icon:document.getElementById('gIcon').value||'🎯',ts:Date.now()
+    });
+    closeGM();showToast(L('✅ Goal saved!','✅ ಗುರಿ ಉಳಿಸಲಾಗಿದೆ!'));
+    ['gName','gTarget','gSaved','gIcon'].forEach(id=>document.getElementById(id).value='');
+  }catch(e){showToast('Error: '+e.message,true)}
+}
 
-/* ══════════════════════════════════════
-   HISTORY
-══════════════════════════════════════ */
+/* ══ HISTORY ══ */
 function renderHistory(){
-  const filters=['All',...[...new Set(txCache.map(t=>t.category))].filter(Boolean)];
-  const fr=document.getElementById('filterRow');
-  const hl=document.getElementById('histList');
-  if(!fr||!hl) return;
-  fr.innerHTML=['All',...CATEGORIES.map(c=>c.id)].filter((f,i,a)=>f==='All'||txCache.some(t=>t.category===f)&&a.indexOf(f)===i).map(f=>{
-    const cat=CATEGORIES.find(c=>c.id===f);
-    const lbl=f==='All'?L('All','ಎಲ್ಲ'):(cat?`${cat.ico} ${L(cat.en,cat.kn)}`:f);
-    return `<div class="fchip${filterCat===f?' on':''}" onclick="setFilt('${f}')">${lbl}</div>`;
+  const fr=document.getElementById('filterRow');if(!fr)return;
+  const usedCats=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f));
+  fr.innerHTML=usedCats.map(f=>{
+    const c=CATS.find(x=>x.id===f);
+    return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?L('All','ಎಲ್ಲ'):(c?c.i+' '+L(c.en,c.kn):f)}</div>`;
   }).join('');
   let list=txCache.slice();
-  if(filterCat!=='All') list=list.filter(t=>t.category===filterCat);
-  hl.innerHTML=list.length?list.map(t=>txHTML(t,true)).join(''):`<div class="empty"><div class="big">📭</div><p>${L('No transactions found','ವ್ಯವಹಾರಗಳು ಕಾಣಲಿಲ್ಲ')}</p></div>`;
+  if(filtCat!=='All')list=list.filter(t=>t.category===filtCat);
+  const hl=document.getElementById('histList');
+  hl.innerHTML=list.length?list.map(t=>txHTML(t,true)).join(''):`<div class="empty"><div class="big">📭</div><p>${L('No transactions','ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
 }
-window.setFilt=function(f){ filterCat=f; renderHistory(); };
+function setFilt(f){filtCat=f;renderHistory()}
 
-/* ══════════════════════════════════════
-   REPORTS
-══════════════════════════════════════ */
+/* ══ REPORTS ══ */
 function renderReports(){
-  const now=new Date();
-  const mm=now.getMonth(),yy=now.getFullYear();
-  const inc=settingsCache.income||{salary:0,rent:0,uma:0};
-  const baseInc=(inc.salary||0)+(inc.rent||0)+(inc.uma||0);
-  const mTx=txCache.filter(t=>{ if(!t.date) return false; const d=new Date(t.date); return d.getMonth()===mm&&d.getFullYear()===yy; });
+  const now=new Date(),mm=now.getMonth(),yy=now.getFullYear();
+  const inc=settings.income||{};
+  const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
+  const mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy});
   const totalInc=baseInc+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const saved=totalInc-totalExp;
-  const savePct=totalInc>0?Math.round((saved/totalInc)*100):0;
-  const avgDaily=totalExp>0?Math.round(totalExp/new Date(yy,mm+1,0).getDate()):0;
-  const lrgTx=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
+  const savePct=totalInc>0?Math.round(saved/totalInc*100):0;
+  const days=new Date(yy,mm+1,0).getDate();
+  const largest=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
+  document.getElementById('repGrid').innerHTML=[
+    {l:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),v:'₹'+fmt(totalInc),c:'var(--green)'},
+    {l:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),v:'₹'+fmt(totalExp),c:'var(--rose)'},
+    {l:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),v:'₹'+fmt(saved)+' ('+savePct+'%)',c:saved>=0?'var(--green)':'var(--rose)'},
+    {l:L('Daily Avg','ದೈನಂದಿನ ಸರಾಸರಿ'),v:'₹'+fmt(Math.round(totalExp/days)),c:'var(--text)'},
+    {l:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'),v:largest?'₹'+fmt(largest.amount):'₹0',c:'var(--rose)'},
+    {l:L('Transactions','ವ್ಯವಹಾರಗಳು'),v:mTx.length,c:'var(--text)'},
+  ].map(r=>`<div class="rcrd"><div class="rlbl">${r.l}</div><div class="rval" style="color:${r.c}">${r.v}</div></div>`).join('');
 
-  const rg=document.getElementById('repGrid');
-  rg.innerHTML=[
-    {lbl:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),val:'₹'+fmt(totalInc),tag:'',cls:'g'},
-    {lbl:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),val:'₹'+fmt(totalExp),tag:'',cls:'r'},
-    {lbl:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),val:'₹'+fmt(saved),tag:savePct+'%',cls: saved>=0?'g':'r'},
-    {lbl:L('Daily Average','ದೈನಂದಿನ ಸರಾಸರಿ'),val:'₹'+fmt(avgDaily),tag:'',cls:''},
-    {lbl:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'),val:lrgTx?'₹'+fmt(lrgTx.amount):'₹0',tag:lrgTx?lrgTx.category:'',cls:'r'},
-    {lbl:L('Transactions','ವ್ಯವಹಾರಗಳು'),val:mTx.length,tag:'',cls:''},
-  ].map(r=>`<div class="rep-card"><div class="rep-label">${r.lbl}</div><div class="rep-val" style="color:var(--${r.cls||'text'})">${r.val}</div>${r.tag?`<span class="rep-tag ${r.cls==='g'?'tag-g':'tag-r'}">${r.tag}</span>`:''}</div>`).join('');
-
-  // Who spent chart
   const gaviAmt=mTx.filter(t=>t.type==='expense'&&t.who==='Gavi').reduce((s,t)=>s+t.amount,0);
-  const umaAmt =mTx.filter(t=>t.type==='expense'&&t.who==='Uma').reduce((s,t)=>s+t.amount,0);
-  drawBarChart(document.getElementById('whoChart'),['Gavi','Uma'],[gaviAmt,umaAmt],['#38bdf8','#fb7185']);
+  const umaAmt=mTx.filter(t=>t.type==='expense'&&t.who==='Uma').reduce((s,t)=>s+t.amount,0);
+  drawBars(document.getElementById('whoC'),['Gavi','Uma'],[gaviAmt,umaAmt],['#38bdf8','#fb7185']);
 
-  // 12-month trend
-  const m12l=[],m12i=[],m12e=[];
-  const shortM=lang==='kn'?['ಜ','ಫೆ','ಮಾ','ಏ','ಮೇ','ಜೂ','ಜು','ಆ','ಸೆ','ಅ','ನ','ಡಿ']:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ml=[],mi=[],me=[];
   for(let i=11;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    m12l.push(shortM[d.getMonth()]);
+    ml.push(sM[d.getMonth()]);
     const m=d.getMonth(),y=d.getFullYear();
-    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y;});
-    m12i.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
-    m12e.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0));
+    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y});
+    mi.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
+    me.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0));
   }
-  drawLineChart(document.getElementById('yearChart'),document.getElementById('yearChart').getContext('2d'),m12l,m12i,m12e,'#4ade80','#fb7185',L('Income','ಆದಾಯ'),L('Expense','ಖರ್ಚು'));
-
-  // Income source split
-  const salTotal=(inc.salary||0)*1;
-  const rentTotal=(inc.rent||0)*1;
-  const umaTotal=(inc.uma||0)*1;
-  drawBarChart(document.getElementById('incSrcChart'),[L('Salary','ಸಂಬಳ'),L('Ginigera Rent','ಗಿನಿಗೇರ'),L("Uma",'ಉಮಾ')],[salTotal,rentTotal,umaTotal],['#38bdf8','#f0b429','#fb7185']);
+  const yc=document.getElementById('yearC');
+  drawLine2(yc,yc.getContext('2d'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
 }
-
-function drawBarChart(canvas,labels,data,colors){
+function drawBars(canvas,labels,data,colors){
   const ctx=canvas.getContext('2d');
-  const W=canvas.parentElement.offsetWidth-28,H=160;
+  const W=canvas.parentElement.clientWidth-32,H=160;
   canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  const p={t:14,r:12,b:32,l:54},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const p={t:16,r:14,b:32,l:52},cW=W-p.l-p.r,cH=H-p.t-p.b;
   const maxV=Math.max(...data,1);
-  const bw=Math.min(60,cW/labels.length*0.6);
+  const bw=Math.min(80,cW/labels.length*0.5);
   const gap=(cW-bw*labels.length)/(labels.length+1);
   ctx.clearRect(0,0,W,H);
   for(let i=0;i<=4;i++){
-    const y=p.t+(cH/4)*i;
+    const y=p.t+cH/4*i;
     ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
-    const v=maxV-(maxV/4)*i;
+    const v=maxV-maxV/4*i;
     ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';
     ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
   }
   labels.forEach((lbl,i)=>{
-    const x=p.l+gap+(bw+gap)*i;
-    const bh=(data[i]/maxV)*cH;
-    const y=p.t+cH-bh;
+    const x=p.l+gap+(bw+gap)*i,bh=(data[i]/maxV)*cH,y=p.t+cH-bh;
     const g=ctx.createLinearGradient(0,y,0,p.t+cH);
-    g.addColorStop(0,colors[i%colors.length]);g.addColorStop(1,colors[i%colors.length]+'60');
+    g.addColorStop(0,colors[i%colors.length]);g.addColorStop(1,colors[i%colors.length]+'50');
     ctx.fillStyle=g;
     ctx.beginPath();
-    ctx.roundRect?ctx.roundRect(x,y,bw,bh,4):ctx.rect(x,y,bw,bh);
+    if(ctx.roundRect)ctx.roundRect(x,y,bw,bh,4);else ctx.rect(x,y,bw,bh);
     ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
-    ctx.fillText('₹'+(data[i]>=1000?Math.round(data[i]/1000)+'k':data[i]),x+bw/2,y-4);
-    ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='10px sans-serif';
+    ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('₹'+(data[i]>=1000?Math.round(data[i]/1000)+'k':data[i]),x+bw/2,y-5);
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='11px sans-serif';
     ctx.fillText(lbl,x+bw/2,H-6);
   });
 }
 
-/* ══════════════════════════════════════
-   SETTINGS RENDER
-══════════════════════════════════════ */
+/* ══ SETTINGS ══ */
 function renderSettings(){
-  const inc=settingsCache.income||{};
-  const el1=document.getElementById('iGaviSal');
-  const el2=document.getElementById('iGaviRent');
-  const el3=document.getElementById('iUmaInc');
-  if(el1) el1.value=inc.salary||'';
-  if(el2) el2.value=inc.rent||'';
-  if(el3) el3.value=inc.uma||'';
-  const lf=document.getElementById('limitsForm');
-  if(!lf) return;
-  const limitable=CATEGORIES.filter(c=>c.limit>0);
-  const savedLimits=settingsCache.limits||{};
-  lf.innerHTML=limitable.map(c=>`
-    <label class="flbl">${c.ico} ${L(c.en,c.kn)}</label>
+  const inc=settings.income||{};
+  const gs=document.getElementById('iGS');if(gs)gs.value=inc.salary||'';
+  const gr=document.getElementById('iGR');if(gr)gr.value=inc.rent||'';
+  const ui=document.getElementById('iUI');if(ui)ui.value=inc.uma||'';
+  const lf=document.getElementById('limForm');if(!lf)return;
+  const savedLims=settings.limits||{};
+  lf.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
+    <label class="fl">${c.i} ${L(c.en,c.kn)}</label>
     <div class="irow">
-      <input class="iinp" type="number" id="lim_${c.id}" value="${savedLimits[c.id]||c.limit}" inputmode="numeric">
-      <button class="isave" onclick="savLimit('${c.id}')">${L('Save','ಉಳಿಸಿ')}</button>
+      <input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]||c.lim}" inputmode="numeric">
+      <button class="isave" onclick="savLim('${c.id}')">${L('Save','ಉಳಿಸಿ')}</button>
     </div>`).join('');
-  const cfg=getStoredConfig();
-  const cp=document.getElementById('connectedProject');
-  if(cp) cp.textContent=cfg?cfg.projectId:'Not configured';
 }
-window.savLimit=async function(id){
-  const val=Number(document.getElementById('lim_'+id).value)||0;
-  const lims={...(settingsCache.limits||{}),[id]:val};
-  await saveSettings('limits',lims);
-  showToast(L('Limit saved!','ಮಿತಿ ಉಳಿಸಲಾಗಿದೆ!'));
-};
+async function savInc(src){
+  const inc={...(settings.income||{})};
+  if(src==='salary')inc.salary=+document.getElementById('iGS').value||0;
+  if(src==='rent')  inc.rent  =+document.getElementById('iGR').value||0;
+  if(src==='uma')   inc.uma   =+document.getElementById('iUI').value||0;
+  try{
+    await db.collection('settings').doc('income').set(inc);
+    settings.income=inc;
+    showToast(L('✅ Income saved!','✅ ಆದಾಯ ಉಳಿಸಲಾಗಿದೆ!'));
+    renderDash();
+  }catch(e){showToast('Error: '+e.message,true)}
+}
+async function savLim(id){
+  const val=+document.getElementById('lim_'+id).value||0;
+  const lims={...(settings.limits||{}),[id]:val};
+  try{
+    await db.collection('settings').doc('limits').set(lims);
+    settings.limits=lims;
+    showToast(L('✅ Limit saved!','✅ ಮಿತಿ ಉಳಿಸಲಾಗಿದೆ!'));
+  }catch(e){showToast('Error: '+e.message,true)}
+}
+function savPin(who){
+  const v=document.getElementById('pin'+who[0]).value;
+  if(v.length!==4||isNaN(v)){showToast(L('PIN must be 4 digits','4 ಅಂಕಿ PIN'),true);return}
+  localStorage.setItem('hb_pin_'+who,v);
+  showToast(L('✅ PIN saved!','✅ PIN ಉಳಿಸಲಾಗಿದೆ!'));
+}
 
-/* ══════════════════════════════════════
-   TX HTML
-══════════════════════════════════════ */
-function txHTML(tx,showDel=false){
-  const cat=CATEGORIES.find(c=>c.id===tx.category)||{ico:'📦',en:tx.category||'Other',kn:tx.category||'ಇತರ',color:'#94a3b8'};
+/* ══ TX HTML ══ */
+function txHTML(tx,showDel){
+  const cat=CATS.find(c=>c.id===tx.category)||{i:'📦',en:tx.category||'Other',kn:tx.category||'ಇತರ',c:'#94a3b8'};
   const sign=tx.type==='income'?'+':'-';
-  const cls=tx.type==='income'?'g':'r';
-  const dateStr=tx.date?new Date(tx.date).toLocaleDateString(lang==='kn'?'kn-IN':'en-IN',{day:'numeric',month:'short'}):'';
-  const note=tx.note?` · ${tx.note}`:'';
+  const col=tx.type==='income'?'var(--green)':'var(--rose)';
+  const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
   return `<div class="tx">
-    <div class="tx-ico">${cat.ico}</div>
-    <div class="tx-inf">
-      <div class="tx-cat">${L(cat.en,cat.kn)}</div>
-      <div class="tx-meta">${tx.who||''} · ${dateStr}${note}</div>
+    <div class="txico">${cat.i}</div>
+    <div class="txinf">
+      <div class="txcat">${L(cat.en,cat.kn)}</div>
+      <div class="txmeta">${tx.who||''} · ${dateStr}${tx.note?' · '+tx.note:''}</div>
     </div>
-    <div class="tx-amt ${cls}">${sign}₹${fmt(tx.amount)}</div>
-    ${showDel?`<button class="tx-del" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}
+    <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
+    ${showDel?`<button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}
   </div>`;
 }
 
-/* ══════════════════════════════════════
-   UTILS
-══════════════════════════════════════ */
-function fmt(n){ return Number(n||0).toLocaleString('en-IN'); }
-function setTxt(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
-function show(id){ document.getElementById(id).classList.remove('hidden'); }
-function hide(id){ document.getElementById(id).classList.add('hidden'); }
+/* ══ UTILS ══ */
+function fmt(n){return Number(n||0).toLocaleString('en-IN')}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
 function showToast(msg,err=false){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast show'+(err?' err':'');
   setTimeout(()=>t.className='toast',2800);
 }
-
-// Expose globals
-window.buildCatGrid=buildCatGrid;
-window.renderAll=renderAll;
-
 </script>
 </body>
 </html>
