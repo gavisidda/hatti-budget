@@ -311,10 +311,10 @@ canvas{width:100%!important;border-radius:8px}
 
     <div class="setup-step">
       <div class="setup-step-title"><span class="setup-step-num">4</span>Paste Config Values Below</div>
-      <input class="setup-input" id="cfgApiKey"       placeholder="apiKey: AIzaSyDj1REJooFa7GRbQaVSC-AXRipQzmtN05M">
+      <input class="setup-input" id="cfgApiKey"       placeholder="apiKey: AIzaSy...">
       <input class="setup-input" id="cfgAuthDomain"   placeholder="authDomain: hatti-budget.firebaseapp.com">
       <input class="setup-input" id="cfgProjectId"    placeholder="projectId: hatti-budget">
-      <input class="setup-input" id="cfgAppId"        placeholder="appId: 1:760721015497:web:51980c2d7df610d5594318">
+      <input class="setup-input" id="cfgAppId"        placeholder="appId: 1:1234567890:web:...">
     </div>
 
     <button class="setup-btn" onclick="saveFirebaseConfig()">🚀 Connect &amp; Continue</button>
@@ -639,97 +639,55 @@ let unsubSettings = null;
 const PINS_DEFAULT = {Gavi:'1234', Uma:'5678'};
 
 /* ══════════════════════════════════════
-   FIREBASE INIT
+   FIREBASE CONFIG — hardcoded
 ══════════════════════════════════════ */
-function getStoredConfig(){
-  try{ return JSON.parse(localStorage.getItem('fb_cfg') || 'null'); } catch(e){ return null; }
-}
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDj1REJooFa7GRbQaVSC-AXRipQzmtN05M",
+  authDomain:        "hatti-budget.firebaseapp.com",
+  projectId:         "hatti-budget",
+  appId:             "1:760721015497:web:51980c2d7df610d5594318",
+  storageBucket:     "hatti-budget.firebasestorage.app",
+  messagingSenderId: "760721015497"
+};
 
-function initFirebase(cfg){
-  // Just initialise — do NOT do any network call here.
-  // Firebase SDK is already loaded via ESM import at top of module.
+function initFirebase(){
   try {
-    const app = initializeApp(cfg);
+    const app = initializeApp(FIREBASE_CONFIG);
     db = getFirestore(app);
     return true;
   } catch(e) {
-    console.error('Firebase initializeApp error:', e);
+    console.error('Firebase init error:', e);
     return false;
   }
 }
 
-window.saveFirebaseConfig = async function(){
-  const raw = {
-    apiKey:            document.getElementById('cfgApiKey').value.trim(),
-    authDomain:        document.getElementById('cfgAuthDomain').value.trim(),
-    projectId:         document.getElementById('cfgProjectId').value.trim(),
-    appId:             document.getElementById('cfgAppId').value.trim(),
-  };
-  // storageBucket and messagingSenderId are optional — fill sensible defaults
-  raw.storageBucket        = raw.projectId + '.firebasestorage.app';
-  raw.messagingSenderId    = raw.messagingSenderId || '000000000000';
-
-  if(!raw.apiKey || !raw.projectId || !raw.appId){
-    document.getElementById('setupErr').textContent = 'Please fill apiKey, projectId and appId.';
-    return;
-  }
-  document.getElementById('setupErr').textContent = 'Saving…';
-  const ok = initFirebase(raw);
-  if(ok){
-    localStorage.setItem('fb_cfg', JSON.stringify(raw));
-    document.getElementById('setupErr').textContent = '';
-    hide('setupScreen');
-    await loadSettings();
-    showLogin();
-  } else {
-    document.getElementById('setupErr').textContent = 'Init failed — double-check your values.';
-  }
-};
-
+// Setup screen no longer needed — config is hardcoded
+window.saveFirebaseConfig = function(){};
 window.reconfigFirebase = function(){
-  // fill existing values back into the form
-  const cfg = getStoredConfig();
-  if(cfg){
-    document.getElementById('cfgApiKey').value     = cfg.apiKey     || '';
-    document.getElementById('cfgAuthDomain').value = cfg.authDomain || '';
-    document.getElementById('cfgProjectId').value  = cfg.projectId  || '';
-    document.getElementById('cfgAppId').value      = cfg.appId      || '';
-  }
-  hide('appShell');
-  show('setupScreen');
+  showToast('Project: hatti-budget (hardcoded)');
 };
 
 /* ══════════════════════════════════════
-   STARTUP  — runs once when module loads
+   STARTUP
 ══════════════════════════════════════ */
 async function startup(){
-  setTxt('loadTxt', 'Loading…');
-  const cfg = getStoredConfig();
-  if(!cfg){
-    // First time — show setup screen
-    hide('loading');
-    show('setupScreen');
-    return;
-  }
-  // Init SDK (no network call)
-  const ok = initFirebase(cfg);
+  setTxt('loadTxt', 'Connecting to Firebase…');
+  const ok = initFirebase();
   if(!ok){
-    hide('loading');
-    show('setupScreen');
+    setTxt('loadTxt', '❌ Firebase error — check console.');
     return;
   }
-  // Try to load settings from Firestore (with timeout so it never hangs)
   try {
     await Promise.race([
       loadSettings(),
-      new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 6000))
+      new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 8000))
     ]);
   } catch(e) {
-    // Settings load failed or timed out — that's fine, use defaults and continue
-    console.warn('loadSettings fallback:', e.message);
+    console.warn('Settings timeout — using defaults:', e.message);
     settingsCache = { income:{salary:0,rent:0,uma:0}, limits:{} };
   }
   hide('loading');
+  hide('setupScreen');
   showLogin();
 }
 
@@ -833,7 +791,9 @@ async function loadSettings(){
     settingsCache.income = (d1 && d1.exists()) ? d1.data() : defaults.income;
     settingsCache.limits = (d2 && d2.exists()) ? d2.data() : defaults.limits;
   } catch(e) {
-    console.warn('loadSettings error (using defaults):', e);
+    console.warn('loadSettings error (using defaults):', e.message || e);
+    // Common cause: Firestore rules expired (test mode lasts 30 days)
+    // Fix: Firebase Console → Firestore → Rules → change "allow read, write: if false" to "if true" and publish
     settingsCache = { ...defaults };
   }
 }
