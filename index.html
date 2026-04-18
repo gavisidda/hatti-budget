@@ -515,7 +515,7 @@ const STRINGS = {
   en:{
     balance:'Balance this month', income:'Total Income', spent:'Total Spent', saved:'Saved %',
     incsrc:'Income Sources', salary:'Salary', rent:'Rent',
-    loantx:'Loan Received', other_inc:'Others Income',
+    loantx:'Loan', other_inc:'Others',
     keyexp:'Key Expenses', catchart:'📊 Spending by Category', trend:'📈 6-Month Trend',
     recent:'Recent Transactions', addtx:'Add Transaction', expense:'💸 Expense',
     income_btn:'💵 Income', incsrc2:'Income Source', amount:'Amount (₹)', who:'Who?',
@@ -568,7 +568,7 @@ function applyLang(){
   // income source buttons
   const isLabels = [
     ['isSal','💼 '+L('salary')],['isRentBtn','🏠 '+L('rent')],
-    ['isLoanBtn','💳 Loan Received'],['isOtherBtn','📦 Others'],
+    ['isLoanBtn','💳 Loan'],['isOtherBtn','📦 Others'],
   ];
   isLabels.forEach(([id,txt])=>{ const e=document.getElementById(id); if(e) e.textContent=txt; });
   buildCatGrid();
