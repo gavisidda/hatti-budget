@@ -292,8 +292,8 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="sh" id="lbl_incsrc">Income Sources</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl" id="lbl_salary">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl" id="lbl_rent">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl" id="lbl_loantx">Loan Received</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl" id="lbl_rent">Rent</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl" id="lbl_loantx">Loan</div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl" id="lbl_other_inc">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh" id="lbl_keyexp">Key Expenses</div>
@@ -323,7 +323,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <div class="fl" id="lbl_incsrc2">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Ginigera Rent</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
             <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Received</button>
             <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
@@ -384,7 +384,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="fc">
         <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:6px">🏠 Ginigera Rent Income (₹/month)</label>
+        <label class="fl" style="margin-top:6px">🏠 Rent Income (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
         <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
@@ -504,8 +504,8 @@ const CATS = [
 
 /* ══ INCOME SOURCES ══ */
 const INC_SOURCES = [
-  {id:'salary',       i:'💼', en:'Salary',        kn:'ಸಂಬಳ'},
-  {id:'rent',         i:'🏠', en:'Ginigera Rent',  kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
+  {id:'salary',       i:'💼', en:'Salary',         kn:'ಸಂಬಳ'},
+  {id:'rent',         i:'🏠', en:'Rent',           kn:'ಬಾಡಿಗೆ'},
   {id:'loan_received',i:'💳', en:'Loan Received',  kn:'ಸಾಲ ಸ್ವೀಕರಿಸಿದ'},
   {id:'other_income', i:'📦', en:'Others',         kn:'ಇತರ ಆದಾಯ'},
 ];
@@ -514,7 +514,7 @@ const INC_SOURCES = [
 const STRINGS = {
   en:{
     balance:'Balance this month', income:'Total Income', spent:'Total Spent', saved:'Saved %',
-    incsrc:'Income Sources', salary:'Salary', rent:'Rent · Ginigera',
+    incsrc:'Income Sources', salary:'Salary', rent:'Rent',
     loantx:'Loan Received', other_inc:'Others Income',
     keyexp:'Key Expenses', catchart:'📊 Spending by Category', trend:'📈 6-Month Trend',
     recent:'Recent Transactions', addtx:'Add Transaction', expense:'💸 Expense',
@@ -529,7 +529,7 @@ const STRINGS = {
   },
   kn:{
     balance:'ಈ ತಿಂಗಳ ಉಳಿಕೆ', income:'ಒಟ್ಟು ಆದಾಯ', spent:'ಒಟ್ಟು ಖರ್ಚು', saved:'ಉಳಿತಾಯ %',
-    incsrc:'ಆದಾಯ ಮೂಲಗಳು', salary:'ಸಂಬಳ', rent:'ಬಾಡಿಗೆ · ಗಿನಿಗೇರ',
+    incsrc:'ಆದಾಯ ಮೂಲಗಳು', salary:'ಸಂಬಳ', rent:'ಬಾಡಿಗೆ',
     loantx:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ', other_inc:'ಇತರ ಆದಾಯ',
     keyexp:'ಪ್ರಮುಖ ಖರ್ಚುಗಳು', catchart:'📊 ವರ್ಗದ ಪ್ರಕಾರ ಖರ್ಚು', trend:'📈 6 ತಿಂಗಳ ಟ್ರೆಂಡ್',
     recent:'ಇತ್ತೀಚಿನ ವ್ಯವಹಾರಗಳು', addtx:'ವ್ಯವಹಾರ ಸೇರಿಸಿ', expense:'💸 ಖರ್ಚು',
