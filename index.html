@@ -376,8 +376,10 @@ canvas{width:100%!important;border-radius:6px;display:block}
       </div>
       <div class="sh">Income Sources</div>
       <div class="inc-split">
-        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary · Bangalore</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Loan</div><div class="ic-amt" id="iSal">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iRent">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
       <div class="sgrid" id="topStats"></div>
@@ -405,7 +407,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Ginigera Rent</button>
+            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Rent</button>
+            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Loan</button>
+            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Others</button>
           </div>
         </div>
       </div>
