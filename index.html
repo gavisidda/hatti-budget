@@ -12,289 +12,213 @@
   --violet:#a78bfa;--sky:#38bdf8;--orange:#fb923c;
   --text:#eef2ff;--text2:#8892b0;--text3:#4a5568;
   --font:'Baloo Tamma 2',sans-serif;
-  --r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden}
 
-/* ─── LOADING ─── */
-#loading{
-  position:fixed;inset:0;z-index:999;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-}
+/* LOADING */
+#loading{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
 .spin{width:42px;height:42px;border:3px solid var(--s3);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#loadMsg{font-size:15px;color:var(--text2);font-weight:600}
 
-/* ─── LOGIN ─── */
+/* LOGIN */
 #loginScreen{
-  position:fixed;inset:0;z-index:50;background:var(--bg);
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;overflow-y:auto;
-  background:radial-gradient(ellipse 80% 50% at 30% 20%,rgba(42,99,160,.18) 0%,transparent 60%);
+  position:fixed;inset:0;z-index:50;display:none;flex-direction:column;
+  align-items:center;justify-content:center;padding:20px;overflow-y:auto;
+  background:var(--bg) radial-gradient(ellipse 80% 50% at 30% 20%,rgba(42,99,160,.18) 0%,transparent 60%);
 }
-.login-logo{font-size:64px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
-@keyframes glow{0%,100%{filter:drop-shadow(0 0 20px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 36px rgba(240,180,41,.9))}}
-.login-title{font-size:28px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
-.login-sub{font-size:14px;color:var(--text2);margin-bottom:28px;text-align:center}
-.user-cards{display:flex;gap:14px;margin-bottom:24px;width:100%;max-width:360px}
-.ucard{
-  flex:1;background:var(--s1);border:2px solid var(--s3);border-radius:18px;
-  padding:18px 10px;cursor:pointer;transition:all .2s;text-align:center;
-}
-.ucard.sel{border-color:var(--gold);background:var(--s2);box-shadow:0 0 24px rgba(240,180,41,.22)}
-.ucard .av{font-size:38px;margin-bottom:6px}
-.ucard .un{font-size:15px;font-weight:700}
-.ucard .ur{font-size:11px;color:var(--text2)}
-.pin-lbl{font-size:13px;color:var(--text2);margin-bottom:10px}
-.pdots{display:flex;gap:16px;margin-bottom:20px}
-.pd{width:18px;height:18px;border-radius:50%;background:var(--s3);border:2px solid var(--s4);transition:all .15s}
+.login-logo{font-size:60px;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 18px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 32px rgba(240,180,41,.9))}}
+.login-title{font-size:26px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:20px;text-align:center}
+/* 4 user cards in 2x2 grid */
+.user-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;width:100%;max-width:340px}
+.ucard{background:var(--s1);border:2px solid var(--s3);border-radius:16px;padding:14px 8px;cursor:pointer;transition:all .2s;text-align:center}
+.ucard.sel{border-color:var(--gold);background:var(--s2);box-shadow:0 0 20px rgba(240,180,41,.2)}
+.ucard .av{font-size:30px;margin-bottom:4px}
+.ucard .un{font-size:13px;font-weight:700}
+.ucard .ur{font-size:10px;color:var(--text2)}
+.pin-lbl{font-size:12px;color:var(--text2);margin-bottom:8px}
+.pdots{display:flex;gap:14px;margin-bottom:16px}
+.pd{width:16px;height:16px;border-radius:50%;background:var(--s3);border:2px solid var(--s4);transition:all .15s}
 .pd.on{background:var(--gold);border-color:var(--gold);transform:scale(1.3)}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:300px}
-.nb{
-  background:var(--s1);color:var(--text);border:1.5px solid var(--s3);
-  border-radius:14px;font-family:var(--font);font-size:24px;font-weight:700;
-  height:68px;cursor:pointer;transition:all .12s;width:100%;
-}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:280px}
+.nb{background:var(--s1);color:var(--text);border:1.5px solid var(--s3);border-radius:13px;font-family:var(--font);font-size:22px;font-weight:700;height:64px;cursor:pointer;transition:all .12s;width:100%}
 .nb:active{background:var(--s3);transform:scale(.92)}
-.nb.ok{background:var(--gold);color:#000;border-color:var(--gold);font-size:15px}
-.lerr{color:var(--rose);font-size:13px;margin-top:12px;min-height:20px}
+.nb.ok{background:var(--gold);color:#000;border-color:var(--gold);font-size:14px}
+.lerr{color:var(--rose);font-size:12px;margin-top:10px;min-height:18px}
 
-/* ─── LANG BTN ─── */
-.lang-btn{
-  position:fixed;top:14px;right:14px;z-index:9999;
-  background:var(--s2);color:var(--gold);border:1.5px solid var(--s3);
-  border-radius:20px;padding:6px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;
-}
-
-/* ─── APP SHELL ─── */
-#app{
-  position:fixed;inset:0;z-index:40;
-  display:none;flex-direction:column;
-  /* On desktop: centered column, max 520px */
-}
-/* Desktop wrapper */
+/* APP */
+#app{position:fixed;inset:0;z-index:40;display:none;flex-direction:column}
 @media(min-width:600px){
-  #app{
-    left:50%;transform:translateX(-50%);
-    width:520px;
-    border-left:1px solid var(--s2);border-right:1px solid var(--s2);
-    box-shadow:0 0 60px rgba(0,0,0,.6);
-  }
+  #app{left:50%;transform:translateX(-50%);width:520px;border-left:1px solid var(--s2);border-right:1px solid var(--s2);box-shadow:0 0 60px rgba(0,0,0,.6)}
   html,body{background:#040810}
 }
 
-/* ─── TOPBAR ─── */
+/* TOPBAR — fixed layout so logout always visible */
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 18px 10px;background:var(--s1);border-bottom:1px solid var(--s2);
-  flex-shrink:0;
+  padding:12px 14px 9px;background:var(--s1);border-bottom:1px solid var(--s2);flex-shrink:0;
+  gap:8px;
 }
-.tb-left{display:flex;align-items:center;gap:10px}
-.tb-logo{font-size:26px}
-.tb-title{font-size:18px;font-weight:800;color:var(--gold)}
-.tb-right{display:flex;align-items:center;gap:8px}
-.tb-user{font-size:12px;color:var(--text2);font-weight:600}
-.tb-btn{
-  background:var(--s2);color:var(--text);border:1px solid var(--s3);
-  border-radius:9px;padding:5px 11px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;
-}
-.sdot{width:9px;height:9px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0}
+.tb-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.tb-logo{font-size:22px;flex-shrink:0}
+.tb-title{font-size:16px;font-weight:800;color:var(--gold);white-space:nowrap}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0}
 .sdot.off{background:var(--rose);animation:none}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-user{font-size:11px;color:var(--text2);font-weight:600;white-space:nowrap}
+/* Single lang toggle in topbar only — no floating btn on app screen */
+.tb-btn{background:var(--s2);color:var(--text);border:1px solid var(--s3);border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tb-btn.logout{background:rgba(251,113,133,.15);color:var(--rose);border-color:rgba(251,113,133,.3)}
 
-/* ─── PAGES ─── */
+/* Login screen lang btn — ONLY visible on login screen */
+.login-lang{background:var(--s2);color:var(--gold);border:1.5px solid var(--s3);border-radius:18px;padding:5px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:16px}
+
+/* PAGES */
 .pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:76px}
 .page{display:none;padding:16px}
 .page.on{display:block}
 
-/* ─── BOTTOM NAV ─── */
-.bnav{
-  position:absolute;bottom:0;left:0;right:0;
-  background:var(--s1);border-top:1px solid var(--s2);display:flex;
-  padding-bottom:env(safe-area-inset-bottom,0);flex-shrink:0;
-}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:11px 4px 8px;cursor:pointer;transition:all .12s}
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--s2);display:flex;padding-bottom:env(safe-area-inset-bottom,0)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 2px 7px;cursor:pointer}
 .ni.on .nico{transform:scale(1.2)}
 .ni.on .nlbl{color:var(--gold)}
-.nico{font-size:22px;margin-bottom:3px;transition:transform .15s}
-.nlbl{font-size:10px;font-weight:700;color:var(--text2)}
+.nico{font-size:20px;margin-bottom:2px;transition:transform .15s}
+.nlbl{font-size:9px;font-weight:700;color:var(--text2)}
 
-/* ─── SECTION HELPERS ─── */
-.sh{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin:18px 0 10px}
-.ph{font-size:22px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+/* SECTION HEADERS */
+.sh{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 10px}
+.ph{font-size:21px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
-/* ─── HERO CARD ─── */
-.hero{
-  background:linear-gradient(135deg,#0a2240,#071830);
-  border:1px solid rgba(56,189,248,.15);border-radius:20px;
-  padding:20px;margin-bottom:16px;position:relative;overflow:hidden;
-}
-.hero::after{content:'₹';position:absolute;right:-10px;top:-20px;font-size:120px;color:rgba(255,255,255,.03);font-weight:900;pointer-events:none}
-.hlbl{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:3px}
-.hbal{font-size:42px;font-weight:800;color:#fff;line-height:1;margin-bottom:16px}
-.hbal sup{font-size:20px}
-.hrow{display:flex;gap:12px}
+/* HERO */
+.hero{background:linear-gradient(135deg,#0a2240,#071830);border:1px solid rgba(56,189,248,.15);border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:'₹';position:absolute;right:-8px;top:-18px;font-size:110px;color:rgba(255,255,255,.03);font-weight:900;pointer-events:none}
+.hlbl{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px}
+.hbal{font-size:40px;font-weight:800;color:#fff;line-height:1;margin-bottom:14px}
+.hbal sup{font-size:18px}
+.hrow{display:flex;gap:10px}
 .hs{flex:1}
-.hslbl{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:2px}
-.hsval{font-size:18px;font-weight:800}
+.hslbl{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:1px}
+.hsval{font-size:17px;font-weight:800}
 
-/* ─── INCOME SPLIT ─── */
-.inc-split{display:flex;gap:12px;margin-bottom:16px}
-.ic{flex:1;background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px;text-align:center}
-.ic-ico{font-size:26px;margin-bottom:6px}
-.ic-lbl{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:3px}
-.ic-amt{font-size:19px;font-weight:800;color:var(--green)}
+/* INCOME SPLIT — 3 cards now */
+.inc-split{display:flex;gap:8px;margin-bottom:14px}
+.ic{flex:1;background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:11px 8px;text-align:center}
+.ic-ico{font-size:22px;margin-bottom:4px}
+.ic-lbl{font-size:9px;color:var(--text2);font-weight:600;margin-bottom:2px;line-height:1.3}
+.ic-amt{font-size:16px;font-weight:800;color:var(--green)}
 
-/* ─── STAT GRID ─── */
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.sc{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px}
-.sc-ico{font-size:22px;margin-bottom:6px}
-.sc-lbl{font-size:11px;color:var(--text2);margin-bottom:2px}
-.sc-val{font-size:20px;font-weight:800}
+/* STAT GRID */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
+.sc-ico{font-size:20px;margin-bottom:4px}
+.sc-lbl{font-size:10px;color:var(--text2);margin-bottom:1px}
+.sc-val{font-size:19px;font-weight:800}
 
-/* ─── CHART BOX ─── */
-.cbox{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:14px}
-.ctitle{font-size:14px;font-weight:700;margin-bottom:12px}
-.cbrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.cblbl{font-size:12px;font-weight:600;width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cbtrack{flex:1;background:var(--s3);border-radius:6px;height:10px;overflow:hidden}
+/* CHART BOX */
+.cbox{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px;margin-bottom:12px}
+.ctitle{font-size:13px;font-weight:700;margin-bottom:10px}
+.cbrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.cblbl{font-size:11px;font-weight:600;width:76px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbtrack{flex:1;background:var(--s3);border-radius:6px;height:9px;overflow:hidden}
 .cbfill{height:100%;border-radius:6px;transition:width .7s}
-.cbamt{font-size:12px;font-weight:700;width:64px;text-align:right;flex-shrink:0}
+.cbamt{font-size:11px;font-weight:700;width:60px;text-align:right;flex-shrink:0}
 canvas{width:100%!important;border-radius:6px;display:block}
 
-/* ─── WARN ─── */
-.warn{
-  background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);
-  border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;
-  color:#fca5a5;margin-bottom:10px;display:flex;align-items:center;gap:8px;
-}
+/* WARN */
+.warn{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;color:#fca5a5;margin-bottom:8px;display:flex;align-items:center;gap:6px}
 
-/* ─── TX LIST ─── */
-.tx{
-  display:flex;align-items:center;gap:12px;background:var(--s1);
-  border:1px solid var(--s2);border-radius:14px;padding:13px 14px;
-  margin-bottom:8px;animation:fu .3s ease;
-}
+/* TX ITEM */
+.tx{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--s2);border-radius:13px;padding:12px 13px;margin-bottom:7px;animation:fu .3s ease}
 @keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.txico{font-size:26px;width:34px;text-align:center;flex-shrink:0}
+.txico{font-size:24px;width:32px;text-align:center;flex-shrink:0}
 .txinf{flex:1;min-width:0}
-.txcat{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.txmeta{font-size:11px;color:var(--text2)}
-.txamt{font-size:16px;font-weight:800;flex-shrink:0}
-.txdel{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:4px 6px;flex-shrink:0}
+.txcat{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txmeta{font-size:10px;color:var(--text2)}
+/* added-by badge */
+.txby{font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;background:var(--s3);color:var(--text2);margin-top:2px;display:inline-block}
+.txamt{font-size:15px;font-weight:800;flex-shrink:0}
+.txdel{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:4px;flex-shrink:0}
 
-.empty{text-align:center;padding:40px 16px;color:var(--text2)}
-.empty .big{font-size:48px;margin-bottom:10px}
-.empty p{font-size:14px}
+.empty{text-align:center;padding:36px 16px;color:var(--text2)}
+.empty .big{font-size:44px;margin-bottom:8px}
+.empty p{font-size:13px}
 
-/* ─── FORM ─── */
-.trow{display:flex;gap:10px;margin-bottom:16px}
-.tbtn{
-  flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);
-  border-radius:13px;padding:12px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;
-}
+/* FORM */
+.trow{display:flex;gap:9px;margin-bottom:14px}
+.tbtn{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:12px;padding:11px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
 .tbtn.exp.on{border-color:var(--rose);background:rgba(251,113,133,.12);color:var(--rose)}
 .tbtn.inc.on{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
-.fc{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:18px;margin-bottom:14px}
-.fl{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
-.fi{
-  width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;
-  border-radius:11px;padding:13px 14px;font-family:var(--font);font-size:15px;font-weight:600;
-  margin-bottom:12px;outline:none;transition:border .2s;-webkit-appearance:none;
-}
+.fc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:16px;margin-bottom:12px}
+.fl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.fi{width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:10px;padding:12px 13px;font-family:var(--font);font-size:14px;font-weight:600;margin-bottom:10px;outline:none;transition:border .2s;-webkit-appearance:none}
 .fi:focus{border-color:var(--gold)}
 .fi option{background:var(--s2)}
-.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-.cbtn{
-  background:var(--s2);border:1.5px solid var(--s3);border-radius:11px;
-  padding:9px 4px;cursor:pointer;text-align:center;color:var(--text);
-  font-family:var(--font);display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .12s;
-}
-.cbtn.on{border-color:var(--gold);background:rgba(240,180,41,.12)}
-.cbtn .ci{font-size:20px}
-.cbtn .cn{font-size:9px;font-weight:700;line-height:1.2}
-.isrow{display:flex;gap:10px;margin-bottom:12px}
-.isbtn{
-  flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);
-  border-radius:11px;padding:10px;font-family:var(--font);font-size:12px;font-weight:700;
-  cursor:pointer;transition:all .15s;text-align:center;
-}
+/* income source pills */
+.isrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.isbtn{background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:10px;padding:9px 6px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
 .isbtn.on{border-color:var(--teal);background:rgba(45,212,191,.12);color:var(--teal)}
-.sbtn{
-  width:100%;background:var(--gold);color:#000;border:none;border-radius:14px;
-  padding:17px;font-family:var(--font);font-size:17px;font-weight:800;cursor:pointer;margin-top:6px;
-}
+/* category grid */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.cbtn{background:var(--s2);border:1.5px solid var(--s3);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;color:var(--text);font-family:var(--font);display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .12s}
+.cbtn.on{border-color:var(--gold);background:rgba(240,180,41,.12)}
+.cbtn .ci{font-size:18px}
+.cbtn .cn{font-size:9px;font-weight:700;line-height:1.1}
+.sbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:13px;padding:15px;font-family:var(--font);font-size:16px;font-weight:800;cursor:pointer;margin-top:4px}
 .sbtn:active{transform:scale(.97);opacity:.9}
 
-/* ─── GOALS ─── */
-.gcrd{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:12px}
-.gh{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.gico{font-size:28px}
+/* GOALS */
+.gcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px;margin-bottom:10px}
+.gh{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.gico{font-size:26px}
 .ginf{flex:1}
-.gname{font-size:15px;font-weight:700}
-.gsub{font-size:11px;color:var(--text2)}
-.gpct{font-size:15px;font-weight:800;color:var(--gold)}
-.gtrack{background:var(--s3);border-radius:6px;height:10px;overflow:hidden;margin-bottom:8px}
+.gname{font-size:14px;font-weight:700}
+.gsub{font-size:10px;color:var(--text2)}
+.gpct{font-size:14px;font-weight:800;color:var(--gold)}
+.gtrack{background:var(--s3);border-radius:6px;height:9px;overflow:hidden;margin-bottom:6px}
 .gfill{height:100%;border-radius:6px;transition:width .8s}
-.gamts{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
+.gamts{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}
 .gamts strong{color:var(--text)}
-.agbtn{
-  width:100%;background:transparent;color:var(--gold);
-  border:2px dashed rgba(240,180,41,.3);border-radius:16px;
-  padding:14px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px;
-}
+.agbtn{width:100%;background:transparent;color:var(--gold);border:2px dashed rgba(240,180,41,.25);border-radius:14px;padding:12px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px}
 
-/* ─── FILTER CHIPS ─── */
-.frow{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+/* FILTER CHIPS */
+.frow{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:3px}
 .frow::-webkit-scrollbar{display:none}
-.fchip{
-  background:var(--s2);border:1.5px solid var(--s3);border-radius:20px;
-  padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;
-  color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;flex-shrink:0;
-}
+.fchip{background:var(--s2);border:1.5px solid var(--s3);border-radius:18px;padding:6px 12px;font-family:var(--font);font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;flex-shrink:0}
 .fchip.on{background:var(--gold);color:#000;border-color:var(--gold)}
 
-/* ─── REPORTS ─── */
-.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.rcrd{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px}
-.rlbl{font-size:12px;color:var(--text2);margin-bottom:4px}
-.rval{font-size:21px;font-weight:800}
+/* EXPORT BTN */
+.export-btn{display:flex;align-items:center;gap:8px;background:var(--s2);color:var(--teal);border:1.5px solid rgba(45,212,191,.3);border-radius:12px;padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;width:100%;justify-content:center}
+.export-btn:active{opacity:.8}
 
-/* ─── SETTINGS ─── */
-.irow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.iinp{
-  flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;
-  border-radius:10px;padding:10px 13px;font-family:var(--font);font-size:15px;font-weight:700;outline:none;transition:border .2s;
-}
+/* REPORTS */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.rcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
+.rlbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.rval{font-size:20px;font-weight:800}
+
+/* SETTINGS */
+.irow{display:flex;gap:7px;align-items:center;margin-bottom:8px}
+.iinp{flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:9px;padding:9px 12px;font-family:var(--font);font-size:14px;font-weight:700;outline:none;transition:border .2s}
 .iinp:focus{border-color:var(--gold)}
-.isave{
-  background:var(--gold);color:#000;border:none;border-radius:10px;
-  padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;
-}
+.isave{background:var(--gold);color:#000;border:none;border-radius:9px;padding:9px 14px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
 
-/* ─── MODAL ─── */
+/* MODAL */
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:flex-end;justify-content:center}
 .mo.open{display:flex}
-.modal{
-  background:var(--s1);border-radius:22px 22px 0 0;padding:24px 20px 36px;
-  width:100%;max-width:520px;animation:su .22s ease;
-}
+.modal{background:var(--s1);border-radius:20px 20px 0 0;padding:22px 18px 34px;width:100%;max-width:520px;animation:su .22s ease;max-height:90vh;overflow-y:auto}
 @keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
-.mtitle{font-size:18px;font-weight:800;margin-bottom:16px}
-.mclose{float:right;background:var(--s3);border:none;color:var(--text);border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;line-height:30px;text-align:center;margin-top:-2px}
+.mtitle{font-size:17px;font-weight:800;margin-bottom:14px}
+.mclose{float:right;background:var(--s3);border:none;color:var(--text);border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;line-height:28px;text-align:center;margin-top:-2px}
 
-/* ─── TOAST ─── */
-.toast{
-  position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);
-  background:var(--s1);border:1px solid var(--green);color:var(--green);
-  border-radius:22px;padding:10px 24px;font-size:14px;font-weight:700;
-  z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap;
-}
+/* TOAST */
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:var(--rose);color:var(--rose)}
 
-/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
 </style>
@@ -303,50 +227,41 @@ canvas{width:100%!important;border-radius:6px;display:block}
 
 <!-- LOADING -->
 <div id="loading">
-  <div style="font-size:64px;filter:drop-shadow(0 0 20px rgba(240,180,41,.5))">🏡</div>
+  <div style="font-size:60px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" class="msg" style="font-size:15px;color:var(--text2);font-weight:600">Starting…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Connecting to Firebase…</div>
 </div>
-
-<button class="lang-btn" onclick="toggleLang()">ಕ/EN</button>
 
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
   <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
+  <!-- lang btn only on login screen -->
+  <button class="login-lang" onclick="toggleLang()">ಕನ್ನಡ / English</button>
   <div class="user-cards">
-    <div class="ucard sel" onclick="selUser(0)" id="uc0">
-      <div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div>
-    </div>
-    <div class="ucard" onclick="selUser(1)" id="uc1">
-      <div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div>
-    </div>
+    <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
+    <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
+    <div class="ucard" onclick="selUser(2)" id="uc2"><div class="av">👧</div><div class="un">Rachana</div><div class="ur">Child</div></div>
+    <div class="ucard" onclick="selUser(3)" id="uc3"><div class="av">👶</div><div class="un">Sanchita</div><div class="ur">Child</div></div>
   </div>
-  <div class="pin-lbl">Enter 4-digit PIN</div>
+  <div class="pin-lbl" id="pinLbl">Enter 4-digit PIN</div>
   <div class="pdots">
     <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
     <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
   </div>
   <div class="numpad">
-    <button class="nb" onclick="pk('1')">1</button>
-    <button class="nb" onclick="pk('2')">2</button>
-    <button class="nb" onclick="pk('3')">3</button>
-    <button class="nb" onclick="pk('4')">4</button>
-    <button class="nb" onclick="pk('5')">5</button>
-    <button class="nb" onclick="pk('6')">6</button>
-    <button class="nb" onclick="pk('7')">7</button>
-    <button class="nb" onclick="pk('8')">8</button>
-    <button class="nb" onclick="pk('9')">9</button>
-    <button class="nb" onclick="pdel()">⌫</button>
-    <button class="nb" onclick="pk('0')">0</button>
-    <button class="nb ok" onclick="pok()">OK</button>
+    <button class="nb" onclick="pk('1')">1</button><button class="nb" onclick="pk('2')">2</button><button class="nb" onclick="pk('3')">3</button>
+    <button class="nb" onclick="pk('4')">4</button><button class="nb" onclick="pk('5')">5</button><button class="nb" onclick="pk('6')">6</button>
+    <button class="nb" onclick="pk('7')">7</button><button class="nb" onclick="pk('8')">8</button><button class="nb" onclick="pk('9')">9</button>
+    <button class="nb" onclick="pdel()">⌫</button><button class="nb" onclick="pk('0')">0</button><button class="nb ok" onclick="pok()">OK</button>
   </div>
   <div class="lerr" id="lerr"></div>
 </div>
 
 <!-- APP -->
 <div id="app">
+  <!-- Topbar: logo | title | dot  ←→  user | lang | logout -->
   <div class="topbar">
     <div class="tb-left">
       <span class="tb-logo">🏡</span>
@@ -355,8 +270,8 @@ canvas{width:100%!important;border-radius:6px;display:block}
     </div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
-      <button class="tb-btn" onclick="toggleLang()">ಕ/EN</button>
-      <button class="tb-btn" onclick="doLogout()">🚪</button>
+      <button class="tb-btn" onclick="toggleLang()" id="langBtn">ಕ/EN</button>
+      <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
     </div>
   </div>
 
@@ -366,103 +281,112 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <div class="page on" id="pgDash">
       <div id="warnBox"></div>
       <div class="hero">
-        <div class="hlbl">Balance this month</div>
+        <div class="hlbl" id="lbl_balance">Balance this month</div>
         <div class="hbal"><sup>₹</sup><span id="hBal">0</span></div>
         <div class="hrow">
-          <div class="hs"><div class="hslbl">Total Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
-          <div class="hs"><div class="hslbl">Total Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
-          <div class="hs"><div class="hslbl">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
+          <div class="hs"><div class="hslbl" id="lbl_income">Total Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="lbl_spent">Total Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="lbl_saved">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
         </div>
       </div>
-      <div class="sh">Income Sources</div>
+      <div class="sh" id="lbl_incsrc">Income Sources</div>
       <div class="inc-split">
-        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Loan</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl" id="lbl_salary">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl" id="lbl_rent">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl" id="lbl_loantx">Loan Received</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl" id="lbl_other_inc">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
-      <div class="sh">Key Expenses</div>
+      <div class="sh" id="lbl_keyexp">Key Expenses</div>
       <div class="sgrid" id="topStats"></div>
       <div class="cbox">
-        <div class="ctitle">📊 Spending by Category</div>
+        <div class="ctitle" id="lbl_catchart">📊 Spending by Category</div>
         <div id="catBars"></div>
       </div>
       <div class="cbox">
-        <div class="ctitle">📈 6-Month Trend</div>
-        <canvas id="trendC" height="160"></canvas>
+        <div class="ctitle" id="lbl_trend">📈 6-Month Trend</div>
+        <canvas id="trendC" height="155"></canvas>
       </div>
-      <div class="sh">Recent Transactions</div>
+      <div class="sh" id="lbl_recent">Recent Transactions</div>
       <div id="recentTx"></div>
     </div>
 
     <!-- ADD -->
     <div class="page" id="pgAdd">
-      <div class="ph">➕ Add Transaction</div>
+      <div class="ph">➕ <span id="lbl_addtx">Add Transaction</span></div>
       <div class="trow">
-        <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
-        <button class="tbtn inc" id="btnInc" onclick="setTyp('income')">💵 Income</button>
+        <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')" id="lbl_expense">💸 Expense</button>
+        <button class="tbtn inc" id="btnInc" onclick="setTyp('income')" id="lbl_income_btn">💵 Income</button>
       </div>
+      <!-- Income source: shown only for income type -->
       <div id="incSrcBox" style="display:none">
         <div class="fc">
-          <div class="fl">Income Source</div>
+          <div class="fl" id="lbl_incsrc2">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Rent</button>
-            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Loan</button>
-            <button class="isbtn" id="isRent" onclick="setIS('rent')">🏠 Others</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Ginigera Rent</button>
+            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Received</button>
+            <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
         </div>
       </div>
       <div class="fc">
-        <label class="fl">Amount (₹)</label>
+        <label class="fl" id="lbl_amount">Amount (₹)</label>
         <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-        <label class="fl">Who?</label>
-        <select class="fi" id="fWho"><option>Gavi</option><option>Uma</option></select>
-        <label class="fl">Date</label>
+        <label class="fl" id="lbl_who">Who?</label>
+        <select class="fi" id="fWho">
+          <option value="Gavi">Gavi</option>
+          <option value="Uma">Uma</option>
+          <option value="Rachana">Rachana</option>
+          <option value="Sanchita">Sanchita</option>
+        </select>
+        <label class="fl" id="lbl_date">Date</label>
         <input class="fi" type="date" id="fDate">
-        <label class="fl">Note (optional)</label>
+        <label class="fl" id="lbl_note">Note (optional)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
       </div>
       <div class="fc" id="catBox">
-        <div class="fl">Category</div>
+        <div class="fl" id="lbl_cat">Category</div>
         <div class="cgrid" id="catGrid"></div>
       </div>
-      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
+      <button class="sbtn" onclick="doAdd()" id="lbl_savetx">✅ Save Transaction</button>
     </div>
 
     <!-- GOALS -->
     <div class="page" id="pgGoals">
-      <div class="ph">🎯 Savings Goals</div>
+      <div class="ph">🎯 <span id="lbl_goals">Savings Goals</span></div>
       <div id="goalList"></div>
-      <button class="agbtn" onclick="openGM()">+ Add New Goal</button>
+      <button class="agbtn" onclick="openGM()" id="lbl_addgoal">+ Add New Goal</button>
     </div>
 
     <!-- HISTORY -->
     <div class="page" id="pgHistory">
-      <div class="ph">📜 History</div>
+      <div class="ph">📜 <span id="lbl_history">History</span></div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export All Transactions (CSV)</button>
       <div class="frow" id="filterRow"></div>
       <div id="histList"></div>
     </div>
 
     <!-- REPORTS -->
     <div class="page" id="pgReports">
-      <div class="ph">📊 Reports</div>
-      <div class="sh">This Month Summary</div>
+      <div class="ph">📊 <span id="lbl_reports">Reports</span></div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV Report</button>
+      <div class="sh" id="lbl_thismonth">This Month Summary</div>
       <div class="rgrid" id="repGrid"></div>
-      <div class="cbox"><div class="ctitle">Who Spent What</div><canvas id="whoC" height="160"></canvas></div>
-      <div class="cbox"><div class="ctitle">12-Month Trend</div><canvas id="yearC" height="160"></canvas></div>
+      <div class="cbox"><div class="ctitle" id="lbl_whospent">Who Spent What</div><canvas id="whoC" height="155"></canvas></div>
+      <div class="cbox"><div class="ctitle" id="lbl_12m">12-Month Trend</div><canvas id="yearC" height="155"></canvas></div>
+      <div class="cbox"><div class="ctitle" id="lbl_incsplit">Income Sources Split</div><canvas id="incC" height="155"></canvas></div>
     </div>
 
     <!-- SETTINGS -->
     <div class="page" id="pgSettings">
-      <div class="ph">⚙️ Settings</div>
-      <div class="sh">Monthly Income</div>
+      <div class="ph">⚙️ <span id="lbl_settings">Settings</span></div>
+      <div class="sh" id="lbl_monthy_inc">Monthly Base Income</div>
       <div class="fc">
         <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:8px">🏠 Ginigera Rent Income (₹/month)</label>
+        <label class="fl" style="margin-top:6px">🏠 Ginigera Rent Income (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
-        <label class="fl" style="margin-top:8px">👩 Uma Income (₹)</label>
+        <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
       </div>
       <div class="sh">Budget Limits (₹/month)</div>
@@ -471,25 +395,29 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="fc">
         <label class="fl">Gavi PIN (4 digits)</label>
         <div class="irow"><input class="iinp" type="password" id="pinG" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Gavi')">Save</button></div>
-        <label class="fl" style="margin-top:8px">Uma PIN (4 digits)</label>
+        <label class="fl" style="margin-top:6px">Uma PIN (4 digits)</label>
         <div class="irow"><input class="iinp" type="password" id="pinU" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Uma')">Save</button></div>
+        <label class="fl" style="margin-top:6px">Rachana PIN (4 digits)</label>
+        <div class="irow"><input class="iinp" type="password" id="pinR" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Rachana')">Save</button></div>
+        <label class="fl" style="margin-top:6px">Sanchita PIN (4 digits)</label>
+        <div class="irow"><input class="iinp" type="password" id="pinS" maxlength="4" inputmode="numeric"><button class="isave" onclick="savPin('Sanchita')">Save</button></div>
       </div>
       <div class="sh">Firebase</div>
-      <div class="fc" style="text-align:center;color:var(--text2);font-size:14px">
+      <div class="fc" style="text-align:center;color:var(--text2);font-size:13px">
         Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
-        <span id="fbStatus" style="font-size:12px;margin-top:6px;display:block"></span>
+        <span id="fbStatus" style="font-size:11px;margin-top:4px;display:block"></span>
       </div>
     </div>
 
   </div><!-- /pages -->
 
   <div class="bnav">
-    <div class="ni on" onclick="goPage('Dash',this)"><div class="nico">🏠</div><div class="nlbl">Home</div></div>
-    <div class="ni" onclick="goPage('Add',this)"><div class="nico">➕</div><div class="nlbl">Add</div></div>
-    <div class="ni" onclick="goPage('Goals',this)"><div class="nico">🎯</div><div class="nlbl">Goals</div></div>
-    <div class="ni" onclick="goPage('History',this)"><div class="nico">📜</div><div class="nlbl">History</div></div>
-    <div class="ni" onclick="goPage('Reports',this)"><div class="nico">📊</div><div class="nlbl">Reports</div></div>
-    <div class="ni" onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl">Settings</div></div>
+    <div class="ni on" onclick="goPage('Dash',this)"><div class="nico">🏠</div><div class="nlbl" id="nav_home">Home</div></div>
+    <div class="ni" onclick="goPage('Add',this)"><div class="nico">➕</div><div class="nlbl" id="nav_add">Add</div></div>
+    <div class="ni" onclick="goPage('Goals',this)"><div class="nico">🎯</div><div class="nlbl" id="nav_goals">Goals</div></div>
+    <div class="ni" onclick="goPage('History',this)"><div class="nico">📜</div><div class="nlbl" id="nav_hist">History</div></div>
+    <div class="ni" onclick="goPage('Reports',this)"><div class="nico">📊</div><div class="nlbl" id="nav_rep">Reports</div></div>
+    <div class="ni" onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl" id="nav_set">Settings</div></div>
   </div>
 </div>
 
@@ -502,8 +430,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <input class="fi" id="gName" placeholder="e.g. Rachana Education">
     <label class="fl">For</label>
     <select class="fi" id="gFor">
-      <option>Family</option><option>Gavi</option><option>Uma</option>
-      <option>Rachana</option><option>Sanchita</option>
+      <option>Family</option><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option>
     </select>
     <label class="fl">Target Amount (₹)</label>
     <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
@@ -520,7 +447,6 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- FIREBASE COMPAT SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <script>
 /* ══ FIREBASE ══ */
 firebase.initializeApp({
@@ -534,13 +460,15 @@ firebase.initializeApp({
 const db = firebase.firestore();
 
 /* ══ STATE ══ */
-let lang='en',curUser=null,curType='expense',curCat='Food',curIS='salary',filtCat='All';
-let txCache=[],goalCache=[],settings={income:{salary:0,rent:0,uma:0},limits:{}};
-let unsubTx,unsubGoals;
-const PINS={Gavi:'1234',Uma:'5678'};
+let lang='en', curUser=null, curType='expense', curCat='Food', curIS='salary', filtCat='All';
+let txCache=[], goalCache=[], settings={income:{salary:0,rent:0,uma:0},limits:{}};
+let unsubTx, unsubGoals;
+
+const USERS = ['Gavi','Uma','Rachana','Sanchita'];
+const DEFAULT_PINS = {Gavi:'1234',Uma:'5678',Rachana:'1111',Sanchita:'2222'};
 
 /* ══ CATEGORIES ══ */
-const CATS=[
+const CATS = [
   {id:'Food',       i:'🍽️',en:'Food',        kn:'ಆಹಾರ',        c:'#ef4444',lim:10000},
   {id:'Groceries',  i:'🛒', en:'Groceries',   kn:'ದಿನಸಿ',        c:'#22c55e',lim:8000},
   {id:'Vegetables', i:'🥦', en:'Vegetables',  kn:'ತರಕಾರಿ',      c:'#4ade80',lim:3000},
@@ -562,6 +490,7 @@ const CATS=[
   {id:'Clothing',   i:'👕', en:'Clothing',    kn:'ಬಟ್ಟೆ',        c:'#ec4899',lim:3000},
   {id:'Children',   i:'👧', en:'Children',    kn:'ಮಕ್ಕಳು',      c:'#f9a8d4',lim:3000},
   {id:'Festival',   i:'🪔', en:'Festival',    kn:'ಹಬ್ಬ',         c:'#fcd34d',lim:5000},
+  {id:'LoanTx',     i:'🤝', en:'Loan Transfer',kn:'ಸಾಲ ವರ್ಗಾವಣೆ',c:'#f472b6',lim:0},
   {id:'Savings',    i:'🏦', en:'Savings',     kn:'ಉಳಿತಾಯ',    c:'#2dd4bf',lim:0},
   {id:'Investment', i:'📈', en:'Investment',  kn:'ಹೂಡಿಕೆ',    c:'#34d399',lim:0},
   {id:'Insurance',  i:'🛡️',en:'Insurance',   kn:'ವಿಮೆ',        c:'#6ee7b7',lim:2000},
@@ -573,72 +502,153 @@ const CATS=[
   {id:'Other',      i:'📦', en:'Other',       kn:'ಇತರ',         c:'#94a3b8',lim:0},
 ];
 
-/* ══ LANG ══ */
-function L(en,kn){return lang==='kn'?kn:en}
-function toggleLang(){lang=lang==='en'?'kn':'en';localStorage.setItem('hb_lang',lang);renderAll();buildCatGrid()}
-lang=localStorage.getItem('hb_lang')||'en';
+/* ══ INCOME SOURCES ══ */
+const INC_SOURCES = [
+  {id:'salary',       i:'💼', en:'Salary',        kn:'ಸಂಬಳ'},
+  {id:'rent',         i:'🏠', en:'Ginigera Rent',  kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
+  {id:'loan_received',i:'💳', en:'Loan Received',  kn:'ಸಾಲ ಸ್ವೀಕರಿಸಿದ'},
+  {id:'other_income', i:'📦', en:'Others',         kn:'ಇತರ ಆದಾಯ'},
+];
+
+/* ══ LANGUAGE STRINGS ══ */
+const STRINGS = {
+  en:{
+    balance:'Balance this month', income:'Total Income', spent:'Total Spent', saved:'Saved %',
+    incsrc:'Income Sources', salary:'Salary · Bangalore', rent:'Rent · Ginigera',
+    loantx:'Loan Received', other_inc:'Others Income',
+    keyexp:'Key Expenses', catchart:'📊 Spending by Category', trend:'📈 6-Month Trend',
+    recent:'Recent Transactions', addtx:'Add Transaction', expense:'💸 Expense',
+    income_btn:'💵 Income', incsrc2:'Income Source', amount:'Amount (₹)', who:'Who?',
+    date:'Date', note:'Note (optional)', cat:'Category', savetx:'✅ Save Transaction',
+    goals:'Savings Goals', addgoal:'+ Add New Goal', history:'History', reports:'Reports',
+    settings:'Settings', thismonth:'This Month Summary', whospent:'Who Spent What',
+    '12m':'12-Month Trend', incsplit:'Income Sources Split',
+    monthly_inc:'Monthly Base Income', enterpin:'Enter 4-digit PIN',
+    nav_home:'Home', nav_add:'Add', nav_goals:'Goals', nav_hist:'History',
+    nav_rep:'Reports', nav_set:'Settings',
+  },
+  kn:{
+    balance:'ಈ ತಿಂಗಳ ಉಳಿಕೆ', income:'ಒಟ್ಟು ಆದಾಯ', spent:'ಒಟ್ಟು ಖರ್ಚು', saved:'ಉಳಿತಾಯ %',
+    incsrc:'ಆದಾಯ ಮೂಲಗಳು', salary:'ಸಂಬಳ · ಬೆಂಗಳೂರು', rent:'ಬಾಡಿಗೆ · ಗಿನಿಗೇರ',
+    loantx:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ', other_inc:'ಇತರ ಆದಾಯ',
+    keyexp:'ಪ್ರಮುಖ ಖರ್ಚುಗಳು', catchart:'📊 ವರ್ಗದ ಪ್ರಕಾರ ಖರ್ಚು', trend:'📈 6 ತಿಂಗಳ ಟ್ರೆಂಡ್',
+    recent:'ಇತ್ತೀಚಿನ ವ್ಯವಹಾರಗಳು', addtx:'ವ್ಯವಹಾರ ಸೇರಿಸಿ', expense:'💸 ಖರ್ಚು',
+    income_btn:'💵 ಆದಾಯ', incsrc2:'ಆದಾಯ ಮೂಲ', amount:'ಮೊತ್ತ (₹)', who:'ಯಾರು?',
+    date:'ದಿನಾಂಕ', note:'ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)', cat:'ವರ್ಗ', savetx:'✅ ಉಳಿಸಿ',
+    goals:'ಉಳಿತಾಯ ಗುರಿಗಳು', addgoal:'+ ಹೊಸ ಗುರಿ ಸೇರಿಸಿ', history:'ಇತಿಹಾಸ', reports:'ವರದಿಗಳು',
+    settings:'ಸೆಟ್ಟಿಂಗ್ಸ್', thismonth:'ಈ ತಿಂಗಳ ಸಾರಾಂಶ', whospent:'ಯಾರು ಎಷ್ಟು ಖರ್ಚು ಮಾಡಿದರು',
+    '12m':'12 ತಿಂಗಳ ಟ್ರೆಂಡ್', incsplit:'ಆದಾಯ ಮೂಲ ವಿಭಜನೆ',
+    monthly_inc:'ಮಾಸಿಕ ಆದಾಯ ಹೊಂದಿಸಿ', enterpin:'4 ಅಂಕಿ PIN ನಮೂದಿಸಿ',
+    nav_home:'ಮನೆ', nav_add:'ಸೇರಿಸಿ', nav_goals:'ಗುರಿ', nav_hist:'ಇತಿಹಾಸ',
+    nav_rep:'ವರದಿ', nav_set:'ಸೆಟ್ಟಿಂಗ್ಸ್',
+  }
+};
+function L(key){ return (STRINGS[lang]||STRINGS.en)[key] || key; }
+function applyLang(){
+  const m = {
+    lbl_balance:'balance', lbl_income:'income', lbl_spent:'spent', lbl_saved:'saved',
+    lbl_incsrc:'incsrc', lbl_salary:'salary', lbl_rent:'rent', lbl_loantx:'loantx',
+    lbl_other_inc:'other_inc', lbl_keyexp:'keyexp', lbl_catchart:'catchart',
+    lbl_trend:'trend', lbl_recent:'recent', lbl_addtx:'addtx', lbl_incsrc2:'incsrc2',
+    lbl_amount:'amount', lbl_who:'who', lbl_date:'date', lbl_note:'note',
+    lbl_cat:'cat', lbl_savetx:'savetx', lbl_goals:'goals', lbl_addgoal:'addgoal',
+    lbl_history:'history', lbl_reports:'reports', lbl_settings:'settings',
+    lbl_thismonth:'thismonth', lbl_whospent:'whospent', lbl_12m:'12m',
+    lbl_incsplit:'incsplit', lbl_monthy_inc:'monthly_inc',
+    nav_home:'nav_home', nav_add:'nav_add', nav_goals:'nav_goals',
+    nav_hist:'nav_hist', nav_rep:'nav_rep', nav_set:'nav_set',
+  };
+  Object.entries(m).forEach(([id,key])=>{
+    const el=document.getElementById(id); if(el) el.textContent=L(key);
+  });
+  document.getElementById('pinLbl').textContent = L('enterpin');
+  document.getElementById('lbl_addgoal').textContent = L('addgoal');
+  document.getElementById('btnExp').textContent = L('expense');
+  document.getElementById('btnInc').textContent = L('income_btn');
+  // income source buttons
+  const isLabels = [
+    ['isSal','💼 '+L('salary')],['isRentBtn','🏠 '+L('rent')],
+    ['isLoanBtn','💳 Loan Received'],['isOtherBtn','📦 Others'],
+  ];
+  isLabels.forEach(([id,txt])=>{ const e=document.getElementById(id); if(e) e.textContent=txt; });
+  buildCatGrid();
+}
+function toggleLang(){
+  lang = lang==='en'?'kn':'en';
+  localStorage.setItem('hb_lang',lang);
+  applyLang();
+  renderAll();
+}
+lang = localStorage.getItem('hb_lang')||'en';
 
 /* ══ STARTUP ══ */
 async function startup(){
-  document.getElementById('loadMsg').textContent='Connecting to Firebase…';
   try{
     const[d1,d2]=await Promise.all([
       db.collection('settings').doc('income').get(),
       db.collection('settings').doc('limits').get()
     ]);
-    settings.income=d1.exists?d1.data():{salary:0,rent:0,uma:0};
-    settings.limits=d2.exists?d2.data():{};
-    document.getElementById('fbStatus').textContent='✅ Connected';
+    settings.income = d1.exists ? d1.data() : {salary:0,rent:0,uma:0};
+    settings.limits = d2.exists ? d2.data() : {};
+    document.getElementById('fbStatus').textContent='✅ Connected to Firebase';
   }catch(e){
-    console.warn('Firestore:',e.message);
-    document.getElementById('fbStatus').textContent='⚠️ Check Firestore Rules';
+    console.warn('Firestore error:',e.message);
+    document.getElementById('fbStatus').textContent='⚠️ Offline — check Firestore Rules';
     settings={income:{salary:0,rent:0,uma:0},limits:{}};
   }
   document.getElementById('loading').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
+  applyLang();
 }
 startup();
 
 /* ══ LOGIN ══ */
-let pinBuf='',selIdx=0;
+let pinBuf='', selIdx=0;
 function selUser(i){
   selIdx=i;
   document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',i===j));
-  pinBuf='';updateDots();document.getElementById('lerr').textContent='';
+  pinBuf=''; updateDots(); document.getElementById('lerr').textContent='';
 }
-function updateDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length)}
-function pk(k){if(pinBuf.length>=4)return;pinBuf+=k;updateDots();if(pinBuf.length===4)setTimeout(pok,100)}
-function pdel(){pinBuf=pinBuf.slice(0,-1);updateDots()}
+function updateDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
+function pk(k){ if(pinBuf.length>=4)return; pinBuf+=k; updateDots(); if(pinBuf.length===4)setTimeout(pok,100); }
+function pdel(){ pinBuf=pinBuf.slice(0,-1); updateDots(); }
 function pok(){
-  const user=selIdx===0?'Gavi':'Uma';
-  const pin=localStorage.getItem('hb_pin_'+user)||PINS[user];
-  if(pinBuf===pin){curUser=user;doLogin()}
-  else{document.getElementById('lerr').textContent=L('Wrong PIN, try again','ತಪ್ಪು PIN, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ');pinBuf='';updateDots()}
+  const user=USERS[selIdx];
+  const pin=localStorage.getItem('hb_pin_'+user)||DEFAULT_PINS[user];
+  if(pinBuf===pin){ curUser=user; doLogin(); }
+  else{ document.getElementById('lerr').textContent=L('enterpin')+' — Wrong PIN!'; pinBuf=''; updateDots(); }
 }
 function doLogin(){
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app');
-  app.style.display='flex';app.style.flexDirection='column';
-  document.getElementById('tbUser').textContent=(curUser==='Gavi'?'👨 ':'👩 ')+curUser;
+  app.style.display='flex'; app.style.flexDirection='column';
+  const ava=['👨','👩','👧','👶'];
+  document.getElementById('tbUser').textContent=ava[USERS.indexOf(curUser)]+' '+curUser;
   document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
-  buildCatGrid();subscribeRT();renderSettings();
+  // set Who dropdown to logged-in user
+  document.getElementById('fWho').value=curUser;
+  buildCatGrid();
+  subscribeRT();
+  renderSettings();
+  applyLang();
 }
 function doLogout(){
-  if(unsubTx)unsubTx();if(unsubGoals)unsubGoals();
-  txCache=[];goalCache=[];
+  if(unsubTx)unsubTx(); if(unsubGoals)unsubGoals();
+  txCache=[]; goalCache=[];
   document.getElementById('app').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
-  pinBuf='';updateDots();document.getElementById('lerr').textContent='';
+  pinBuf=''; updateDots();
+  document.getElementById('lerr').textContent='';
 }
 
-/* ══ REALTIME ══ */
+/* ══ REALTIME LISTENERS ══ */
 function subscribeRT(){
   if(unsubTx)unsubTx();
   unsubTx=db.collection('transactions').orderBy('ts','desc').onSnapshot(snap=>{
     txCache=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderAll();
     document.getElementById('sdot').className='sdot';
-  },err=>{console.error(err);document.getElementById('sdot').className='sdot off'});
+  },err=>{ console.error(err); document.getElementById('sdot').className='sdot off'; });
   if(unsubGoals)unsubGoals();
   unsubGoals=db.collection('goals').onSnapshot(snap=>{
     goalCache=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -657,106 +667,131 @@ function goPage(name,el){
   if(name==='History')renderHistory();
   if(name==='Settings')renderSettings();
 }
-function renderAll(){renderDash();renderHistory()}
+function renderAll(){ renderDash(); renderHistory(); }
 
 /* ══ DASHBOARD ══ */
 function renderDash(){
-  const now=new Date(),mm=now.getMonth(),yy=now.getFullYear();
+  const now=new Date(), mm=now.getMonth(), yy=now.getFullYear();
   const inc=settings.income||{};
   const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
-  const mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy});
-  const addlInc=mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const mTx=txCache.filter(t=>{
+    if(!t.date)return false;
+    const d=new Date(t.date);
+    return d.getMonth()===mm&&d.getFullYear()===yy;
+  });
+  // income breakdown from transactions
+  const incTx=mTx.filter(t=>t.type==='income');
+  const salaryTx=incTx.filter(t=>t.incSrc==='salary').reduce((s,t)=>s+t.amount,0);
+  const rentTx=incTx.filter(t=>t.incSrc==='rent').reduce((s,t)=>s+t.amount,0);
+  const loanTx=incTx.filter(t=>t.incSrc==='loan_received').reduce((s,t)=>s+t.amount,0);
+  const otherTx=incTx.filter(t=>t.incSrc==='other_income').reduce((s,t)=>s+t.amount,0);
+  const addlInc=incTx.reduce((s,t)=>s+t.amount,0);
   const totalInc=baseInc+addlInc;
   const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const bal=totalInc-totalExp;
   const pct=totalInc>0?Math.round(bal/totalInc*100):0;
-  setText('hBal',fmt(bal));setText('hInc','₹'+fmt(totalInc));setText('hSpent','₹'+fmt(totalExp));setText('hPct',pct+'%');
-  setText('iSal','₹'+fmt(+inc.salary||0));setText('iRent','₹'+fmt(+inc.rent||0));
 
-  /* warnings */
+  setText('hBal',fmt(bal));
+  setText('hInc','₹'+fmt(totalInc));
+  setText('hSpent','₹'+fmt(totalExp));
+  setText('hPct',pct+'%');
+  setText('iSal','₹'+fmt((+inc.salary||0)+salaryTx));
+  setText('iRent','₹'+fmt((+inc.rent||0)+rentTx));
+  setText('iLoan','₹'+fmt(loanTx));
+  setText('iOther','₹'+fmt((+inc.uma||0)+otherTx));
+
+  // Warnings
   const lims={...Object.fromEntries(CATS.map(c=>[c.id,c.lim])),...(settings.limits||{})};
-  const catExp={};CATS.forEach(c=>catExp[c.id]=0);
-  mTx.filter(t=>t.type==='expense').forEach(t=>{if(catExp[t.category]!==undefined)catExp[t.category]+=t.amount});
-  const wb=document.getElementById('warnBox');wb.innerHTML='';
-  CATS.forEach(c=>{if(lims[c.id]>0&&catExp[c.id]>lims[c.id])wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${L(c.en,c.kn)} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`});
+  const catExp={}; CATS.forEach(c=>catExp[c.id]=0);
+  mTx.filter(t=>t.type==='expense').forEach(t=>{ if(catExp[t.category]!==undefined)catExp[t.category]+=t.amount; });
+  const wb=document.getElementById('warnBox'); wb.innerHTML='';
+  CATS.forEach(c=>{ if(lims[c.id]>0&&catExp[c.id]>lims[c.id]) wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${L(c.en||c.id)} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`; });
 
-  /* top 4 stat cards */
+  // Top 4 stat cards
   const top4=[{id:'BLR_Rent',i:'🏙️'},{id:'School',i:'🎓'},{id:'Food',i:'🍽️'},{id:'Medical',i:'🏥'}];
   document.getElementById('topStats').innerHTML=top4.map(x=>{
     const c=CATS.find(q=>q.id===x.id);
-    return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${L(c.en,c.kn)}</div><div class="sc-val" style="color:${c.c}">₹${fmt(catExp[x.id]||0)}</div></div>`;
+    return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${c?L2(c):x.id}</div><div class="sc-val" style="color:${c?c.c:'#fff'}">₹${fmt(catExp[x.id]||0)}</div></div>`;
   }).join('');
 
-  /* category bars */
-  const expCats=CATS.filter(c=>c.id!=='Savings'&&c.id!=='Investment').map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
+  // Category bars
+  const expCats=CATS.filter(c=>c.id!=='Savings'&&c.id!=='Investment'&&c.id!=='LoanTx')
+    .map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
   const maxA=Math.max(...expCats.map(c=>c.amt),1);
   const cb=document.getElementById('catBars');
   cb.innerHTML=expCats.length?expCats.slice(0,10).map(c=>`
     <div class="cbrow">
-      <div class="cblbl">${c.i} ${L(c.en,c.kn)}</div>
+      <div class="cblbl">${c.i} ${L2(c)}</div>
       <div class="cbtrack"><div class="cbfill" style="width:${Math.round(c.amt/maxA*100)}%;background:${c.c}"></div></div>
       <div class="cbamt" style="color:${c.c}">₹${fmt(c.amt)}</div>
-    </div>`).join(''):`<div style="color:var(--text2);font-size:13px;text-align:center;padding:10px">${L('No expenses this month','ಈ ತಿಂಗಳು ಖರ್ಚಿಲ್ಲ')}</div>`;
+    </div>`).join('')
+    :`<div style="color:var(--text2);font-size:12px;text-align:center;padding:8px">${lang==='kn'?'ಈ ತಿಂಗಳು ಖರ್ಚಿಲ್ಲ':'No expenses this month'}</div>`;
 
   drawTrend(baseInc);
+
   const rl=document.getElementById('recentTx');
-  rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')||`<div class="empty"><div class="big">💸</div><p>${L('No transactions yet','ಇನ್ನೂ ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
+  rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')
+    ||`<div class="empty"><div class="big">💸</div><p>${lang==='kn'?'ಇನ್ನೂ ವ್ಯವಹಾರಗಳಿಲ್ಲ':'No transactions yet'}</p></div>`;
 }
+
+// Helper: get category label
+function L2(cat){ return lang==='kn'?cat.kn:cat.en; }
 
 /* ══ TREND CHART ══ */
 function drawTrend(baseInc){
-  const canvas=document.getElementById('trendC');if(!canvas)return;
-  const ctx=canvas.getContext('2d'),now=new Date();
+  const canvas=document.getElementById('trendC'); if(!canvas)return;
+  const ctx=canvas.getContext('2d'), now=new Date();
   const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const labels=[],incD=[],expD=[];
   for(let i=5;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     labels.push(sM[d.getMonth()]);
     const m=d.getMonth(),y=d.getFullYear();
-    const mTx=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y});
+    const mTx=txCache.filter(t=>{ if(!t.date)return false; const dd=new Date(t.date); return dd.getMonth()===m&&dd.getFullYear()===y; });
     incD.push((baseInc||0)+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
     expD.push(mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0));
   }
-  drawLine2(canvas,ctx,labels,incD,expD,'#4ade80','#fb7185','Income','Expense');
+  drawLine2(canvas,ctx,labels,incD,expD,'#4ade80','#fb7185',lang==='kn'?'ಆದಾಯ':'Income',lang==='kn'?'ಖರ್ಚು':'Expense');
 }
+
 function drawLine2(canvas,ctx,labels,d1,d2,c1,c2,l1,l2){
-  const W=canvas.parentElement.clientWidth-32,H=160;
-  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
-  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const W=canvas.parentElement.clientWidth-28, H=155;
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  const p={t:16,r:14,b:28,l:48},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const p={t:16,r:14,b:28,l:46}, cW=W-p.l-p.r, cH=H-p.t-p.b;
   const maxV=Math.max(...d1,...d2,1);
   const step=cW/(labels.length-1||1);
   ctx.clearRect(0,0,W,H);
   for(let i=0;i<=4;i++){
     const y=p.t+cH/4*i;
-    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(p.l,y); ctx.lineTo(W-p.r,y); ctx.stroke();
     const v=maxV-maxV/4*i;
-    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='10px sans-serif'; ctx.textAlign='right';
     ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
   }
   [[d1,c1],[d2,c2]].forEach(([data,color])=>{
     const pts=data.map((v,i)=>({x:p.l+step*i,y:p.t+cH-(v/maxV)*cH}));
-    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));
-    ctx.lineTo(pts[pts.length-1].x,p.t+cH);ctx.lineTo(pts[0].x,p.t+cH);ctx.closePath();
+    ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y); pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));
+    ctx.lineTo(pts[pts.length-1].x,p.t+cH); ctx.lineTo(pts[0].x,p.t+cH); ctx.closePath();
     const g=ctx.createLinearGradient(0,p.t,0,p.t+cH);
-    g.addColorStop(0,color+'38');g.addColorStop(1,color+'00');
-    ctx.fillStyle=g;ctx.fill();
-    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.lineJoin='round';
-    ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));ctx.stroke();
-    pts.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()});
+    g.addColorStop(0,color+'38'); g.addColorStop(1,color+'00');
+    ctx.fillStyle=g; ctx.fill();
+    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    ctx.moveTo(pts[0].x,pts[0].y); pts.forEach(pt=>ctx.lineTo(pt.x,pt.y)); ctx.stroke();
+    pts.forEach(pt=>{ ctx.beginPath(); ctx.arc(pt.x,pt.y,3.5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); });
   });
-  ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='11px sans-serif'; ctx.textAlign='center';
   labels.forEach((l,i)=>ctx.fillText(l,p.l+step*i,H-5));
   [[c1,l1],[c2,l2]].forEach(([c,l],i)=>{
-    ctx.fillStyle=c;ctx.fillRect(W-90,6+i*13,10,4);
-    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='10px sans-serif';ctx.textAlign='left';
-    ctx.fillText(l,W-76,12+i*13);
+    ctx.fillStyle=c; ctx.fillRect(W-88,6+i*13,10,4);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(l,W-74,12+i*13);
   });
 }
 
-/* ══ ADD ══ */
+/* ══ ADD TRANSACTION ══ */
 function setTyp(t){
   curType=t;
   document.getElementById('btnExp').classList.toggle('on',t==='expense');
@@ -766,96 +801,154 @@ function setTyp(t){
 }
 function setIS(s){
   curIS=s;
-  document.getElementById('isSal').classList.toggle('on',s==='salary');
-  document.getElementById('isRent').classList.toggle('on',s==='rent');
+  ['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};
+  if(map[s]) document.getElementById(map[s]).classList.add('on');
 }
 function buildCatGrid(){
-  const g=document.getElementById('catGrid');if(!g)return;
+  const g=document.getElementById('catGrid'); if(!g)return;
   g.innerHTML='';
   CATS.forEach(c=>{
     const b=document.createElement('button');
     b.className='cbtn'+(c.id===curCat?' on':'');
-    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${L(c.en,c.kn)}</span>`;
-    b.onclick=()=>{curCat=c.id;buildCatGrid()};
+    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${L2(c)}</span>`;
+    b.onclick=()=>{ curCat=c.id; buildCatGrid(); };
     g.appendChild(b);
   });
 }
 async function doAdd(){
   const amt=Number(document.getElementById('fAmt').value);
-  if(!amt||amt<=0){showToast(L('Enter a valid amount','ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ'),true);return}
+  if(!amt||amt<=0){ showToast(lang==='kn'?'ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ':'Enter a valid amount',true); return; }
   try{
     await db.collection('transactions').add({
-      type:curType,amount:amt,
-      category:curType==='expense'?curCat:(curIS==='salary'?'Salary_Income':'Rent_Income'),
+      type:curType,
+      amount:amt,
+      category:curType==='expense'?curCat:'Income_'+curIS,
       incSrc:curType==='income'?curIS:null,
       who:document.getElementById('fWho').value,
       date:document.getElementById('fDate').value||new Date().toISOString().split('T')[0],
       note:document.getElementById('fNote').value.trim(),
+      addedBy:curUser,          // ← who added this transaction
       ts:Date.now()
     });
     document.getElementById('fAmt').value='';
     document.getElementById('fNote').value='';
-    showToast(L('✅ Saved!','✅ ಉಳಿಸಲಾಗಿದೆ!'));
-  }catch(e){showToast('Error: '+e.message,true)}
+    showToast(lang==='kn'?'✅ ಉಳಿಸಲಾಗಿದೆ!':'✅ Saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function deleteTx(id){
-  if(!confirm(L('Delete this?','ಅಳಿಸಬೇಕೇ?')))return;
+  if(!confirm(lang==='kn'?'ಅಳಿಸಬೇಕೇ?':'Delete this transaction?'))return;
   await db.collection('transactions').doc(id).delete();
-  showToast(L('Deleted','ಅಳಿಸಲಾಗಿದೆ'));
+  showToast(lang==='kn'?'ಅಳಿಸಲಾಗಿದೆ':'Deleted');
 }
 
 /* ══ GOALS ══ */
 function renderGoals(){
-  const gl=document.getElementById('goalList');if(!gl)return;
-  if(!goalCache.length){gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>${L('No goals yet','ಇನ್ನೂ ಗುರಿಗಳಿಲ್ಲ')}</p></div>`;return}
+  const gl=document.getElementById('goalList'); if(!gl)return;
+  if(!goalCache.length){ gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>${lang==='kn'?'ಇನ್ನೂ ಗುರಿಗಳಿಲ್ಲ':'No goals yet'}</p></div>`; return; }
   const cols=['#4ade80','#2dd4bf','#a78bfa','#f0b429','#fb923c','#38bdf8'];
   gl.innerHTML=goalCache.map((g,i)=>{
     const pct=Math.min(100,Math.round(g.saved/g.target*100));
     return `<div class="gcrd">
-      <div class="gh"><div class="gico">${g.icon||'🎯'}</div><div class="ginf"><div class="gname">${g.name}</div><div class="gsub">${L('For','ಯಾರಿಗಾಗಿ')}: ${g.forPerson||'Family'}</div></div><div class="gpct">${pct}%</div></div>
+      <div class="gh"><div class="gico">${g.icon||'🎯'}</div>
+      <div class="ginf"><div class="gname">${g.name}</div><div class="gsub">${lang==='kn'?'ಯಾರಿಗಾಗಿ':'For'}: ${g.forPerson||'Family'}</div></div>
+      <div class="gpct">${pct}%</div></div>
       <div class="gtrack"><div class="gfill" style="width:${pct}%;background:${cols[i%cols.length]}"></div></div>
-      <div class="gamts"><span>${L('Saved','ಉಳಿಸಿದ')}: <strong>₹${fmt(g.saved)}</strong></span><span>${L('Target','ಗುರಿ')}: <strong>₹${fmt(g.target)}</strong></span></div>
-    </div>`;
+      <div class="gamts">
+        <span>${lang==='kn'?'ಉಳಿಸಿದ':'Saved'}: <strong>₹${fmt(g.saved)}</strong></span>
+        <span>${lang==='kn'?'ಗುರಿ':'Target'}: <strong>₹${fmt(g.target)}</strong></span>
+      </div></div>`;
   }).join('');
 }
-function openGM(){document.getElementById('gModal').classList.add('open')}
-function closeGM(){document.getElementById('gModal').classList.remove('open')}
+function openGM(){ document.getElementById('gModal').classList.add('open'); }
+function closeGM(){ document.getElementById('gModal').classList.remove('open'); }
 async function doSaveGoal(){
   const name=document.getElementById('gName').value.trim();
   const target=Number(document.getElementById('gTarget').value);
-  if(!name||!target){showToast(L('Fill all fields','ಎಲ್ಲ ಮಾಹಿತಿ ನಮೂದಿಸಿ'),true);return}
+  if(!name||!target){ showToast(lang==='kn'?'ಎಲ್ಲ ಮಾಹಿತಿ ನಮೂದಿಸಿ':'Fill all fields',true); return; }
   try{
     await db.collection('goals').add({
-      name,forPerson:document.getElementById('gFor').value,
-      target,saved:Number(document.getElementById('gSaved').value)||0,
-      icon:document.getElementById('gIcon').value||'🎯',ts:Date.now()
+      name, forPerson:document.getElementById('gFor').value,
+      target, saved:Number(document.getElementById('gSaved').value)||0,
+      icon:document.getElementById('gIcon').value||'🎯', ts:Date.now()
     });
-    closeGM();showToast(L('✅ Goal saved!','✅ ಗುರಿ ಉಳಿಸಲಾಗಿದೆ!'));
+    closeGM();
+    showToast(lang==='kn'?'✅ ಗುರಿ ಉಳಿಸಲಾಗಿದೆ!':'✅ Goal saved!');
     ['gName','gTarget','gSaved','gIcon'].forEach(id=>document.getElementById(id).value='');
-  }catch(e){showToast('Error: '+e.message,true)}
+  }catch(e){ showToast('Error: '+e.message,true); }
 }
 
 /* ══ HISTORY ══ */
 function renderHistory(){
-  const fr=document.getElementById('filterRow');if(!fr)return;
-  const usedCats=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f));
-  fr.innerHTML=usedCats.map(f=>{
-    const c=CATS.find(x=>x.id===f);
-    return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?L('All','ಎಲ್ಲ'):(c?c.i+' '+L(c.en,c.kn):f)}</div>`;
-  }).join('');
+  const fr=document.getElementById('filterRow'); if(!fr)return;
+  const usedCats=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f||t.category==='Income_'+f));
+  fr.innerHTML=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f||t.category.includes(f)))
+    .filter((v,i,a)=>a.indexOf(v)===i).map(f=>{
+      const c=CATS.find(x=>x.id===f);
+      return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?(lang==='kn'?'ಎಲ್ಲ':'All'):(c?c.i+' '+L2(c):f)}</div>`;
+    }).join('');
   let list=txCache.slice();
-  if(filtCat!=='All')list=list.filter(t=>t.category===filtCat);
+  if(filtCat!=='All') list=list.filter(t=>t.category===filtCat||t.category.includes(filtCat));
   const hl=document.getElementById('histList');
-  hl.innerHTML=list.length?list.map(t=>txHTML(t,true)).join(''):`<div class="empty"><div class="big">📭</div><p>${L('No transactions','ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
+  hl.innerHTML=list.length?list.map(t=>txHTML(t,true)).join('')
+    :`<div class="empty"><div class="big">📭</div><p>${lang==='kn'?'ವ್ಯವಹಾರಗಳಿಲ್ಲ':'No transactions found'}</p></div>`;
 }
-function setFilt(f){filtCat=f;renderHistory()}
+function setFilt(f){ filtCat=f; renderHistory(); }
+
+/* ══ TX HTML — shows addedBy & who ══ */
+function txHTML(tx, showDel){
+  const cat=CATS.find(c=>c.id===tx.category||tx.category==='Income_'+c.id)
+    ||{i: tx.type==='income'?'💵':'📦', en:tx.category||'Other', kn:tx.category||'ಇತರ', c:'#94a3b8'};
+  const sign=tx.type==='income'?'+':'-';
+  const col=tx.type==='income'?'var(--green)':'var(--rose)';
+  const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+  const note=tx.note?` · ${tx.note}`:'';
+  // who spent vs who added
+  const spentBy=tx.who||'';
+  const addedBy=tx.addedBy&&tx.addedBy!==tx.who?` · Added by ${tx.addedBy}`:'';
+  return `<div class="tx">
+    <div class="txico">${cat.i}</div>
+    <div class="txinf">
+      <div class="txcat">${L2(cat)}</div>
+      <div class="txmeta">${spentBy} · ${dateStr}${note}</div>
+      <div class="txby">👤 ${spentBy}${addedBy}</div>
+    </div>
+    <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
+    ${showDel?`<button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}
+  </div>`;
+}
+
+/* ══ EXPORT CSV ══ */
+function exportCSV(){
+  if(!txCache.length){ showToast(lang==='kn'?'ಡೇಟಾ ಇಲ್ಲ':'No data to export',true); return; }
+  const headers=['Date','Type','Category','Amount','Who','Added By','Note','Income Source'];
+  const rows=txCache.map(t=>[
+    t.date||'',
+    t.type||'',
+    t.category||'',
+    t.amount||0,
+    t.who||'',
+    t.addedBy||t.who||'',
+    '"'+(t.note||'').replace(/"/g,"''")+'"',
+    t.incSrc||''
+  ].join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='HattiBudget_'+new Date().toISOString().split('T')[0]+'.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast(lang==='kn'?'✅ CSV ಡೌನ್‌ಲೋಡ್!':'✅ CSV Downloaded!');
+}
 
 /* ══ REPORTS ══ */
 function renderReports(){
-  const now=new Date(),mm=now.getMonth(),yy=now.getFullYear();
+  const now=new Date(), mm=now.getMonth(), yy=now.getFullYear();
   const inc=settings.income||{};
   const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
-  const mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy});
+  const mTx=txCache.filter(t=>{ if(!t.date)return false; const d=new Date(t.date); return d.getMonth()===mm&&d.getFullYear()===yy; });
   const totalInc=baseInc+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const saved=totalInc-totalExp;
@@ -863,91 +956,104 @@ function renderReports(){
   const days=new Date(yy,mm+1,0).getDate();
   const largest=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
   document.getElementById('repGrid').innerHTML=[
-    {l:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),v:'₹'+fmt(totalInc),c:'var(--green)'},
-    {l:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),v:'₹'+fmt(totalExp),c:'var(--rose)'},
-    {l:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),v:'₹'+fmt(saved)+' ('+savePct+'%)',c:saved>=0?'var(--green)':'var(--rose)'},
-    {l:L('Daily Avg','ದೈನಂದಿನ ಸರಾಸರಿ'),v:'₹'+fmt(Math.round(totalExp/days)),c:'var(--text)'},
-    {l:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'),v:largest?'₹'+fmt(largest.amount):'₹0',c:'var(--rose)'},
-    {l:L('Transactions','ವ್ಯವಹಾರಗಳು'),v:mTx.length,c:'var(--text)'},
+    {l:lang==='kn'?'ಒಟ್ಟು ಆದಾಯ':'Total Income',   v:'₹'+fmt(totalInc),  c:'var(--green)'},
+    {l:lang==='kn'?'ಒಟ್ಟು ಖರ್ಚು':'Total Expense',  v:'₹'+fmt(totalExp),  c:'var(--rose)'},
+    {l:lang==='kn'?'ನಿಕರ ಉಳಿತಾಯ':'Net Savings',    v:'₹'+fmt(saved)+' ('+savePct+'%)', c:saved>=0?'var(--green)':'var(--rose)'},
+    {l:lang==='kn'?'ದೈನಂದಿನ ಸರಾಸರಿ':'Daily Avg',   v:'₹'+fmt(Math.round(totalExp/days)), c:'var(--text)'},
+    {l:lang==='kn'?'ದೊಡ್ಡ ಖರ್ಚು':'Biggest Expense',v:largest?'₹'+fmt(largest.amount):'₹0', c:'var(--rose)'},
+    {l:lang==='kn'?'ವ್ಯವಹಾರಗಳು':'Transactions',    v:mTx.length, c:'var(--text)'},
   ].map(r=>`<div class="rcrd"><div class="rlbl">${r.l}</div><div class="rval" style="color:${r.c}">${r.v}</div></div>`).join('');
 
-  const gaviAmt=mTx.filter(t=>t.type==='expense'&&t.who==='Gavi').reduce((s,t)=>s+t.amount,0);
-  const umaAmt=mTx.filter(t=>t.type==='expense'&&t.who==='Uma').reduce((s,t)=>s+t.amount,0);
-  drawBars(document.getElementById('whoC'),['Gavi','Uma'],[gaviAmt,umaAmt],['#38bdf8','#fb7185']);
+  // Who spent
+  const byUser=USERS.map(u=>mTx.filter(t=>t.type==='expense'&&t.who===u).reduce((s,t)=>s+t.amount,0));
+  const ava=['👨','👩','👧','👶'];
+  drawBars(document.getElementById('whoC'),USERS.map((u,i)=>ava[i]+u),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d']);
 
+  // 12 month
   const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const ml=[],mi=[],me=[];
   for(let i=11;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     ml.push(sM[d.getMonth()]);
     const m=d.getMonth(),y=d.getFullYear();
-    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y});
+    const mTxY=txCache.filter(t=>{ if(!t.date)return false; const dd=new Date(t.date); return dd.getMonth()===m&&dd.getFullYear()===y; });
     mi.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0));
     me.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0));
   }
   const yc=document.getElementById('yearC');
-  drawLine2(yc,yc.getContext('2d'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
+  drawLine2(yc,yc.getContext('2d'),ml,mi,me,'#4ade80','#fb7185',lang==='kn'?'ಆದಾಯ':'Income',lang==='kn'?'ಖರ್ಚು':'Expense');
+
+  // Income sources split (this month)
+  const incSrcAmt=INC_SOURCES.map(s=>{
+    const base=s.id==='salary'?(+inc.salary||0):s.id==='rent'?(+inc.rent||0):s.id==='other_income'?(+inc.uma||0):0;
+    const fromTx=mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+t.amount,0);
+    return base+fromTx;
+  });
+  drawBars(document.getElementById('incC'),INC_SOURCES.map(s=>s.i+' '+L2(s)),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
 }
+
 function drawBars(canvas,labels,data,colors){
   const ctx=canvas.getContext('2d');
-  const W=canvas.parentElement.clientWidth-32,H=160;
-  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;
-  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const W=canvas.parentElement.clientWidth-28, H=155;
+  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
   ctx.scale(devicePixelRatio,devicePixelRatio);
-  const p={t:16,r:14,b:32,l:52},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const p={t:18,r:14,b:36,l:48}, cW=W-p.l-p.r, cH=H-p.t-p.b;
   const maxV=Math.max(...data,1);
-  const bw=Math.min(80,cW/labels.length*0.5);
+  const bw=Math.min(70,cW/labels.length*0.5);
   const gap=(cW-bw*labels.length)/(labels.length+1);
   ctx.clearRect(0,0,W,H);
   for(let i=0;i<=4;i++){
     const y=p.t+cH/4*i;
-    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(p.l,y); ctx.lineTo(W-p.r,y); ctx.stroke();
     const v=maxV-maxV/4*i;
-    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='10px sans-serif'; ctx.textAlign='right';
     ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
   }
   labels.forEach((lbl,i)=>{
-    const x=p.l+gap+(bw+gap)*i,bh=(data[i]/maxV)*cH,y=p.t+cH-bh;
+    const x=p.l+gap+(bw+gap)*i, bh=Math.max(2,(data[i]/maxV)*cH), y=p.t+cH-bh;
     const g=ctx.createLinearGradient(0,y,0,p.t+cH);
-    g.addColorStop(0,colors[i%colors.length]);g.addColorStop(1,colors[i%colors.length]+'50');
+    g.addColorStop(0,colors[i%colors.length]); g.addColorStop(1,colors[i%colors.length]+'50');
     ctx.fillStyle=g;
     ctx.beginPath();
-    if(ctx.roundRect)ctx.roundRect(x,y,bw,bh,4);else ctx.rect(x,y,bw,bh);
+    if(ctx.roundRect) ctx.roundRect(x,y,bw,bh,4); else ctx.rect(x,y,bw,bh);
     ctx.fill();
-    ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='bold 12px sans-serif';ctx.textAlign='center';
-    ctx.fillText('₹'+(data[i]>=1000?Math.round(data[i]/1000)+'k':data[i]),x+bw/2,y-5);
-    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='11px sans-serif';
-    ctx.fillText(lbl,x+bw/2,H-6);
+    if(data[i]>0){
+      ctx.fillStyle='rgba(255,255,255,.75)'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('₹'+(data[i]>=1000?Math.round(data[i]/1000)+'k':data[i]),x+bw/2,y-5);
+    }
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='10px sans-serif';
+    ctx.fillText(lbl,x+bw/2,H-4);
   });
 }
 
 /* ══ SETTINGS ══ */
 function renderSettings(){
   const inc=settings.income||{};
-  const gs=document.getElementById('iGS');if(gs)gs.value=inc.salary||'';
-  const gr=document.getElementById('iGR');if(gr)gr.value=inc.rent||'';
-  const ui=document.getElementById('iUI');if(ui)ui.value=inc.uma||'';
-  const lf=document.getElementById('limForm');if(!lf)return;
+  const gs=document.getElementById('iGS'); if(gs) gs.value=inc.salary||'';
+  const gr=document.getElementById('iGR'); if(gr) gr.value=inc.rent||'';
+  const ui=document.getElementById('iUI'); if(ui) ui.value=inc.uma||'';
+  const lf=document.getElementById('limForm'); if(!lf)return;
   const savedLims=settings.limits||{};
   lf.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
-    <label class="fl">${c.i} ${L(c.en,c.kn)}</label>
+    <label class="fl">${c.i} ${L2(c)}</label>
     <div class="irow">
-      <input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]||c.lim}" inputmode="numeric">
-      <button class="isave" onclick="savLim('${c.id}')">${L('Save','ಉಳಿಸಿ')}</button>
+      <input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric">
+      <button class="isave" onclick="savLim('${c.id}')">${lang==='kn'?'ಉಳಿಸಿ':'Save'}</button>
     </div>`).join('');
 }
 async function savInc(src){
   const inc={...(settings.income||{})};
-  if(src==='salary')inc.salary=+document.getElementById('iGS').value||0;
-  if(src==='rent')  inc.rent  =+document.getElementById('iGR').value||0;
-  if(src==='uma')   inc.uma   =+document.getElementById('iUI').value||0;
+  if(src==='salary') inc.salary=+document.getElementById('iGS').value||0;
+  if(src==='rent')   inc.rent  =+document.getElementById('iGR').value||0;
+  if(src==='uma')    inc.uma   =+document.getElementById('iUI').value||0;
   try{
     await db.collection('settings').doc('income').set(inc);
     settings.income=inc;
-    showToast(L('✅ Income saved!','✅ ಆದಾಯ ಉಳಿಸಲಾಗಿದೆ!'));
+    showToast(lang==='kn'?'✅ ಆದಾಯ ಉಳಿಸಲಾಗಿದೆ!':'✅ Income saved!');
     renderDash();
-  }catch(e){showToast('Error: '+e.message,true)}
+  }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function savLim(id){
   const val=+document.getElementById('lim_'+id).value||0;
@@ -955,39 +1061,23 @@ async function savLim(id){
   try{
     await db.collection('settings').doc('limits').set(lims);
     settings.limits=lims;
-    showToast(L('✅ Limit saved!','✅ ಮಿತಿ ಉಳಿಸಲಾಗಿದೆ!'));
-  }catch(e){showToast('Error: '+e.message,true)}
+    showToast(lang==='kn'?'✅ ಮಿತಿ ಉಳಿಸಲಾಗಿದೆ!':'✅ Limit saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
 }
 function savPin(who){
-  const v=document.getElementById('pin'+who[0]).value;
-  if(v.length!==4||isNaN(v)){showToast(L('PIN must be 4 digits','4 ಅಂಕಿ PIN'),true);return}
+  const map={Gavi:'G',Uma:'U',Rachana:'R',Sanchita:'S'};
+  const v=document.getElementById('pin'+map[who]).value;
+  if(v.length!==4||isNaN(v)){ showToast(lang==='kn'?'4 ಅಂಕಿ PIN':'PIN must be 4 digits',true); return; }
   localStorage.setItem('hb_pin_'+who,v);
-  showToast(L('✅ PIN saved!','✅ PIN ಉಳಿಸಲಾಗಿದೆ!'));
-}
-
-/* ══ TX HTML ══ */
-function txHTML(tx,showDel){
-  const cat=CATS.find(c=>c.id===tx.category)||{i:'📦',en:tx.category||'Other',kn:tx.category||'ಇತರ',c:'#94a3b8'};
-  const sign=tx.type==='income'?'+':'-';
-  const col=tx.type==='income'?'var(--green)':'var(--rose)';
-  const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
-  return `<div class="tx">
-    <div class="txico">${cat.i}</div>
-    <div class="txinf">
-      <div class="txcat">${L(cat.en,cat.kn)}</div>
-      <div class="txmeta">${tx.who||''} · ${dateStr}${tx.note?' · '+tx.note:''}</div>
-    </div>
-    <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
-    ${showDel?`<button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}
-  </div>`;
+  showToast('✅ '+who+' PIN saved!');
 }
 
 /* ══ UTILS ══ */
-function fmt(n){return Number(n||0).toLocaleString('en-IN')}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+function fmt(n){ return Number(n||0).toLocaleString('en-IN'); }
+function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
 function showToast(msg,err=false){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast show'+(err?' err':'');
+  t.textContent=msg; t.className='toast show'+(err?' err':'');
   setTimeout(()=>t.className='toast',2800);
 }
 </script>
