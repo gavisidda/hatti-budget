@@ -963,6 +963,7 @@ async function doAdd(){
     });
     document.getElementById('fAmt').value='';
     document.getElementById('fNote').value='';
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; // ✅ ADD THIS LINE
     showToast(L('✅ Saved to Firebase!','✅ Firebase ಗೆ ಉಳಿಸಲಾಗಿದೆ!'));
   }catch(e){ showToast('Error: '+e.message,true); }
 }
