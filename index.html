@@ -316,10 +316,19 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </select>
         <label class="fl">Date</label>
         <input class="fi" type="date" id="fDate">
+        <label class="fl" id="lbl_transtype" for="fTxnType">Transaction Type</label>
+        <select class="fi" id="fTxnType">
+        <option value="">Select type</option>
+        <option value="atm">ATM</option>
+        <option value="cash">Cash</option>
+        <option value="upi_paytm">Paytm (UPI)</option>
+        <option value="upi_phonepe">PhonePe (UPI)</option>
+        <option value="bank_transfer">Bank Transfer (NEFT/RTGS)</option>
+        </select>
         <label class="fl">Note (optional)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
-      </div>
-      <div class="fc" id="catBox">
+        </div>
+        <div class="fc" id="catBox">
         <div class="fl">Category</div>
         <div class="cgrid" id="catGrid"></div>
       </div>
@@ -462,6 +471,15 @@ service cloud.firestore {
     </select>
     <label class="fl">Date</label>
     <input class="fi" type="date" id="editDate">
+    <label class="fl">Transaction Type</label>
+    <select class="fi" id="editTxnType">
+    <option value="">Select type</option>
+    <option value="atm">ATM</option>
+    <option value="cash">Cash</option>
+    <option value="upi_paytm">Paytm (UPI)</option>
+    <option value="upi_phonepe">PhonePe (UPI)</option>
+    <option value="bank_transfer">Bank Transfer (NEFT/RTGS)</option>
+    </select>
     <label class="fl">Category</label>
     <select class="fi" id="editCat"></select>
     <label class="fl">Note</label>
@@ -926,6 +944,7 @@ function buildEditCatSelect(){
 }
 async function doAdd(){
   const amt=Number(document.getElementById('fAmt').value);
+  const txnType = document.getElementById('fTxnType').value;
   if(!amt||amt<=0){ showToast(L('Enter valid amount','ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ'),true); return; }
   try{
     await db.collection('transactions').add({
@@ -933,6 +952,7 @@ async function doAdd(){
       amount:   amt,
       category: curType==='expense' ? curCat : 'Income_'+curIS,
       incSrc:   curType==='income' ? curIS : null,
+      txnType: txnType,   // ✅ ADD THIS LINE
       who:      document.getElementById('fWho').value,
       date:     document.getElementById('fDate').value || new Date().toISOString().split('T')[0],
       note:     document.getElementById('fNote').value.trim(),
@@ -958,6 +978,7 @@ function openEditModal(id){
   document.getElementById('editDate').value = tx.date||'';
   document.getElementById('editNote').value = tx.note||'';
   document.getElementById('editCat').value  = tx.category?.replace('Income_','')||'Other';
+  document.getElementById('editTxnType').value = tx.txnType || ''; // ✅ ADD THIS
   setEditTyp(tx.type||'expense');
   // Show audit trail
   let byText = 'Added by '+( tx.addedBy||'Unknown');
@@ -984,6 +1005,7 @@ async function doUpdateTx(){
       who:      document.getElementById('editWho').value,
       date:     document.getElementById('editDate').value,
       note:     document.getElementById('editNote').value.trim(),
+      txnType:  document.getElementById('editTxnType').value, // ✅ ADD THIS
       editedBy: curUser,          // ← who edited
       editedAt: Date.now()        // ← when edited
     });
@@ -1088,11 +1110,11 @@ function txHTML(tx, showActions){
 ══════════════════════════════════════ */
 function exportCSV(){
   if(!txCache.length){ showToast(L('No data to export','ಡೇಟಾ ಇಲ್ಲ'),true); return; }
-  const hdr = ['Date','Type','Category','Amount','Who','Added By','Edited By','Note','Income Source'];
+  const hdr = ['Date','Type','Category','Amount','Who','Added By','Edited By','Note','Income Source','Transaction Type'];
   const rows = txCache.map(t=>[
     t.date||'', t.type||'', t.category||'', t.amount||0,
     t.who||'', t.addedBy||'', t.editedBy||'',
-    '"'+(t.note||'').replace(/"/g,"''")+'"', t.incSrc||''
+    '"'+(t.note||'').replace(/"/g,"''")+'"', t.incSrc||'', t.txnType||''
   ].join(','));
   const csv = [hdr.join(','),...rows].join('\n');
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
