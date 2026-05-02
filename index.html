@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ಹಟ್ಟಿ ಕುಟುಂಬ ಬಜೆಟ್</title>
+<title>MY BUDGET</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -177,6 +177,28 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.err{border-color:var(--rose);color:var(--rose)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+/* MONTH SELECTOR */
+.month-sel-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.month-sel{flex:1;background:var(--s3);color:var(--text);border:1.5px solid var(--s4);border-radius:10px;padding:9px 12px;font-family:var(--font);font-size:13px;font-weight:700;outline:none;-webkit-appearance:none;cursor:pointer}
+.month-sel:focus{border-color:var(--gold)}
+.month-sel option{background:var(--s2)}
+/* OVERALL SUMMARY CARDS */
+.summ-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.summ-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:13px}
+.summ-lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.summ-val{font-size:19px;font-weight:800}
+.summ-card.highlight{border-color:var(--gold);background:rgba(240,180,41,.06)}
+/* CURRENT BALANCE HERO — different gradient */
+.hero.all-time{background:linear-gradient(135deg,#1a1040,#0a0820)}
+/* MONTH TABLE */
+.month-table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.month-table th{font-size:10px;font-weight:700;color:var(--text2);text-align:left;padding:6px 8px;border-bottom:1px solid var(--s3);text-transform:uppercase}
+.month-table td{font-size:12px;padding:8px 8px;border-bottom:1px solid var(--s2)}
+.month-table tr:last-child td{border-bottom:none}
+.month-table .pos{color:var(--green);font-weight:700}
+.month-table .neg{color:var(--rose);font-weight:700}
+.month-table .gold{color:var(--gold);font-weight:700}
+
 </style>
 </head>
 <body>
@@ -188,10 +210,10 @@ canvas{width:100%!important;border-radius:6px;display:block}
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-logo">🏡</div>
+  <!--<div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
   <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
-  <button class="login-lang" onclick="toggleLang()">ಕನ್ನಡ / English</button>
+  <button class="login-lang" onclick="toggleLang()">ಕನ್ನಡ / English</button> -->
   <div class="user-cards">
     <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
     <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
@@ -211,7 +233,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">Hatti Budget</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
       <button class="tb-btn" onclick="toggleLang()">ಕ/EN</button>
@@ -222,31 +244,31 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <!-- DASHBOARD -->
     <div class="page on" id="pgDash">
       <div id="warnBox"></div>
-      <div class="hero">
-        <div class="hlbl">Balance this month</div>
+      <div class="hero all-time">
+        <div class="hlbl" id="heroLbl">Current Balance (All Time)</div>
         <div class="hbal"><sup>₹</sup><span id="hBal">0</span></div>
         <div class="hrow">
-          <div class="hs"><div class="hslbl">Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
-          <div class="hs"><div class="hslbl">Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
-          <div class="hs"><div class="hslbl">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
+          <div class="hs"><div class="hslbl" id="hIncLbl">Total Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="hSpentLbl">Total Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="hSavedLbl">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
         </div>
       </div>
       <!-- BANK BALANCE STRIP -->
-      <div class="sh">🏦 Bank Accounts</div>
+      <div class="sh">🏦 Bank Accounts / ಬ್ಯಾಂಕ್ ಖಾತೆಗಳು</div>
       <div class="bank-strip" id="dashBankStrip"></div>
       <!-- INCOME SOURCES -->
-      <div class="sh">Income Sources</div>
+      <div class="sh">Income Source / ಆದಾಯ ಮೂಲs</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent·Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
         <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
-      <div class="sh">Key Expenses</div>
+      <div class="sh">Key Expenses / ಪ್ರಮುಖ ಖರ್ಚು</div>
       <div class="sgrid" id="topStats"></div>
-      <div class="cbox"><div class="ctitle">📊 Spending by Category</div><div id="catBars"></div></div>
+      <div class="cbox"><div class="ctitle">📊 Spending by Category / ವರ್ಗ</div><div id="catBars"></div></div>
       <div class="cbox"><div class="ctitle">📈 6-Month Trend</div><canvas id="trendC" height="155"></canvas></div>
-      <div class="sh">Recent Transactions</div>
+      <div class="sh">Recent Transactions / ಇತ್ತೀಚಿನ ವ್ಯವಹಾರಗಳು</div>
       <div id="recentTx"></div>
     </div>
     <!-- ADD -->
@@ -268,16 +290,16 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </div>
       </div>
       <div class="fc">
-        <label class="fl">Amount (₹)</label>
+        <label class="fl">Amount / ಮೊತ್ತ (₹)</label>
         <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-        <label class="fl">Who?</label>
+        <label class="fl">Who? / ಯಾರು?</label>
         <select class="fi" id="fWho">
           <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
           <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
         </select>
-        <label class="fl">Date</label>
+        <label class="fl">Date / ದಿನಾಂಕ</label>
         <input class="fi" type="date" id="fDate">
-        <!-- YOUR ADDITION: Transaction Type -->
+        <!-- YOUR ADDITION: Transaction Type / ವ್ಯವಹಾರ ಪ್ರಕಾರ -->
         <label class="fl">Transaction Type</label>
         <select class="fi" id="fTxType">
           <option value="">Select type</option>
@@ -292,24 +314,24 @@ canvas{width:100%!important;border-radius:6px;display:block}
         <select class="fi" id="fBankAcc">
           <option value="">-- Select Account --</option>
         </select>
-        <label class="fl">Note (optional)</label>
+        <label class="fl">Note / ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
       </div>
       <div class="fc" id="catBox">
         <div class="fl">Category</div>
         <div class="cgrid" id="catGrid"></div>
       </div>
-      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
+      <button class="sbtn" onclick="doAdd()">✅ Save / ಉಳಿಸಿ</button>
     </div>
     <!-- BANK ACCOUNTS -->
     <div class="page" id="pgBanks">
       <div class="ph">🏦 Bank Accounts</div>
       <div id="bankList"></div>
-      <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account</button>
-      <div class="sh">All Accounts Summary</div>
+      <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account / ಬ್ಯಾಂಕ್ ಖಾತೆ ಸೇರಿಸಿ</button>
+      <div class="sh">All Accounts / ಎಲ್ಲ ಖಾತೆಗಳ ಸಾರಾಂಶ</div>
       <div class="cbox">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:700">Total Balance</span>
+          <span style="font-size:13px;font-weight:700">Total Balance / ಒಟ್ಟು ಬ್ಯಾಲೆನ್ಸ್</span>
           <span style="font-size:22px;font-weight:800;color:var(--green)" id="totalBankBal">₹0</span>
         </div>
         <canvas id="bankChart" height="160"></canvas>
@@ -317,44 +339,80 @@ canvas{width:100%!important;border-radius:6px;display:block}
     </div>
     <!-- GOALS -->
     <div class="page" id="pgGoals">
-      <div class="ph">🎯 Savings Goals</div>
+      <div class="ph">🎯 Savings Goals / ಉಳಿತಾಯ ಗುರಿಗಳು</div>
       <div id="goalList"></div>
-      <button class="agbtn" onclick="openGM()">+ Add New Goal</button>
+      <button class="agbtn" onclick="openGM()">+ Add Goal / ಹೊಸ ಗುರಿ</button>
     </div>
     <!-- HISTORY -->
     <div class="page" id="pgHistory">
       <div class="ph">📜 History</div>
-      <button class="export-btn" onclick="exportCSV()">📥 Export All as CSV</button>
+      <button class="export-btn" onclick="exportCSV()">📥 📥 Export CSV / CSV ರಫ್ತು</button>
       <div class="frow" id="filterRow"></div>
       <div id="histList"></div>
     </div>
     <!-- REPORTS -->
     <div class="page" id="pgReports">
-      <div class="ph">📊 Reports</div>
-      <button class="export-btn" onclick="exportCSV()">📥 Export CSV Report</button>
-      <div class="sh">This Month Summary</div>
-      <div class="rgrid" id="repGrid"></div>
-      <div class="cbox"><div class="ctitle">Who Spent What</div><canvas id="whoC" height="155"></canvas></div>
-      <div class="cbox"><div class="ctitle">12-Month Trend</div><canvas id="yearC" height="155"></canvas></div>
-      <div class="cbox"><div class="ctitle">Income Sources Split</div><canvas id="incC" height="155"></canvas></div>
+      <div class="ph">📊 Reports / ವರದಿಗಳು</div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV / CSV ರಫ್ತು</button>
+
+      <!-- ── MONTH SELECTOR ── -->
+      <div class="month-sel-row">
+        <select class="month-sel" id="repMonthSel" onchange="renderReports()">
+          <option value="all">📊 All Time / ಎಲ್ಲ ಸಮಯ</option>
+        </select>
+      </div>
+
+      <!-- ── SUMMARY CARDS ── -->
+      <div class="sh" id="repSummTitle">Overall Summary / ಒಟ್ಟು ಸಾರಾಂಶ</div>
+      <div class="summ-grid" id="repSummGrid"></div>
+
+      <!-- ── MONTH TABLE (All Time only) ── -->
+      <div id="monthlyTableBox" style="display:none">
+        <div class="sh">Month-wise Breakdown / ತಿಂಗಳ ಮಾಹಿತಿ</div>
+        <div class="cbox" style="padding:0;overflow:hidden">
+          <table class="month-table" id="monthTable">
+            <thead><tr>
+              <th>Month / ತಿಂಗಳು</th>
+              <th>Income / ಆದಾಯ</th>
+              <th>Expense / ಖರ್ಚು</th>
+              <th>Balance / ಬ್ಯಾಲೆನ್ಸ್</th>
+            </tr></thead>
+            <tbody id="monthTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CHARTS ── -->
+      <div class="cbox">
+        <div class="ctitle" id="whoTitle">Who Spent What / ಯಾರು ಎಷ್ಟು ಖರ್ಚು</div>
+        <canvas id="whoC" height="155"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="ctitle">📈 12-Month Trend / 12 ತಿಂಗಳ ಟ್ರೆಂಡ್</div>
+        <canvas id="yearC" height="155"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="ctitle" id="incSrcTitle">Income Sources / ಆದಾಯ ಮೂಲಗಳು</div>
+        <canvas id="incC" height="155"></canvas>
+      </div>
     </div>
     <!-- SETTINGS -->
     <div class="page" id="pgSettings">
       <div class="ph">⚙️ Settings</div>
-      <div class="sh">Monthly Base Income</div>
+      <div class="sh">Monthly Income / ಮಾಸಿಕ ಆದಾಯ</div>
       <div class="fc">
         <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:6px">🏠 Ginigera Rent (₹/month)</label>
+        <label class="fl" style="margin-top:6px">🏠 Rent Rx (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
         <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
       </div>
-      <div class="sh">Budget Limits (₹/month)</div>
+      <div class="sh">Budget Limits / ಬಜೆಟ್ ಮಿತಿ (₹/ತಿಂಗಳು)</div>
       <div class="fc" id="limForm"></div>
-      <div class="sh">Change PINs (saved to Firebase)</div>
+      <div class="sh">Change PINs / PIN ಬದಲಾಯಿಸಿ</div>
       <div class="fc" id="pinForm"></div>
-      <div class="sh">Firebase Status</div>
+      <div class="sh">Firebase Status / ಸ್ಥಿತಿ</div>
       <div class="fc" style="text-align:center">
         Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
         <span id="fbStatus" style="font-size:11px;margin-top:4px;display:block;color:var(--text2)"></span>
@@ -376,14 +434,14 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div class="mo" id="gModal">
   <div class="modal">
     <button class="mclose" onclick="closeGM()">✕</button>
-    <div class="mtitle">New Savings Goal</div>
-    <label class="fl">Goal Name</label><input class="fi" id="gName" placeholder="e.g. Rachana Education">
+    <div class="mtitle">New Savings Goal / ಹೊಸ ಉಳಿತಾಯ ಗುರಿ</div>
+    <label class="fl">Goal Name / ಗುರಿ ಹೆಸರು</label><input class="fi" id="gName" placeholder="e.g. Rachana Education">
     <label class="fl">For</label>
     <select class="fi" id="gFor"><option>Family</option><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option></select>
-    <label class="fl">Target (₹)</label><input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
-    <label class="fl">Already Saved (₹)</label><input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Target / ಗುರಿ ಮೊತ್ತ (₹)</label><input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
+    <label class="fl">Already Saved / ಈಗಾಗಲೇ ಉಳಿಸಿದ (₹)</label><input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
     <label class="fl">Icon</label><input class="fi" id="gIcon" placeholder="🎓" maxlength="2">
-    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal</button>
+    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal / ಗುರಿ ಉಳಿಸಿ</button>
   </div>
 </div>
 
@@ -393,9 +451,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <button class="mclose" onclick="closeBankModal()">✕</button>
     <div class="mtitle" id="bankModalTitle">Add Bank Account</div>
     <input type="hidden" id="bankEditId">
-    <label class="fl">Bank Name</label>
+    <label class="fl">Bank Name / ಬ್ಯಾಂಕ್ ಹೆಸರು</label>
     <input class="fi" id="bankName" placeholder="e.g. SBI, HDFC, Canara">
-    <label class="fl">Account Type</label>
+    <label class="fl">Account Type / ಖಾತೆ ಪ್ರಕಾರ</label>
     <select class="fi" id="bankType">
       <option value="savings">💰 Savings Account</option>
       <option value="current">🏢 Current Account</option>
@@ -404,13 +462,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <option value="wallet">📱 Digital Wallet (Paytm/PhonePe)</option>
       <option value="cash">💵 Cash in Hand</option>
     </select>
-    <label class="fl">Opening Balance (₹)</label>
+    <label class="fl">Opening Balance / ಆರಂಭಿಕ ಬ್ಯಾಲೆನ್ಸ್ (₹)</label>
     <input class="fi" type="number" id="bankBalance" placeholder="0" inputmode="numeric">
     <label class="fl">Account Icon (emoji)</label>
     <input class="fi" id="bankIcon" placeholder="🏦" maxlength="2">
     <label class="fl">Account Number (last 4 digits, optional)</label>
     <input class="fi" id="bankAccNo" placeholder="e.g. 4521" maxlength="4" inputmode="numeric">
-    <button class="sbtn" onclick="doSaveBank()">✅ Save Account</button>
+    <button class="sbtn" onclick="doSaveBank()">✅ Save Account / ಖಾತೆ ಉಳಿಸಿ</button>
   </div>
 </div>
 
@@ -418,7 +476,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div class="mo" id="editModal">
   <div class="modal">
     <button class="mclose" onclick="closeEditModal()">✕</button>
-    <div class="mtitle">✏️ Edit Transaction</div>
+    <div class="mtitle">✏️ Edit / ಸಂಪಾದಿಸಿ</div>
     <input type="hidden" id="editId">
     <label class="fl">Type</label>
     <div class="trow" style="margin-bottom:12px">
@@ -444,7 +502,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <label class="fl">Category</label><select class="fi" id="editCat"></select>
     <label class="fl">Note</label><input class="fi" type="text" id="editNote" placeholder="Optional note">
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px;background:var(--s3);border-radius:8px" id="editAudit"></div>
-    <button class="mupdate-btn" onclick="doUpdateTx()">💾 Update Transaction</button>
+    <button class="mupdate-btn" onclick="doUpdateTx()">💾 Update / ನವೀಕರಿಸಿ</button>
   </div>
 </div>
 
@@ -698,38 +756,60 @@ function getBankBalance(bankId){
   return opening + txNet;
 }
 
+/* ══ HELPER: count months spanned by data ══ */
+function getDataMonthCount(){
+  if(!txCache.length) return 1;
+  const dates = txCache.map(t=>t.date).filter(Boolean).map(d=>new Date(d));
+  if(!dates.length) return 1;
+  const minD = new Date(Math.min(...dates));
+  const maxD = new Date();
+  const months = (maxD.getFullYear()-minD.getFullYear())*12 + (maxD.getMonth()-minD.getMonth()) + 1;
+  return Math.max(1, months);
+}
+
 /* ══ DASHBOARD ══ */
 function renderDash(){
   const now=new Date(), mm=now.getMonth(), yy=now.getFullYear();
   const inc = settings.income || {salary:0,rent:0,uma:0};
-
-  // ── FIX: ensure numeric values ──
   const baseInc = (+inc.salary||0) + (+inc.rent||0) + (+inc.uma||0);
 
+  // ── CURRENT BALANCE = ALL TIME (all transactions, not just this month) ──
+  const allIncTx  = txCache.filter(t=>t.type==='income');
+  const allExpTx  = txCache.filter(t=>t.type==='expense');
+  const allAddlInc = allIncTx.reduce((s,t)=>s+(+t.amount||0),0);
+  // baseInc is monthly — multiply by number of months we have data for
+  const months = getDataMonthCount();
+  const allTotalInc = baseInc * months + allAddlInc;
+  const allTotalExp = allExpTx.reduce((s,t)=>s+(+t.amount||0),0);
+  const allBal = allTotalInc - allTotalExp;
+  const allPct = allTotalInc>0 ? Math.round(allBal/allTotalInc*100) : 0;
+
+  setText('hBal',  fmt(allBal));
+  setText('hInc',  '₹'+fmt(allTotalInc));
+  setText('hSpent','₹'+fmt(allTotalExp));
+  setText('hPct',  allPct+'%');
+
+  // Income source breakdown (all time)
+  const srcAmt = s => allIncTx.filter(t=>t.incSrc===s).reduce((a,t)=>a+(+t.amount||0),0);
+  setText('iSal',  '₹'+fmt(baseInc*months + srcAmt('salary')));
+  setText('iRent', '₹'+fmt(srcAmt('rent')));
+  setText('iLoan', '₹'+fmt(srcAmt('loan_received')));
+  setText('iOther','₹'+fmt(srcAmt('other_income')));
+
+  // Labels
+  const heroLbl = document.getElementById('heroLbl');
+  if(heroLbl) heroLbl.textContent = lang==='kn'?'ಒಟ್ಟು ಬ್ಯಾಲೆನ್ಸ್ (ಎಲ್ಲ ಸಮಯ)':'Current Balance (All Time)';
+  const hIncLbl=document.getElementById('hIncLbl'); if(hIncLbl) hIncLbl.textContent=lang==='kn'?'ಒಟ್ಟು ಆದಾಯ':'Total Income';
+  const hSpentLbl=document.getElementById('hSpentLbl'); if(hSpentLbl) hSpentLbl.textContent=lang==='kn'?'ಒಟ್ಟು ಖರ್ಚು':'Total Spent';
+  const hSavedLbl=document.getElementById('hSavedLbl'); if(hSavedLbl) hSavedLbl.textContent=lang==='kn'?'ಉಳಿತಾಯ %':'Saved %';
+
+  // For category bars and warnings still use THIS month
   const mTx=txCache.filter(t=>{
     if(!t.date) return false;
     const d=new Date(t.date);
     return d.getMonth()===mm && d.getFullYear()===yy;
   });
-
   const incTx = mTx.filter(t=>t.type==='income');
-  const addlInc = incTx.reduce((s,t)=>s+(+t.amount||0),0);
-  const totalInc = baseInc + addlInc;
-  const totalExp = mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
-  const bal = totalInc - totalExp;
-  const pct = totalInc>0 ? Math.round(bal/totalInc*100) : 0;
-
-  setText('hBal',  fmt(bal));
-  setText('hInc',  '₹'+fmt(totalInc));
-  setText('hSpent','₹'+fmt(totalExp));
-  setText('hPct',  pct+'%');
-
-  // Income source breakdown
-  const srcAmt = s => incTx.filter(t=>t.incSrc===s).reduce((a,t)=>a+(+t.amount||0),0);
-  setText('iSal',  '₹'+fmt((+inc.salary||0)+srcAmt('salary')));
-  setText('iRent', '₹'+fmt((+inc.rent||0)+srcAmt('rent')));
-  setText('iLoan', '₹'+fmt(srcAmt('loan_received')));
-  setText('iOther','₹'+fmt((+inc.uma||0)+srcAmt('other_income')));
 
   // Budget warnings
   const lims={...Object.fromEntries(CATS.map(c=>[c.id,c.lim])),...(settings.limits||{})};
@@ -1059,42 +1139,142 @@ function exportCSV(){
 }
 
 /* ══ REPORTS ══ */
+function populateMonthSelector(){
+  const sel=document.getElementById('repMonthSel'); if(!sel) return;
+  // Build list of unique year-month from txCache
+  const seen=new Set();
+  txCache.forEach(t=>{ if(t.date){ const d=new Date(t.date); seen.add(d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')); } });
+  const sorted=[...seen].sort().reverse();
+  const sM=lang==='kn'
+    ?['ಜನವರಿ','ಫೆಬ್ರವರಿ','ಮಾರ್ಚ್','ಏಪ್ರಿಲ್','ಮೇ','ಜೂನ್','ಜುಲೈ','ಆಗಸ್ಟ್','ಸೆಪ್ಟೆಂಬರ್','ಅಕ್ಟೋಬರ್','ನವೆಂಬರ್','ಡಿಸೆಂಬರ್']
+    :['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const prev=sel.value;
+  sel.innerHTML=`<option value="all">${lang==='kn'?'📊 ಎಲ್ಲ ಸಮಯ':'📊 All Time'}</option>`;
+  sorted.forEach(ym=>{
+    const [y,m]=ym.split('-');
+    const lbl=sM[parseInt(m)-1]+' '+y;
+    sel.innerHTML+=`<option value="${ym}">${lbl}</option>`;
+  });
+  // Try restore previous
+  if(prev && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
+}
+
 function renderReports(){
-  const now=new Date(),mm=now.getMonth(),yy=now.getFullYear();
+  populateMonthSelector();
+  const sel=document.getElementById('repMonthSel');
+  const selVal=sel?sel.value:'all';
+  const isAll=selVal==='all';
+
+  const now=new Date();
   const inc=settings.income||{};
   const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
-  const mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy;});
-  const totalInc=baseInc+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0);
+  const sM=lang==='kn'
+    ?['ಜನವರಿ','ಫೆಬ್ರವರಿ','ಮಾರ್ಚ್','ಏಪ್ರಿಲ್','ಮೇ','ಜೂನ್','ಜುಲೈ','ಆಗಸ್ಟ್','ಸೆಪ್ಟೆಂಬರ್','ಅಕ್ಟೋಬರ್','ನವೆಂಬರ್','ಡಿಸೆಂಬರ್']
+    :['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Filter transactions
+  let mTx;
+  let mm,yy,days=30;
+  if(isAll){
+    mTx=txCache.slice();
+  } else {
+    const [y,m]=selVal.split('-').map(Number);
+    mm=m-1; yy=y;
+    mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy;});
+    days=new Date(yy,mm+1,0).getDate();
+  }
+
+  const months=isAll?getDataMonthCount():1;
+  const effectiveBase=isAll?(baseInc*months):baseInc;
+  const totalInc=effectiveBase+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0);
   const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
   const saved=totalInc-totalExp;
   const savePct=totalInc>0?Math.round(saved/totalInc*100):0;
-  const days=new Date(yy,mm+1,0).getDate();
+  const avgExp=isAll?Math.round(totalExp/months):Math.round(totalExp/days);
+  const avgLbl=isAll?L('Monthly Avg Expense','ಮಾಸಿಕ ಸರಾಸರಿ ಖರ್ಚು'):L('Daily Avg','ದೈನಂದಿನ ಸರಾಸರಿ');
   const largest=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
-  document.getElementById('repGrid').innerHTML=[
-    {l:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),    v:'₹'+fmt(totalInc), c:'var(--green)'},
-    {l:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),   v:'₹'+fmt(totalExp), c:'var(--rose)'},
-    {l:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),    v:'₹'+fmt(saved)+' ('+savePct+'%)', c:saved>=0?'var(--green)':'var(--rose)'},
-    {l:L('Daily Avg','ದೈನಂದಿನ ಸರಾಸರಿ'),   v:'₹'+fmt(Math.round(totalExp/days)), c:'var(--text)'},
-    {l:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'), v:largest?'₹'+fmt(largest.amount):'₹0', c:'var(--rose)'},
-    {l:L('Transactions','ವ್ಯವಹಾರಗಳು'),    v:mTx.length, c:'var(--text)'},
-  ].map(r=>`<div class="rcrd"><div class="rlbl">${r.l}</div><div class="rval" style="color:${r.c}">${r.v}</div></div>`).join('');
 
+  // Summary title
+  const repSummTitle=document.getElementById('repSummTitle');
+  if(repSummTitle){
+    if(isAll) repSummTitle.textContent=L('Overall Summary / ಒಟ್ಟು ಸಾರಾಂಶ','ಒಟ್ಟು ಸಾರಾಂಶ');
+    else{ const [y,m]=selVal.split('-').map(Number); repSummTitle.textContent=sM[m-1]+' '+y+' '+L('Summary','ಸಾರಾಂಶ'); }
+  }
+
+  // Summary grid — 6 cards
+  const sg=document.getElementById('repSummGrid');
+  sg.innerHTML=[
+    {l:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),         v:'₹'+fmt(totalInc),                                 c:'var(--green)',  hl:false},
+    {l:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),         v:'₹'+fmt(totalExp),                                 c:'var(--rose)',   hl:false},
+    {l:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),           v:'₹'+fmt(saved)+' ('+savePct+'%)',                  c:saved>=0?'var(--green)':'var(--rose)',hl:true},
+    {l:avgLbl,                                    v:'₹'+fmt(avgExp),                                   c:'var(--text)',   hl:false},
+    {l:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'),       v:largest?'₹'+fmt(largest.amount)+'\n'+(largest.category||''):'₹0', c:'var(--rose)', hl:false},
+    {l:L('Transactions','ವ್ಯವಹಾರಗಳು'),           v:mTx.length,                                        c:'var(--text)',   hl:false},
+  ].map(r=>`<div class="summ-card${r.hl?' highlight':''}"><div class="summ-lbl">${r.l}</div><div class="summ-val" style="color:${r.c}">${r.v}</div></div>`).join('');
+
+  // Monthly table (only when "All" selected)
+  const tableBox=document.getElementById('monthlyTableBox');
+  if(isAll && tableBox){
+    tableBox.style.display='block';
+    // Build per-month rows
+    const seen=new Set();
+    txCache.forEach(t=>{ if(t.date){ const d=new Date(t.date); seen.add(d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')); } });
+    const sorted=[...seen].sort().reverse();
+    const tbody=document.getElementById('monthTableBody');
+    let runBal=0;
+    const rows=sorted.map(ym=>{
+      const [y,m]=ym.split('-').map(Number);
+      const mTxRow=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===(m-1)&&d.getFullYear()===y;});
+      const mInc=baseInc+mTxRow.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0);
+      const mExp=mTxRow.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
+      const mBal=mInc-mExp;
+      return {ym,y,m,mInc,mExp,mBal,label:sM[m-1]+' '+y};
+    });
+    // running balance from oldest to newest
+    let running=0;
+    const runMap={};
+    [...rows].reverse().forEach(r=>{ running+=r.mBal; runMap[r.ym]=running; });
+    tbody.innerHTML=rows.map(r=>`<tr>
+      <td class="gold">${r.label}</td>
+      <td class="pos">₹${fmt(r.mInc)}</td>
+      <td class="neg">₹${fmt(r.mExp)}</td>
+      <td class="${runMap[r.ym]>=0?'pos':'neg'}">₹${fmt(runMap[r.ym])}</td>
+    </tr>`).join('');
+    // Total row
+    const grandInc=rows.reduce((s,r)=>s+r.mInc,0);
+    const grandExp=rows.reduce((s,r)=>s+r.mExp,0);
+    tbody.innerHTML+=`<tr style="background:rgba(240,180,41,.08);font-weight:800">
+      <td class="gold">${L('Total','ಒಟ್ಟು')}</td>
+      <td class="pos">₹${fmt(grandInc)}</td>
+      <td class="neg">₹${fmt(grandExp)}</td>
+      <td class="${grandInc-grandExp>=0?'pos':'neg'}">₹${fmt(grandInc-grandExp)}</td>
+    </tr>`;
+  } else if(tableBox){
+    tableBox.style.display='none';
+  }
+
+  // Who spent chart (filtered)
   const byUser=USERS.map(u=>mTx.filter(t=>t.type==='expense'&&t.who===u).reduce((s,t)=>s+(+t.amount||0),0));
   drawBarChart(document.getElementById('whoC'),USERS.map((u,i)=>AVATARS[i]+u),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d']);
 
-  const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],ml=[],mi=[],me=[];
+  // 12-month trend (always last 12 months)
+  const sM2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ml=[],mi=[],me=[];
   for(let i=11;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    ml.push(sM[d.getMonth()]);
-    const m=d.getMonth(),y=d.getFullYear();
-    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y;});
+    ml.push(sM2[d.getMonth()]);
+    const mo=d.getMonth(),yo=d.getFullYear();
+    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===mo&&dd.getFullYear()===yo;});
     mi.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0));
     me.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0));
   }
   drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185',L('Income','ಆದಾಯ'),L('Expense','ಖರ್ಚು'));
 
+  // Income sources (filtered)
   const incSrcAmt=INC_SRCS.map(s=>{
-    const base=s.id==='salary'?(+inc.salary||0):s.id==='rent'?(+inc.rent||0):s.id==='other_income'?(+inc.uma||0):0;
+    const base=isAll
+      ?(s.id==='salary'?(+inc.salary||0)*months:s.id==='rent'?(+inc.rent||0)*months:s.id==='other_income'?(+inc.uma||0)*months:0)
+      :(s.id==='salary'?(+inc.salary||0):s.id==='rent'?(+inc.rent||0):s.id==='other_income'?(+inc.uma||0):0);
     return base+mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0);
   });
   drawBarChart(document.getElementById('incC'),INC_SRCS.map(s=>s.i+L(s.en,s.kn)),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
