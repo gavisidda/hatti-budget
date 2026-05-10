@@ -25,7 +25,6 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 @keyframes glow{0%,100%{filter:drop-shadow(0 0 18px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 32px rgba(240,180,41,.9))}}
 .login-title{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:14px;text-align:center}
-.login-lang{background:var(--s2);color:var(--gold);border:1.5px solid var(--s3);border-radius:18px;padding:5px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:14px}
 .user-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;width:100%;max-width:320px}
 .ucard{background:var(--s1);border:2px solid var(--s3);border-radius:16px;padding:13px 8px;cursor:pointer;transition:all .2s;text-align:center}
 .ucard.sel{border-color:var(--gold);background:var(--s2);box-shadow:0 0 20px rgba(240,180,41,.2)}
@@ -148,6 +147,12 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .gtrack{background:var(--s3);border-radius:6px;height:9px;overflow:hidden;margin-bottom:6px}
 .gfill{height:100%;border-radius:6px;transition:width .8s}
 .gamts{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}.gamts strong{color:var(--text)}
+
+/* GOAL CARD ACTIONS */
+.gcrd-actions{display:flex;gap:8px;margin-top:10px}
+.g-edit-btn{flex:1;background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.2);border-radius:9px;padding:8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+.g-del-btn{background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.2);border-radius:9px;padding:8px 12px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
+.g-add-btn{flex:1;background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2);border-radius:9px;padding:8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
 .agbtn{width:100%;background:transparent;color:var(--gold);border:2px dashed rgba(240,180,41,.25);border-radius:14px;padding:12px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px}
 /* FILTER */
 .frow{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:3px}
@@ -206,14 +211,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Your Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
   <!--<div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
-  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
-  <button class="login-lang" onclick="toggleLang()">ಕನ್ನಡ / English</button> -->
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>-->
   <div class="user-cards">
     <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
     <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
@@ -236,7 +240,6 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
-      <button class="tb-btn" onclick="toggleLang()">ಕ/EN</button>
       <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
     </div>
   </div>
@@ -254,21 +257,21 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </div>
       </div>
       <!-- BANK BALANCE STRIP -->
-      <div class="sh">🏦 Bank Accounts / ಬ್ಯಾಂಕ್ ಖಾತೆಗಳು</div>
+      <div class="sh">🏦 Bank Accounts</div>
       <div class="bank-strip" id="dashBankStrip"></div>
       <!-- INCOME SOURCES -->
-      <div class="sh">Income Source / ಆದಾಯ ಮೂಲs</div>
+      <div class="sh">Income Sources</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
-        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">ಸಾಲ Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">ಇತರ</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
-      <div class="sh">Key Expenses / ಪ್ರಮುಖ ಖರ್ಚು</div>
+      <div class="sh">Key Expenses</div>
       <div class="sgrid" id="topStats"></div>
-      <div class="cbox"><div class="ctitle">📊 Spending by Category / ವರ್ಗ</div><div id="catBars"></div></div>
+      <div class="cbox"><div class="ctitle">📊 Spending by Category</div><div id="catBars"></div></div>
       <div class="cbox"><div class="ctitle">📈 6-Month Trend</div><canvas id="trendC" height="155"></canvas></div>
-      <div class="sh">Recent Transactions / ಇತ್ತೀಚಿನ ವ್ಯವಹಾರಗಳು</div>
+      <div class="sh">Recent Transactions</div>
       <div id="recentTx"></div>
     </div>
     <!-- ADD -->
@@ -290,16 +293,16 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </div>
       </div>
       <div class="fc">
-        <label class="fl">Amount / ಮೊತ್ತ (₹)</label>
+        <label class="fl">Amount (₹)</label>
         <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-        <label class="fl">Who? / ಯಾರು?</label>
+        <label class="fl">Who?</label>
         <select class="fi" id="fWho">
           <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
           <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
         </select>
-        <label class="fl">Date / ದಿನಾಂಕ</label>
+        <label class="fl">Date</label>
         <input class="fi" type="date" id="fDate">
-        <!-- YOUR ADDITION: Transaction Type / ವ್ಯವಹಾರ ಪ್ರಕಾರ -->
+        <!-- YOUR ADDITION: Transaction Type -->
         <label class="fl">Transaction Type</label>
         <select class="fi" id="fTxType">
           <option value="">Select type</option>
@@ -314,24 +317,24 @@ canvas{width:100%!important;border-radius:6px;display:block}
         <select class="fi" id="fBankAcc">
           <option value="">-- Select Account --</option>
         </select>
-        <label class="fl">Note / ಟಿಪ್ಪಣಿ (ಐಚ್ಛಿಕ)</label>
+        <label class="fl">Note (optional)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
       </div>
       <div class="fc" id="catBox">
         <div class="fl">Category</div>
         <div class="cgrid" id="catGrid"></div>
       </div>
-      <button class="sbtn" onclick="doAdd()">✅ Save / ಉಳಿಸಿ</button>
+      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
     </div>
     <!-- BANK ACCOUNTS -->
     <div class="page" id="pgBanks">
       <div class="ph">🏦 Bank Accounts</div>
       <div id="bankList"></div>
-      <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account / ಬ್ಯಾಂಕ್ ಖಾತೆ ಸೇರಿಸಿ</button>
-      <div class="sh">All Accounts / ಎಲ್ಲ ಖಾತೆಗಳ ಸಾರಾಂಶ</div>
+      <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account</button>
+      <div class="sh">All Accounts Summary</div>
       <div class="cbox">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:700">Total Balance / ಒಟ್ಟು ಬ್ಯಾಲೆನ್ಸ್</span>
+          <span style="font-size:13px;font-weight:700">Total Balance</span>
           <span style="font-size:22px;font-weight:800;color:var(--green)" id="totalBankBal">₹0</span>
         </div>
         <canvas id="bankChart" height="160"></canvas>
@@ -339,43 +342,43 @@ canvas{width:100%!important;border-radius:6px;display:block}
     </div>
     <!-- GOALS -->
     <div class="page" id="pgGoals">
-      <div class="ph">🎯 Savings Goals / ಉಳಿತಾಯ ಗುರಿಗಳು</div>
+      <div class="ph">🎯 Savings Goals</div>
       <div id="goalList"></div>
-      <button class="agbtn" onclick="openGM()">+ Add Goal / ಹೊಸ ಗುರಿ</button>
+      <button class="agbtn" onclick="openGM()">+ Add New Goal</button>
     </div>
     <!-- HISTORY -->
     <div class="page" id="pgHistory">
       <div class="ph">📜 History</div>
-      <button class="export-btn" onclick="exportCSV()">📥 📥 Export CSV / CSV ರಫ್ತು</button>
+      <button class="export-btn" onclick="exportCSV()">📥 📥 Export CSV</button>
       <div class="frow" id="filterRow"></div>
       <div id="histList"></div>
     </div>
     <!-- REPORTS -->
     <div class="page" id="pgReports">
-      <div class="ph">📊 Reports / ವರದಿಗಳು</div>
-      <button class="export-btn" onclick="exportCSV()">📥 Export CSV / CSV ರಫ್ತು</button>
+      <div class="ph">📊 Reports</div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
 
       <!-- ── MONTH SELECTOR ── -->
       <div class="month-sel-row">
         <select class="month-sel" id="repMonthSel" onchange="renderReports()">
-          <option value="all">📊 All Time / ಎಲ್ಲ ಸಮಯ</option>
+          <option value="all">📊 All Time</option>
         </select>
       </div>
 
       <!-- ── SUMMARY CARDS ── -->
-      <div class="sh" id="repSummTitle">Overall Summary / ಒಟ್ಟು ಸಾರಾಂಶ</div>
+      <div class="sh" id="repSummTitle">Overall Summary</div>
       <div class="summ-grid" id="repSummGrid"></div>
 
       <!-- ── MONTH TABLE (All Time only) ── -->
       <div id="monthlyTableBox" style="display:none">
-        <div class="sh">Month-wise Breakdown / ತಿಂಗಳ ಮಾಹಿತಿ</div>
+        <div class="sh">Month-wise Breakdown</div>
         <div class="cbox" style="padding:0;overflow:hidden">
           <table class="month-table" id="monthTable">
             <thead><tr>
-              <th>Month / ತಿಂಗಳು</th>
-              <th>Income / ಆದಾಯ</th>
-              <th>Expense / ಖರ್ಚು</th>
-              <th>Balance / ಬ್ಯಾಲೆನ್ಸ್</th>
+              <th>Month</th>
+              <th>Income</th>
+              <th>Expense</th>
+              <th>Balance</th>
             </tr></thead>
             <tbody id="monthTableBody"></tbody>
           </table>
@@ -384,35 +387,35 @@ canvas{width:100%!important;border-radius:6px;display:block}
 
       <!-- ── CHARTS ── -->
       <div class="cbox">
-        <div class="ctitle" id="whoTitle">Who Spent What / ಯಾರು ಎಷ್ಟು ಖರ್ಚು</div>
+        <div class="ctitle" id="whoTitle">Who Spent What</div>
         <canvas id="whoC" height="155"></canvas>
       </div>
       <div class="cbox">
-        <div class="ctitle">📈 12-Month Trend / 12 ತಿಂಗಳ ಟ್ರೆಂಡ್</div>
+        <div class="ctitle">📈 12-Month Trend</div>
         <canvas id="yearC" height="155"></canvas>
       </div>
       <div class="cbox">
-        <div class="ctitle" id="incSrcTitle">Income Sources / ಆದಾಯ ಮೂಲಗಳು</div>
+        <div class="ctitle" id="incSrcTitle">Income Sources</div>
         <canvas id="incC" height="155"></canvas>
       </div>
     </div>
     <!-- SETTINGS -->
     <div class="page" id="pgSettings">
       <div class="ph">⚙️ Settings</div>
-      <div class="sh">Monthly Income / ಮಾಸಿಕ ಆದಾಯ</div>
+      <div class="sh">Monthly Base Income</div>
       <div class="fc">
         <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:6px">🏠 Rent Rx (₹/month)</label>
+        <label class="fl" style="margin-top:6px">🏠 Ginigera Rent (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
         <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
       </div>
-      <div class="sh">Budget Limits / ಬಜೆಟ್ ಮಿತಿ (₹/ತಿಂಗಳು)</div>
+      <div class="sh">Budget Limits (₹/month)</div>
       <div class="fc" id="limForm"></div>
-      <div class="sh">Change PINs / PIN ಬದಲಾಯಿಸಿ</div>
+      <div class="sh">Change PINs</div>
       <div class="fc" id="pinForm"></div>
-      <div class="sh">Firebase Status / ಸ್ಥಿತಿ</div>
+      <div class="sh">Firebase Status</div>
       <div class="fc" style="text-align:center">
         Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
         <span id="fbStatus" style="font-size:11px;margin-top:4px;display:block;color:var(--text2)"></span>
@@ -434,14 +437,14 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div class="mo" id="gModal">
   <div class="modal">
     <button class="mclose" onclick="closeGM()">✕</button>
-    <div class="mtitle">New Savings Goal / ಹೊಸ ಉಳಿತಾಯ ಗುರಿ</div>
-    <label class="fl">Goal Name / ಗುರಿ ಹೆಸರು</label><input class="fi" id="gName" placeholder="e.g. Rachana Education">
+    <div class="mtitle">New Savings Goal</div>
+    <label class="fl">Goal Name</label><input class="fi" id="gName" placeholder="e.g. Rachana Education">
     <label class="fl">For</label>
     <select class="fi" id="gFor"><option>Family</option><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option></select>
-    <label class="fl">Target / ಗುರಿ ಮೊತ್ತ (₹)</label><input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
-    <label class="fl">Already Saved / ಈಗಾಗಲೇ ಉಳಿಸಿದ (₹)</label><input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Target Amount (₹)</label><input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
+    <label class="fl">Already Saved (₹)</label><input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
     <label class="fl">Icon</label><input class="fi" id="gIcon" placeholder="🎓" maxlength="2">
-    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal / ಗುರಿ ಉಳಿಸಿ</button>
+    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal</button>
   </div>
 </div>
 
@@ -451,9 +454,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <button class="mclose" onclick="closeBankModal()">✕</button>
     <div class="mtitle" id="bankModalTitle">Add Bank Account</div>
     <input type="hidden" id="bankEditId">
-    <label class="fl">Bank Name / ಬ್ಯಾಂಕ್ ಹೆಸರು</label>
+    <label class="fl">Bank Name</label>
     <input class="fi" id="bankName" placeholder="e.g. SBI, HDFC, Canara">
-    <label class="fl">Account Type / ಖಾತೆ ಪ್ರಕಾರ</label>
+    <label class="fl">Account Type</label>
     <select class="fi" id="bankType">
       <option value="savings">💰 Savings Account</option>
       <option value="current">🏢 Current Account</option>
@@ -462,13 +465,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <option value="wallet">📱 Digital Wallet (Paytm/PhonePe)</option>
       <option value="cash">💵 Cash in Hand</option>
     </select>
-    <label class="fl">Opening Balance / ಆರಂಭಿಕ ಬ್ಯಾಲೆನ್ಸ್ (₹)</label>
+    <label class="fl">Opening Balance (₹)</label>
     <input class="fi" type="number" id="bankBalance" placeholder="0" inputmode="numeric">
     <label class="fl">Account Icon (emoji)</label>
     <input class="fi" id="bankIcon" placeholder="🏦" maxlength="2">
     <label class="fl">Account Number (last 4 digits, optional)</label>
     <input class="fi" id="bankAccNo" placeholder="e.g. 4521" maxlength="4" inputmode="numeric">
-    <button class="sbtn" onclick="doSaveBank()">✅ Save Account / ಖಾತೆ ಉಳಿಸಿ</button>
+    <button class="sbtn" onclick="doSaveBank()">✅ Save Account</button>
   </div>
 </div>
 
@@ -476,7 +479,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div class="mo" id="editModal">
   <div class="modal">
     <button class="mclose" onclick="closeEditModal()">✕</button>
-    <div class="mtitle">✏️ Edit / ಸಂಪಾದಿಸಿ</div>
+    <div class="mtitle">✏️ Edit Transaction</div>
     <input type="hidden" id="editId">
     <label class="fl">Type</label>
     <div class="trow" style="margin-bottom:12px">
@@ -502,7 +505,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <label class="fl">Category</label><select class="fi" id="editCat"></select>
     <label class="fl">Note</label><input class="fi" type="text" id="editNote" placeholder="Optional note">
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px;background:var(--s3);border-radius:8px" id="editAudit"></div>
-    <button class="mupdate-btn" onclick="doUpdateTx()">💾 Update / ನವೀಕರಿಸಿ</button>
+    <button class="mupdate-btn" onclick="doUpdateTx()">💾 Update Transaction</button>
   </div>
 </div>
 
@@ -564,15 +567,15 @@ const CATS = [
 
 const INC_SRCS = [
   {id:'salary',       i:'💼',en:'Salary',       kn:'ಸಂಬಳ'},
-  {id:'rent',         i:'🏠',en:'Rent Rx', kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
-  {id:'loan_received',i:'💳',en:'Loan Rx', kn:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ'},
+  {id:'rent',         i:'🏠',en:'Ginigera Rent', kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
+  {id:'loan_received',i:'💳',en:'Loan Received', kn:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ'},
   {id:'other_income', i:'📦',en:'Others',        kn:'ಇತರ ಆದಾಯ'},
 ];
 
 const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash'};
 
 /* ══ STATE ══ */
-let lang      = localStorage.getItem('hb_lang') || 'en';
+let lang      = 'en'; // English only
 let curUser   = null;
 let curType   = 'expense';
 let curCat    = 'Food';
@@ -598,7 +601,7 @@ function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
 /* ══ STARTUP ══ */
 async function startup(){
-  setMsg('Loading Hatti Budget…');
+  setMsg('Loading Your Budget…');
   try{
     // ── FIX: load income, limits, and users in parallel with individual error handling ──
     const results = await Promise.allSettled([
@@ -675,7 +678,7 @@ function pok(){
   const user=USERS[selIdx];
   const correct=pinCache[user]||DEF_PINS[user];
   if(pinBuf===correct){ curUser=user; enterApp(); }
-  else{ document.getElementById('lerr').textContent=L('❌ Wrong PIN, try again','❌ ತಪ್ಪು PIN, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ'); pinBuf=''; updateDots(); }
+  else{ document.getElementById('lerr').textContent='❌ Wrong PIN, try again'; pinBuf=''; updateDots(); }
 }
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
@@ -698,7 +701,7 @@ function doLogout(){
 }
 
 /* ══ LANG ══ */
-function toggleLang(){ lang=lang==='en'?'kn':'en'; localStorage.setItem('hb_lang',lang); buildCatGrid(); renderAll(); }
+// Language toggle removed — English only
 
 /* ══ REALTIME LISTENERS ══ */
 function subscribeRT(){
@@ -798,10 +801,10 @@ function renderDash(){
 
   // Labels
   const heroLbl = document.getElementById('heroLbl');
-  if(heroLbl) heroLbl.textContent = lang==='kn'?'ಒಟ್ಟು ಬ್ಯಾಲೆನ್ಸ್ (ಎಲ್ಲ ಸಮಯ)':'Current Balance (All Time)';
-  const hIncLbl=document.getElementById('hIncLbl'); if(hIncLbl) hIncLbl.textContent=lang==='kn'?'ಒಟ್ಟು ಆದಾಯ':'Total Income';
-  const hSpentLbl=document.getElementById('hSpentLbl'); if(hSpentLbl) hSpentLbl.textContent=lang==='kn'?'ಒಟ್ಟು ಖರ್ಚು':'Total Spent';
-  const hSavedLbl=document.getElementById('hSavedLbl'); if(hSavedLbl) hSavedLbl.textContent=lang==='kn'?'ಉಳಿತಾಯ %':'Saved %';
+  if(heroLbl) heroLbl.textContent = 'Current Balance (All Time)';
+  const hIncLbl=document.getElementById('hIncLbl'); if(hIncLbl) hIncLbl.textContent='Total Income';
+  const hSpentLbl=document.getElementById('hSpentLbl'); if(hSpentLbl) hSpentLbl.textContent='Total Spent';
+  const hSavedLbl=document.getElementById('hSavedLbl'); if(hSavedLbl) hSavedLbl.textContent='Saved %';
 
   // For category bars and warnings still use THIS month
   const mTx=txCache.filter(t=>{
@@ -816,25 +819,25 @@ function renderDash(){
   const catExp={}; CATS.forEach(c=>catExp[c.id]=0);
   mTx.filter(t=>t.type==='expense').forEach(t=>{ if(catExp[t.category]!==undefined) catExp[t.category]+=(+t.amount||0); });
   const wb=document.getElementById('warnBox'); wb.innerHTML='';
-  CATS.forEach(c=>{ if(lims[c.id]>0&&catExp[c.id]>lims[c.id]) wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${L(c.en,c.kn)} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`; });
+  CATS.forEach(c=>{ if(lims[c.id]>0&&catExp[c.id]>lims[c.id]) wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${c.en} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`; });
 
   // Top 4 stat cards
   const top4=[{id:'BLR_Rent',i:'🏙️'},{id:'School',i:'🎓'},{id:'Food',i:'🍽️'},{id:'Medical',i:'🏥'}];
   document.getElementById('topStats').innerHTML=top4.map(x=>{
-    const c=C(x.id); return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${c?L(c.en,c.kn):x.id}</div><div class="sc-val" style="color:${c?c.c:'#fff'}">₹${fmt(catExp[x.id]||0)}</div></div>`;
+    const c=C(x.id); return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${c?c.en:x.id}</div><div class="sc-val" style="color:${c?c.c:'#fff'}">₹${fmt(catExp[x.id]||0)}</div></div>`;
   }).join('');
 
   // Category bars
   const expCats=CATS.filter(c=>!['Savings','Investment','LoanTx'].includes(c.id)).map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
   const maxA=Math.max(...expCats.map(c=>c.amt),1);
   document.getElementById('catBars').innerHTML=expCats.length
-    ?expCats.slice(0,10).map(c=>`<div class="cbrow"><div class="cblbl">${c.i} ${L(c.en,c.kn)}</div><div class="cbtrack"><div class="cbfill" style="width:${Math.round(c.amt/maxA*100)}%;background:${c.c}"></div></div><div class="cbamt" style="color:${c.c}">₹${fmt(c.amt)}</div></div>`).join('')
-    :`<div style="color:var(--text2);font-size:12px;text-align:center;padding:8px">${L('No expenses this month','ಈ ತಿಂಗಳು ಖರ್ಚಿಲ್ಲ')}</div>`;
+    ?expCats.slice(0,10).map(c=>`<div class="cbrow"><div class="cblbl">${c.i} ${c.en}</div><div class="cbtrack"><div class="cbfill" style="width:${Math.round(c.amt/maxA*100)}%;background:${c.c}"></div></div><div class="cbamt" style="color:${c.c}">₹${fmt(c.amt)}</div></div>`).join('')
+    :`<div style="color:var(--text2);font-size:12px;text-align:center;padding:8px">${'No expenses this month'}</div>`;
 
   // Bank strip on dashboard
   const strip=document.getElementById('dashBankStrip');
   if(bankCache.length===0){
-    strip.innerHTML=`<div style="color:var(--text2);font-size:12px;padding:8px">${L('No accounts yet — add in Banks tab','ಬ್ಯಾಂಕ್ ಖಾತೆ ಸೇರಿಸಿ')}</div>`;
+    strip.innerHTML=`<div style="color:var(--text2);font-size:12px;padding:8px">${'No accounts yet — add in Banks tab'}</div>`;
   } else {
     let totalBankBal=0;
     strip.innerHTML=bankCache.map(b=>{
@@ -851,7 +854,7 @@ function renderDash(){
 
   const rl=document.getElementById('recentTx');
   rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')
-    ||`<div class="empty"><div class="big">💸</div><p>${L('No transactions yet','ಇನ್ನೂ ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
+    ||`<div class="empty"><div class="big">💸</div><p>${'No transactions yet'}</p></div>`;
 }
 
 /* ══ BANK ACCOUNTS ══ */
@@ -859,7 +862,7 @@ function renderBanks(){
   const bl=document.getElementById('bankList'); if(!bl) return;
   let totalBal=0;
   if(!bankCache.length){
-    bl.innerHTML=`<div class="empty"><div class="big">🏦</div><p>${L('No bank accounts yet','ಇನ್ನೂ ಬ್ಯಾಂಕ್ ಖಾತೆ ಇಲ್ಲ')}</p></div>`;
+    bl.innerHTML=`<div class="empty"><div class="big">🏦</div><p>${'No bank accounts yet'}</p></div>`;
     setText('totalBankBal','₹0');
     return;
   }
@@ -917,7 +920,7 @@ function openBankEdit(id){
 function closeBankModal(){ document.getElementById('bankModal').classList.remove('open'); }
 async function doSaveBank(){
   const name=document.getElementById('bankName').value.trim();
-  if(!name){ showToast(L('Enter bank name','ಬ್ಯಾಂಕ್ ಹೆಸರು ನಮೂದಿಸಿ'),true); return; }
+  if(!name){ showToast('Enter a bank name',true); return; }
   const data={
     name,
     type:    document.getElementById('bankType').value,
@@ -931,17 +934,17 @@ async function doSaveBank(){
     if(editId){ await db.collection('bankAccounts').doc(editId).update(data); }
     else { await db.collection('bankAccounts').add(data); }
     closeBankModal();
-    showToast(L('✅ Account saved!','✅ ಖಾತೆ ಉಳಿಸಲಾಗಿದೆ!'));
+    showToast('✅ Account saved!');
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function deleteBank(id){
   const linked=txCache.filter(t=>t.bankAccountId===id).length;
   const msg=linked>0
-    ? L(`This account has ${linked} transactions linked. Delete anyway?`,`ಈ ಖಾತೆಯಲ್ಲಿ ${linked} ವ್ಯವಹಾರಗಳಿವೆ. ಅಳಿಸಬೇಕೇ?`)
-    : L('Delete this bank account?','ಈ ಬ್ಯಾಂಕ್ ಖಾತೆ ಅಳಿಸಬೇಕೇ?');
+    ? `This account has ${linked} transactions linked. Delete anyway?`
+    : 'Delete this bank account?';
   if(!confirm(msg)) return;
   await db.collection('bankAccounts').doc(id).delete();
-  showToast(L('Account deleted','ಖಾತೆ ಅಳಿಸಲಾಗಿದೆ'));
+  showToast('Account deleted');
 }
 
 // Refresh bank dropdowns in Add & Edit forms
@@ -974,7 +977,7 @@ function buildCatGrid(){
   CATS.forEach(c=>{
     const b=document.createElement('button');
     b.className='cbtn'+(c.id===curCat?' on':'');
-    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${L(c.en,c.kn)}</span>`;
+    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${c.en}</span>`;
     b.onclick=()=>{ curCat=c.id; buildCatGrid(); };
     g.appendChild(b);
   });
@@ -985,7 +988,7 @@ function buildEditCatSelect(){
 }
 async function doAdd(){
   const amt=Number(document.getElementById('fAmt').value);
-  if(!amt||amt<=0){ showToast(L('Enter valid amount','ಮಾನ್ಯ ಮೊತ್ತ ನಮೂದಿಸಿ'),true); return; }
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
   const bankAccId = document.getElementById('fBankAcc').value;
   try{
     await db.collection('transactions').add({
@@ -1005,7 +1008,7 @@ async function doAdd(){
     });
     document.getElementById('fAmt').value='';
     document.getElementById('fNote').value='';
-    showToast(L('✅ Saved!','✅ ಉಳಿಸಲಾಗಿದೆ!'));
+    showToast('✅ Saved!');
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 
@@ -1031,7 +1034,7 @@ function closeEditModal(){ document.getElementById('editModal').classList.remove
 async function doUpdateTx(){
   const id=document.getElementById('editId').value;
   const amt=Number(document.getElementById('editAmt').value);
-  if(!amt||amt<=0){ showToast(L('Enter valid amount','ಮಾನ್ಯ ಮೊತ್ತ'),true); return; }
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
   const cat=document.getElementById('editCat').value;
   try{
     await db.collection('transactions').doc(id).update({
@@ -1047,39 +1050,146 @@ async function doUpdateTx(){
       editedAt:      Date.now()
     });
     closeEditModal();
-    showToast(L('✅ Updated!','✅ ನವೀಕರಿಸಲಾಗಿದೆ!'));
+    showToast('✅ Updated!');
   }catch(e){ showToast('Update error: '+e.message,true); }
 }
 async function deleteTx(id){
-  if(!confirm(L('Delete this transaction?','ಈ ವ್ಯವಹಾರ ಅಳಿಸಬೇಕೇ?'))) return;
+  if(!confirm('Delete this transaction?')) return;
   await db.collection('transactions').doc(id).delete();
-  showToast(L('Deleted','ಅಳಿಸಲಾಗಿದೆ'));
+  showToast('Deleted');
 }
 
 /* ══ GOALS ══ */
 function renderGoals(){
   const gl=document.getElementById('goalList'); if(!gl) return;
-  if(!goalCache.length){ gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>${L('No goals yet','ಇನ್ನೂ ಗುರಿಗಳಿಲ್ಲ')}</p></div>`; return; }
+  if(!goalCache.length){
+    gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>No goals yet — add one below!</p></div>`;
+    return;
+  }
   const cols=['#4ade80','#2dd4bf','#a78bfa','#f0b429','#fb923c','#38bdf8'];
   gl.innerHTML=goalCache.map((g,i)=>{
-    const pct=Math.min(100,Math.round(g.saved/g.target*100));
+    const pct=Math.min(100,Math.round((+g.saved||0)/(+g.target||1)*100));
+    const remaining=Math.max(0,(+g.target||0)-(+g.saved||0));
     return `<div class="gcrd">
-      <div class="gh"><div class="gico">${g.icon||'🎯'}</div><div class="ginf"><div class="gname">${g.name}</div><div class="gsub">${L('For','ಯಾರಿಗಾಗಿ')}: ${g.forPerson||'Family'}</div></div><div class="gpct">${pct}%</div></div>
+      <div class="gh">
+        <div class="gico">${g.icon||'🎯'}</div>
+        <div class="ginf">
+          <div class="gname">${g.name}</div>
+          <div class="gsub">For: ${g.forPerson||'Family'} &nbsp;·&nbsp; ₹${fmt(remaining)} remaining</div>
+        </div>
+        <div class="gpct">${pct}%</div>
+      </div>
       <div class="gtrack"><div class="gfill" style="width:${pct}%;background:${cols[i%cols.length]}"></div></div>
-      <div class="gamts"><span>${L('Saved','ಉಳಿಸಿದ')}: <strong>₹${fmt(g.saved)}</strong></span><span>${L('Target','ಗುರಿ')}: <strong>₹${fmt(g.target)}</strong></span></div>
+      <div class="gamts">
+        <span>Saved: <strong style="color:var(--green)">₹${fmt(g.saved||0)}</strong></span>
+        <span>Target: <strong>₹${fmt(g.target||0)}</strong></span>
+      </div>
+      <div class="gcrd-actions">
+        <button class="g-edit-btn" onclick="openEditGoal('${g.id}')">✏️ Edit Goal</button>
+        <button class="g-add-btn" onclick="openQuickAdd('${g.id}','${g.name}',${g.saved||0})">+ Add Savings</button>
+        <button class="g-del-btn" onclick="doDeleteGoal('${g.id}')">🗑️</button>
+      </div>
     </div>`;
   }).join('');
 }
-function openGM(){ document.getElementById('gModal').classList.add('open'); }
+
+function openGM(){
+  // Reset to ADD mode
+  document.getElementById('gEditId').value='';
+  document.getElementById('gModalTitle').textContent='New Savings Goal';
+  document.getElementById('gName').value='';
+  document.getElementById('gFor').value='Family';
+  document.getElementById('gTarget').value='';
+  document.getElementById('gSaved').value='';
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value='';
+  document.getElementById('gSaveBtn').textContent='✅ Save Goal';
+  document.getElementById('gDeleteBtn').style.display='none';
+  document.getElementById('gModal').classList.add('open');
+}
+
+function openEditGoal(id){
+  const g=goalCache.find(x=>x.id===id); if(!g) return;
+  document.getElementById('gEditId').value=id;
+  document.getElementById('gModalTitle').textContent='Edit Goal';
+  document.getElementById('gName').value=g.name||'';
+  document.getElementById('gFor').value=g.forPerson||'Family';
+  document.getElementById('gTarget').value=g.target||'';
+  document.getElementById('gSaved').value=g.saved||0;
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value=g.icon||'🎯';
+  document.getElementById('gSaveBtn').textContent='💾 Update Goal';
+  document.getElementById('gDeleteBtn').style.display='block';
+  document.getElementById('gModal').classList.add('open');
+}
+
+function openQuickAdd(id, name, currentSaved){
+  const g=goalCache.find(x=>x.id===id); if(!g) return;
+  document.getElementById('gEditId').value=id;
+  document.getElementById('gModalTitle').textContent='Update Savings · '+name;
+  document.getElementById('gName').value=g.name||'';
+  document.getElementById('gFor').value=g.forPerson||'Family';
+  document.getElementById('gTarget').value=g.target||'';
+  document.getElementById('gSaved').value=g.saved||0;
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value=g.icon||'🎯';
+  document.getElementById('gSaveBtn').textContent='💾 Update Savings';
+  document.getElementById('gDeleteBtn').style.display='block';
+  document.getElementById('gModal').classList.add('open');
+  // Focus add field
+  setTimeout(()=>document.getElementById('gAddSaved').focus(),300);
+}
+
 function closeGM(){ document.getElementById('gModal').classList.remove('open'); }
+
 async function doSaveGoal(){
   const name=document.getElementById('gName').value.trim();
   const target=Number(document.getElementById('gTarget').value);
-  if(!name||!target){ showToast(L('Fill all fields','ಎಲ್ಲ ಮಾಹಿತಿ ನಮೂದಿಸಿ'),true); return; }
+  if(!name||!target){ showToast('Please fill Goal Name and Target Amount',true); return; }
+
+  const editId=document.getElementById('gEditId').value;
+  const baseSaved=Number(document.getElementById('gSaved').value)||0;
+  const addAmt=Number(document.getElementById('gAddSaved').value)||0;
+  const subAmt=Number(document.getElementById('gSubSaved').value)||0;
+  const finalSaved=Math.max(0, baseSaved+addAmt-subAmt);
+
+  const data={
+    name,
+    forPerson: document.getElementById('gFor').value,
+    target,
+    saved:     finalSaved,
+    icon:      document.getElementById('gIcon').value||'🎯',
+    ts:        Date.now()
+  };
+
   try{
-    await db.collection('goals').add({name,forPerson:document.getElementById('gFor').value,target,saved:Number(document.getElementById('gSaved').value)||0,icon:document.getElementById('gIcon').value||'🎯',ts:Date.now()});
-    closeGM(); showToast(L('✅ Goal saved!','✅ ಗುರಿ ಉಳಿಸಲಾಗಿದೆ!'));
-    ['gName','gTarget','gSaved','gIcon'].forEach(id=>document.getElementById(id).value='');
+    if(editId){
+      await db.collection('goals').doc(editId).update(data);
+      showToast('✅ Goal updated!');
+    } else {
+      await db.collection('goals').add(data);
+      showToast('✅ Goal saved!');
+    }
+    closeGM();
+    ['gName','gTarget','gSaved','gAddSaved','gSubSaved','gIcon'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function doDeleteGoal(id){
+  // id can come from button or from modal hidden field
+  const goalId=id||document.getElementById('gEditId').value;
+  if(!goalId){ showToast('No goal selected',true); return; }
+  const g=goalCache.find(x=>x.id===goalId);
+  if(!confirm(`Delete goal "${g?g.name:'this goal'}"? This cannot be undone.`)) return;
+  try{
+    await db.collection('goals').doc(goalId).delete();
+    closeGM();
+    showToast('Goal deleted');
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 
@@ -1087,11 +1197,11 @@ async function doSaveGoal(){
 function renderHistory(){
   const fr=document.getElementById('filterRow'); if(!fr) return;
   const chips=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f||t.category==='Income_'+f));
-  fr.innerHTML=chips.map(f=>{ const c=C(f); return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?L('All','ಎಲ್ಲ'):(c?c.i+' '+L(c.en,c.kn):f)}</div>`; }).join('');
+  fr.innerHTML=chips.map(f=>{ const c=C(f); return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?'All':(c?c.i+' '+c.en:f)}</div>`; }).join('');
   let list=txCache.slice();
   if(filtCat!=='All') list=list.filter(t=>t.category===filtCat||t.category==='Income_'+filtCat);
   const hl=document.getElementById('histList');
-  hl.innerHTML=list.length ? list.map(t=>txHTML(t,true)).join('') : `<div class="empty"><div class="big">📭</div><p>${L('No transactions found','ವ್ಯವಹಾರಗಳಿಲ್ಲ')}</p></div>`;
+  hl.innerHTML=list.length ? list.map(t=>txHTML(t,true)).join('') : `<div class="empty"><div class="big">📭</div><p>${'No transactions found'}</p></div>`;
 }
 function setFilt(f){ filtCat=f; renderHistory(); }
 
@@ -1123,7 +1233,7 @@ function txHTML(tx,showActions){
 
 /* ══ EXPORT CSV ══ */
 function exportCSV(){
-  if(!txCache.length){ showToast(L('No data','ಡೇಟಾ ಇಲ್ಲ'),true); return; }
+  if(!txCache.length){ showToast('No data to export',true); return; }
   const hdr=['Date','Type','Category','Amount','Who','TxType','Bank Account','Added By','Edited By','Note'];
   const rows=txCache.map(t=>{
     const bank=bankCache.find(b=>b.id===t.bankAccountId);
@@ -1135,7 +1245,7 @@ function exportCSV(){
   const a=document.createElement('a');
   a.href=url; a.download='HattiBudget_'+new Date().toISOString().split('T')[0]+'.csv';
   document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast(L('✅ CSV Downloaded!','✅ CSV ಡೌನ್‌ಲೋಡ್!'));
+  showToast('✅ CSV Downloaded!');
 }
 
 /* ══ REPORTS ══ */
@@ -1145,11 +1255,9 @@ function populateMonthSelector(){
   const seen=new Set();
   txCache.forEach(t=>{ if(t.date){ const d=new Date(t.date); seen.add(d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')); } });
   const sorted=[...seen].sort().reverse();
-  const sM=lang==='kn'
-    ?['ಜನವರಿ','ಫೆಬ್ರವರಿ','ಮಾರ್ಚ್','ಏಪ್ರಿಲ್','ಮೇ','ಜೂನ್','ಜುಲೈ','ಆಗಸ್ಟ್','ಸೆಪ್ಟೆಂಬರ್','ಅಕ್ಟೋಬರ್','ನವೆಂಬರ್','ಡಿಸೆಂಬರ್']
-    :['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sM=['January','February','March','April','May','June','July','August','September','October','November','December'];
   const prev=sel.value;
-  sel.innerHTML=`<option value="all">${lang==='kn'?'📊 ಎಲ್ಲ ಸಮಯ':'📊 All Time'}</option>`;
+  sel.innerHTML=`<option value="all">📊 All Time</option>`;
   sorted.forEach(ym=>{
     const [y,m]=ym.split('-');
     const lbl=sM[parseInt(m)-1]+' '+y;
@@ -1168,9 +1276,7 @@ function renderReports(){
   const now=new Date();
   const inc=settings.income||{};
   const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
-  const sM=lang==='kn'
-    ?['ಜನವರಿ','ಫೆಬ್ರವರಿ','ಮಾರ್ಚ್','ಏಪ್ರಿಲ್','ಮೇ','ಜೂನ್','ಜುಲೈ','ಆಗಸ್ಟ್','ಸೆಪ್ಟೆಂಬರ್','ಅಕ್ಟೋಬರ್','ನವೆಂಬರ್','ಡಿಸೆಂಬರ್']
-    :['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sM=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
   // Filter transactions
   let mTx;
@@ -1191,25 +1297,25 @@ function renderReports(){
   const saved=totalInc-totalExp;
   const savePct=totalInc>0?Math.round(saved/totalInc*100):0;
   const avgExp=isAll?Math.round(totalExp/months):Math.round(totalExp/days);
-  const avgLbl=isAll?L('Monthly Avg Expense','ಮಾಸಿಕ ಸರಾಸರಿ ಖರ್ಚು'):L('Daily Avg','ದೈನಂದಿನ ಸರಾಸರಿ');
+  const avgLbl=isAll?'Monthly Avg Expense':'Daily Avg';
   const largest=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
 
   // Summary title
   const repSummTitle=document.getElementById('repSummTitle');
   if(repSummTitle){
-    if(isAll) repSummTitle.textContent=L('Overall Summary / ಒಟ್ಟು ಸಾರಾಂಶ','ಒಟ್ಟು ಸಾರಾಂಶ');
-    else{ const [y,m]=selVal.split('-').map(Number); repSummTitle.textContent=sM[m-1]+' '+y+' '+L('Summary','ಸಾರಾಂಶ'); }
+    if(isAll) repSummTitle.textContent='Overall Summary';
+    else{ const [y,m]=selVal.split('-').map(Number); repSummTitle.textContent=sM[m-1]+' '+y+' '+'Summary'; }
   }
 
   // Summary grid — 6 cards
   const sg=document.getElementById('repSummGrid');
   sg.innerHTML=[
-    {l:L('Total Income','ಒಟ್ಟು ಆದಾಯ'),         v:'₹'+fmt(totalInc),                                 c:'var(--green)',  hl:false},
-    {l:L('Total Expense','ಒಟ್ಟು ಖರ್ಚು'),         v:'₹'+fmt(totalExp),                                 c:'var(--rose)',   hl:false},
-    {l:L('Net Savings','ನಿಕರ ಉಳಿತಾಯ'),           v:'₹'+fmt(saved)+' ('+savePct+'%)',                  c:saved>=0?'var(--green)':'var(--rose)',hl:true},
+    {l:'Total Income',         v:'₹'+fmt(totalInc),                                 c:'var(--green)',  hl:false},
+    {l:'Total Expense',         v:'₹'+fmt(totalExp),                                 c:'var(--rose)',   hl:false},
+    {l:'Net Savings',           v:'₹'+fmt(saved)+' ('+savePct+'%)',                  c:saved>=0?'var(--green)':'var(--rose)',hl:true},
     {l:avgLbl,                                    v:'₹'+fmt(avgExp),                                   c:'var(--text)',   hl:false},
-    {l:L('Biggest Expense','ದೊಡ್ಡ ಖರ್ಚು'),       v:largest?'₹'+fmt(largest.amount)+'\n'+(largest.category||''):'₹0', c:'var(--rose)', hl:false},
-    {l:L('Transactions','ವ್ಯವಹಾರಗಳು'),           v:mTx.length,                                        c:'var(--text)',   hl:false},
+    {l:'Biggest Expense',       v:largest?'₹'+fmt(largest.amount)+'\n'+(largest.category||''):'₹0', c:'var(--rose)', hl:false},
+    {l:'Transactions',           v:mTx.length,                                        c:'var(--text)',   hl:false},
   ].map(r=>`<div class="summ-card${r.hl?' highlight':''}"><div class="summ-lbl">${r.l}</div><div class="summ-val" style="color:${r.c}">${r.v}</div></div>`).join('');
 
   // Monthly table (only when "All" selected)
@@ -1244,7 +1350,7 @@ function renderReports(){
     const grandInc=rows.reduce((s,r)=>s+r.mInc,0);
     const grandExp=rows.reduce((s,r)=>s+r.mExp,0);
     tbody.innerHTML+=`<tr style="background:rgba(240,180,41,.08);font-weight:800">
-      <td class="gold">${L('Total','ಒಟ್ಟು')}</td>
+      <td class="gold">${'Total'}</td>
       <td class="pos">₹${fmt(grandInc)}</td>
       <td class="neg">₹${fmt(grandExp)}</td>
       <td class="${grandInc-grandExp>=0?'pos':'neg'}">₹${fmt(grandInc-grandExp)}</td>
@@ -1268,7 +1374,7 @@ function renderReports(){
     mi.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0));
     me.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0));
   }
-  drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185',L('Income','ಆದಾಯ'),L('Expense','ಖರ್ಚು'));
+  drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
 
   // Income sources (filtered)
   const incSrcAmt=INC_SRCS.map(s=>{
@@ -1277,7 +1383,7 @@ function renderReports(){
       :(s.id==='salary'?(+inc.salary||0):s.id==='rent'?(+inc.rent||0):s.id==='other_income'?(+inc.uma||0):0);
     return base+mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0);
   });
-  drawBarChart(document.getElementById('incC'),INC_SRCS.map(s=>s.i+L(s.en,s.kn)),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
+  drawBarChart(document.getElementById('incC'),INC_SRCS.map(s=>s.i+s.en),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
 }
 
 /* ══ CHARTS ══ */
@@ -1294,7 +1400,7 @@ function drawTrend(baseInc){
     incD.push((baseInc||0)+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0));
     expD.push(mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0));
   }
-  drawLineChart(canvas,labels,incD,expD,'#4ade80','#fb7185',L('Income','ಆದಾಯ'),L('Expense','ಖರ್ಚು'));
+  drawLineChart(canvas,labels,incD,expD,'#4ade80','#fb7185','Income','Expense');
 }
 function drawLineChart(canvas,labels,d1,d2,c1,c2,l1,l2){
   const ctx=canvas.getContext('2d'),W=canvas.parentElement.clientWidth-28,H=155;
@@ -1357,8 +1463,8 @@ function renderSettings(){
   const lf=document.getElementById('limForm'); if(!lf) return;
   const savedLims=settings.limits||{};
   lf.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
-    <label class="fl">${c.i} ${L(c.en,c.kn)}</label>
-    <div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">${L('Save','ಉಳಿಸಿ')}</button></div>`).join('');
+    <label class="fl">${c.i} ${c.en}</label>
+    <div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">${'Save'}</button></div>`).join('');
 }
 async function savInc(src){
   const inc={...(settings.income||{})};
@@ -1368,7 +1474,7 @@ async function savInc(src){
   try{
     await db.collection('settings').doc('income').set(inc);
     settings.income=inc;
-    showToast(L('✅ Income saved!','✅ ಆದಾಯ ಉಳಿಸಲಾಗಿದೆ!'));
+    showToast('✅ Income saved!');
     renderDash();
   }catch(e){ showToast('Error: '+e.message,true); }
 }
@@ -1378,13 +1484,13 @@ async function savLim(id){
   try{
     await db.collection('settings').doc('limits').set(lims);
     settings.limits=lims;
-    showToast(L('✅ Limit saved!','✅ ಮಿತಿ ಉಳಿಸಲಾಗಿದೆ!'));
+    showToast('✅ Limit saved!');
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function savPin(who){
   const el=document.getElementById('pin_'+who); if(!el) return;
   const v=el.value.trim();
-  if(v.length!==4||isNaN(v)){ showToast(L('PIN must be 4 digits','4 ಅಂಕಿ PIN'),true); return; }
+  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
   try{
     await db.collection('users').doc(who).set({name:who,pin:v,role:ROLES[USERS.indexOf(who)],avatar:AVATARS[USERS.indexOf(who)]},{merge:true});
     pinCache[who]=v; el.value='';
