@@ -239,9 +239,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-logo">🏡</div>
+  <!--<div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
-  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>-->
   <div class="user-cards">
     <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
     <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
@@ -261,7 +261,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">Hatti Budget</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
       <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
@@ -287,9 +287,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="sh">Income Sources</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">ಸಾಲ Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
-        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">ಇತರ</div><div class="ic-amt" id="iOther">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
       <div class="sgrid" id="topStats"></div>
@@ -310,7 +310,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent Rx</button>
             <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Rx</button>
             <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
@@ -448,9 +448,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <!-- ── INCOME (admin only) ── -->
       <div class="sh" id="incomeSettingsLbl">💰 Monthly Base Income <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
       <div class="fc" id="incomeSettingsSection">
-        <label class="fl">💼 Gavi Salary (₹)</label>
+        <label class="fl">💼 Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:6px">🏠 Ginigera Rent (₹/month)</label>
+        <label class="fl" style="margin-top:6px">🏠 Rent Rx (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
         <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
@@ -557,17 +557,53 @@ service cloud.firestore {
 </div>
 
 <!-- GOAL MODAL -->
+<!-- GOAL MODAL -->
 <div class="mo" id="gModal">
   <div class="modal">
     <button class="mclose" onclick="closeGM()">✕</button>
-    <div class="mtitle">New Savings Goal</div>
-    <label class="fl">Goal Name</label><input class="fi" id="gName" placeholder="e.g. Rachana Education">
+
+    <input type="hidden" id="gEditId">
+
+    <div class="mtitle" id="gModalTitle">New Savings Goal</div>
+
+    <label class="fl">Goal Name</label>
+    <input class="fi" id="gName" placeholder="e.g. Rachana Education">
+
     <label class="fl">For</label>
-    <select class="fi" id="gFor"><option>Family</option><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option></select>
-    <label class="fl">Target Amount (₹)</label><input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
-    <label class="fl">Already Saved (₹)</label><input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
-    <label class="fl">Icon</label><input class="fi" id="gIcon" placeholder="🎓" maxlength="2">
-    <button class="sbtn" onclick="doSaveGoal()">✅ Save Goal</button>
+    <select class="fi" id="gFor">
+      <option>Family</option>
+      <option>Gavi</option>
+      <option>Uma</option>
+      <option>Rachana</option>
+      <option>Sanchita</option>
+    </select>
+
+    <label class="fl">Target Amount (₹)</label>
+    <input class="fi" type="number" id="gTarget" placeholder="100000">
+
+    <label class="fl">Already Saved (₹)</label>
+    <input class="fi" type="number" id="gSaved" placeholder="0">
+
+    <label class="fl">Add Savings (₹)</label>
+    <input class="fi" type="number" id="gAddSaved" placeholder="0">
+
+    <label class="fl">Subtract Savings (₹)</label>
+    <input class="fi" type="number" id="gSubSaved" placeholder="0">
+
+    <label class="fl">Icon</label>
+    <input class="fi" id="gIcon" placeholder="🎯" maxlength="2">
+
+    <button class="sbtn" id="gSaveBtn" onclick="doSaveGoal()">
+      ✅ Save Goal
+    </button>
+
+    <button
+      class="g-del-btn"
+      id="gDeleteBtn"
+      onclick="doDeleteGoal()"
+      style="width:100%;margin-top:10px;display:none">
+      🗑️ Delete Goal
+    </button>
   </div>
 </div>
 
@@ -661,6 +697,7 @@ const ROLES    = ['Admin','Member','Child','Child'];
 const DEF_PINS = {Gavi:'1234',Uma:'5678',Rachana:'1111',Sanchita:'2222'};
 
 const CATS = [
+  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',     kn:'ಆಟೋ/ಬಸ್',   c:'#facc15',lim:1500},  
   {id:'Food',       i:'🍽️',en:'Food',         kn:'ಆಹಾರ',        c:'#ef4444',lim:10000},
   {id:'Groceries',  i:'🛒', en:'Groceries',    kn:'ದಿನಸಿ',        c:'#22c55e',lim:8000},
   {id:'Vegetables', i:'🥦', en:'Vegetables',   kn:'ತರಕಾರಿ',      c:'#4ade80',lim:3000},
@@ -668,10 +705,9 @@ const CATS = [
   {id:'School',     i:'🎓', en:'School',       kn:'ಶಾಲೆ',         c:'#38bdf8',lim:8000},
   {id:'Books',      i:'📚', en:'Books',        kn:'ಪುಸ್ತಕ',       c:'#818cf8',lim:2000},
   {id:'Tuition',    i:'✏️', en:'Tuition',      kn:'ಟ್ಯೂಷನ್',    c:'#a78bfa',lim:3000},
-  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',     kn:'ಬೆಂಗಳೂರು ಬಾಡಿಗೆ',c:'#fb923c',lim:20000},
+  {id:'BLR_Rent',   i:'🏙️',en:'Rent Rx',       kn:'ಬೆಂಗಳೂರು ಬಾಡಿಗೆ',c:'#fb923c',lim:20000},
   {id:'Travel',     i:'🚗', en:'Travel',       kn:'ಪ್ರಯಾಣ',      c:'#f59e0b',lim:3000},
   {id:'Petrol',     i:'⛽', en:'Petrol',       kn:'ಪೆಟ್ರೋಲ್',   c:'#fbbf24',lim:2000},
-  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',     kn:'ಆಟೋ/ಬಸ್',   c:'#facc15',lim:1500},
   {id:'Electricity',i:'💡', en:'Electricity',  kn:'ವಿದ್ಯುತ್',   c:'#fde047',lim:2000},
   {id:'Water',      i:'💧', en:'Water',        kn:'ನೀರು',         c:'#7dd3fc',lim:500},
   {id:'Internet',   i:'📡', en:'Internet',     kn:'ಇಂಟರ್ನೆಟ್',  c:'#6ee7b7',lim:1000},
@@ -696,8 +732,8 @@ const CATS = [
 
 const INC_SRCS = [
   {id:'salary',       i:'💼',en:'Salary',       kn:'ಸಂಬಳ'},
-  {id:'rent',         i:'🏠',en:'Ginigera Rent', kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
-  {id:'loan_received',i:'💳',en:'Loan Received', kn:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ'},
+  {id:'rent',         i:'🏠',en:'Rent Rx', kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
+  {id:'loan_received',i:'💳',en:'Loan Rx', kn:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ'},
   {id:'other_income', i:'📦',en:'Others',        kn:'ಇತರ ಆದಾಯ'},
 ];
 
@@ -749,7 +785,7 @@ function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
 /* ══ STARTUP ══ */
 async function startup(){
-  setMsg('Loading Hatti Budget…');
+  setMsg('Loading Your Budget…');
   try{
     // ── FIX: load income, limits, and users in parallel with individual error handling ──
     const results = await Promise.allSettled([
