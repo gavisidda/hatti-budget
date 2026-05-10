@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MY BUDGET</title>
+<title>ಹಟ್ಟಿ ಕುಟುಂಬ ಬಜೆಟ್</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -182,6 +182,30 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.err{border-color:var(--rose);color:var(--rose)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+/* MEMBER MANAGEMENT */
+.member-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.member-av{font-size:30px;flex-shrink:0}
+.member-info{flex:1;min-width:0}
+.member-name{font-size:15px;font-weight:800}
+.member-role-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:3px}
+.badge-admin{background:rgba(240,180,41,.2);color:var(--gold);border:1px solid rgba(240,180,41,.3)}
+.badge-member{background:rgba(56,189,248,.15);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
+.badge-child{background:rgba(167,139,250,.15);color:var(--violet);border:1px solid rgba(167,139,250,.3)}
+.member-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.mem-btn{background:var(--s3);color:var(--text);border:1px solid var(--s4);border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;text-align:center;white-space:nowrap}
+.mem-btn.promote{background:rgba(240,180,41,.15);color:var(--gold);border-color:rgba(240,180,41,.3)}
+.mem-btn.demote{background:rgba(56,189,248,.1);color:var(--sky);border-color:rgba(56,189,248,.25)}
+.mem-btn.resetpin{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.25)}
+/* ACCESS DENIED OVERLAY */
+.access-denied{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:24px}
+.access-denied.show{display:flex}
+.ad-icon{font-size:56px}
+.ad-title{font-size:20px;font-weight:800;color:var(--rose)}
+.ad-msg{font-size:14px;color:var(--text2);max-width:280px;line-height:1.6}
+.ad-btn{background:var(--s2);color:var(--text);border:1px solid var(--s3);border-radius:12px;padding:12px 24px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+/* RULES BOX */
+.rules-box{background:var(--bg);border:1px solid var(--s4);border-radius:10px;padding:12px;font-family:monospace;font-size:10px;color:var(--teal);white-space:pre;overflow-x:auto;margin-top:8px;line-height:1.7}
+
 /* MONTH SELECTOR */
 .month-sel-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .month-sel{flex:1;background:var(--s3);color:var(--text);border:1.5px solid var(--s4);border-radius:10px;padding:9px 12px;font-family:var(--font);font-size:13px;font-weight:700;outline:none;-webkit-appearance:none;cursor:pointer}
@@ -211,13 +235,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Your Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
-  <!--<div class="login-logo">🏡</div>
+  <div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
-  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>-->
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
   <div class="user-cards">
     <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
     <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
@@ -237,7 +261,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">Hatti Budget</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
       <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
@@ -402,8 +426,28 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <!-- SETTINGS -->
     <div class="page" id="pgSettings">
       <div class="ph">⚙️ Settings</div>
-      <div class="sh">Monthly Base Income</div>
-      <div class="fc">
+
+      <!-- ── LOGGED IN AS banner ── -->
+      <div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px" id="setUserAv">👨</span>
+        <div>
+          <div style="font-size:13px;font-weight:800" id="setUserName">Gavi</div>
+          <div style="font-size:11px;color:var(--text2)" id="setUserRole">Admin · Full Access</div>
+        </div>
+      </div>
+
+      <!-- ── MEMBER MANAGEMENT (admin only) ── -->
+      <div class="sh">👥 Member Management</div>
+      <div id="memberSection">
+        <div id="memberList"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;margin-bottom:12px">
+          ⚠️ Only visible to Admins. Promote a member to give them full admin access.
+        </div>
+      </div>
+
+      <!-- ── INCOME (admin only) ── -->
+      <div class="sh" id="incomeSettingsLbl">💰 Monthly Base Income <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
+      <div class="fc" id="incomeSettingsSection">
         <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
         <label class="fl" style="margin-top:6px">🏠 Ginigera Rent (₹/month)</label>
@@ -411,11 +455,90 @@ canvas{width:100%!important;border-radius:6px;display:block}
         <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
       </div>
-      <div class="sh">Budget Limits (₹/month)</div>
+
+      <!-- ── BUDGET LIMITS (admin only) ── -->
+      <div class="sh">📊 Budget Limits (₹/month) <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
       <div class="fc" id="limForm"></div>
-      <div class="sh">Change PINs</div>
-      <div class="fc" id="pinForm"></div>
-      <div class="sh">Firebase Status</div>
+
+      <!-- ── CHANGE MY PIN (all users) ── -->
+      <div class="sh">🔑 Change My PIN</div>
+      <div class="fc" id="myPinForm">
+        <div style="color:var(--text2);font-size:12px;margin-bottom:10px">Enter your new 4-digit PIN. Saved securely to Firebase.</div>
+        <label class="fl" id="myPinLbl">New PIN for Gavi</label>
+        <div class="irow">
+          <input class="iinp" type="password" id="myPinInput" maxlength="4" inputmode="numeric" placeholder="Enter new 4-digit PIN">
+          <button class="isave" onclick="savMyPin()">Save</button>
+        </div>
+      </div>
+
+      <!-- ── FIREBASE RULES (admin only) ── -->
+      <div class="sh" id="rulesSection">🔐 Firestore Security Rules <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
+      <div class="fc" id="rulesBox">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">
+          Copy these rules into <strong style="color:var(--gold)">Firebase Console → Firestore → Rules → Publish</strong>
+        </div>
+        <div class="rules-box">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── USERS collection ──
+    // Anyone can read (needed at login to verify PINs)
+    // Only admins can write user records (role changes)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── SETTINGS (income, limits) ──
+    // Anyone can read, only admin can write
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── TRANSACTIONS ──
+    // All members: create + read + update
+    // Only admin: delete
+    match /transactions/{txId} {
+      allow read, create: if true;
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ── GOALS ──
+    // All members: create + read + update
+    // Only admin: delete
+    match /goals/{goalId} {
+      allow read, create, update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ── BANK ACCOUNTS ──
+    // All members: read + create
+    // Only admin: update + delete
+    match /bankAccounts/{bankId} {
+      allow read, create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // ── HELPER FUNCTION ──
+    // Checks if the requesting user's document has role == 'Admin'
+    // Since we use PIN-based auth (not Firebase Auth), we use a
+    // shared secret header approach — set adminToken in app config
+    function isAdmin() {
+      // For PIN-based app: allow all writes (PIN login is client-side)
+      // For production: integrate Firebase Authentication
+      return true;
+    }
+  }
+}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6">
+          <strong style="color:var(--gold)">Note:</strong> Since this app uses PIN-based login (not Firebase Auth), Firestore rules cannot technically verify who is logged in on the server side. The admin access control is enforced in the app UI. For full server-side security, integrate Firebase Authentication.
+        </div>
+      </div>
+
+      <!-- ── FIREBASE STATUS ── -->
+      <div class="sh">🔥 Firebase Status</div>
       <div class="fc" style="text-align:center">
         Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
         <span id="fbStatus" style="font-size:11px;margin-top:4px;display:block;color:var(--text2)"></span>
@@ -509,6 +632,12 @@ canvas{width:100%!important;border-radius:6px;display:block}
   </div>
 </div>
 
+<div class="access-denied" id="accessDenied">
+  <div class="ad-icon">🔒</div>
+  <div class="ad-title">Access Denied</div>
+  <div class="ad-msg" id="accessDeniedMsg">You don't have permission to perform this action. Only Admins can do this.</div>
+  <button class="ad-btn" onclick="document.getElementById('accessDenied').classList.remove('show')">OK, Got it</button>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -584,13 +713,32 @@ let editType  = 'expense';
 let filtCat   = 'All';
 let txCache   = [];
 let goalCache = [];
-let bankCache = [];  // ← new: bank accounts
+let bankCache = [];
 let pinCache  = {};
+let userCache = {}; // {Gavi:{role:'Admin',...}, Uma:{role:'Member',...}}
 let settings  = {income:{salary:0,rent:0,uma:0},limits:{}};
 let unsubTx, unsubGoals, unsubBanks;
 
-const L = (en,kn) => lang==='kn' ? kn : en;
+const L = (en,kn) => en; // English only
 const C = id => CATS.find(c=>c.id===id);
+
+/* ── Role helpers ── */
+function isAdmin(){ return getUserRole(curUser) === 'Admin'; }
+function getUserRole(name){
+  if(userCache[name] && userCache[name].role) return userCache[name].role;
+  const idx = USERS.indexOf(name);
+  return ROLES[idx] || 'Member';
+}
+function requireAdmin(action){
+  if(!isAdmin()){
+    const el = document.getElementById('accessDenied');
+    const msg = document.getElementById('accessDeniedMsg');
+    if(msg) msg.textContent = `Only Admins can ${action||'perform this action'}. Ask Gavi to promote you to Admin in Settings.`;
+    if(el) el.classList.add('show');
+    return false;
+  }
+  return true;
+}
 
 /* ══ SESSION ══ */
 function saveSession(){ sessionStorage.setItem('hb_s', JSON.stringify({user:curUser,ts:Date.now()})); }
@@ -601,7 +749,7 @@ function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
 /* ══ STARTUP ══ */
 async function startup(){
-  setMsg('Loading Your Budget…');
+  setMsg('Loading Hatti Budget…');
   try{
     // ── FIX: load income, limits, and users in parallel with individual error handling ──
     const results = await Promise.allSettled([
@@ -625,9 +773,13 @@ async function startup(){
       settings.limits = {};
     }
 
-    // Users / PINs
+    // Users / PINs / Roles
     if(results[2].status==='fulfilled' && !results[2].value.empty){
-      results[2].value.forEach(doc => { pinCache[doc.id] = doc.data().pin || DEF_PINS[doc.id] || '1234'; });
+      results[2].value.forEach(doc => {
+        const d = doc.data();
+        pinCache[doc.id]  = d.pin || DEF_PINS[doc.id] || '1234';
+        userCache[doc.id] = d; // store full user object incl role
+      });
     } else {
       await seedUsers();
     }
@@ -683,10 +835,12 @@ function pok(){
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app'); app.style.display='flex'; app.style.flexDirection='column';
-  document.getElementById('tbUser').textContent=AVATARS[USERS.indexOf(curUser)]+' '+curUser;
+  const role = getUserRole(curUser);
+  const av   = AVATARS[USERS.indexOf(curUser)];
+  document.getElementById('tbUser').textContent = av+' '+curUser+' ['+role+']';
   document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
   document.getElementById('fWho').value=curUser;
-  buildCatGrid(); buildEditCatSelect(); buildPinForm();
+  buildCatGrid(); buildEditCatSelect();
   subscribeRT();
   renderSettings();
   saveSession();
@@ -717,6 +871,12 @@ function subscribeRT(){
     goalCache=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderGoals();
   },err=>console.error('Goals:',err));
+
+  // Live user/role updates
+  db.collection('users').onSnapshot(snap=>{
+    snap.forEach(doc=>{ userCache[doc.id]=doc.data(); });
+    if(document.getElementById('pgSettings').classList.contains('on')) renderSettings();
+  },err=>console.warn('Users listener:',err));
 
   if(unsubBanks) unsubBanks();
   unsubBanks=db.collection('bankAccounts').orderBy('ts','asc').onSnapshot(snap=>{
@@ -880,8 +1040,9 @@ function renderBanks(){
         <div class="bank-bal ${balCol}">₹${fmt(bal)}</div>
       </div>
       <div class="bank-actions">
-        <button class="bank-edit-btn" onclick="openBankEdit('${b.id}')">✏️ Edit</button>
-        <button class="bank-del-btn" onclick="deleteBank('${b.id}')">🗑️</button>
+        ${isAdmin()?`<button class="bank-edit-btn" onclick="openBankEdit('${b.id}')">✏️ Edit</button>`:''}
+        ${isAdmin()?`<button class="bank-del-btn" onclick="deleteBank('${b.id}')">🗑️</button>`:''}
+        ${!isAdmin()?'<span style="font-size:10px;color:var(--text3)">View only</span>':''}
       </div>
     </div>`;
   }).join('');
@@ -938,6 +1099,7 @@ async function doSaveBank(){
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function deleteBank(id){
+  if(!requireAdmin('delete bank accounts')) return;
   const linked=txCache.filter(t=>t.bankAccountId===id).length;
   const msg=linked>0
     ? `This account has ${linked} transactions linked. Delete anyway?`
@@ -1054,6 +1216,7 @@ async function doUpdateTx(){
   }catch(e){ showToast('Update error: '+e.message,true); }
 }
 async function deleteTx(id){
+  if(!requireAdmin('delete transactions')) return;
   if(!confirm('Delete this transaction?')) return;
   await db.collection('transactions').doc(id).delete();
   showToast('Deleted');
@@ -1087,7 +1250,7 @@ function renderGoals(){
       <div class="gcrd-actions">
         <button class="g-edit-btn" onclick="openEditGoal('${g.id}')">✏️ Edit Goal</button>
         <button class="g-add-btn" onclick="openQuickAdd('${g.id}','${g.name}',${g.saved||0})">+ Add Savings</button>
-        <button class="g-del-btn" onclick="doDeleteGoal('${g.id}')">🗑️</button>
+        ${isAdmin()?`<button class="g-del-btn" onclick="doDeleteGoal('${g.id}')">🗑️</button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1181,7 +1344,7 @@ async function doSaveGoal(){
 }
 
 async function doDeleteGoal(id){
-  // id can come from button or from modal hidden field
+  if(!requireAdmin('delete goals')) return;
   const goalId=id||document.getElementById('gEditId').value;
   if(!goalId){ showToast('No goal selected',true); return; }
   const g=goalCache.find(x=>x.id===goalId);
@@ -1227,7 +1390,7 @@ function txHTML(tx,showActions){
       ${audit?`<div class="txby">${audit}</div>`:''}
     </div>
     <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
-    ${showActions?`<div class="tx-actions"><button class="txedit" onclick="openEditModal('${tx.id}')">✏️</button><button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button></div>`:''}
+    ${showActions?`<div class="tx-actions"><button class="txedit" onclick="openEditModal('${tx.id}')">✏️</button>${isAdmin()?`<button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}</div>`:''}
   </div>`;
 }
 
@@ -1448,25 +1611,138 @@ function drawBarChart(canvas,labels,data,colors){
 }
 
 /* ══ SETTINGS ══ */
-function buildPinForm(){
-  const pf=document.getElementById('pinForm'); if(!pf) return;
-  pf.innerHTML=`<div style="color:var(--text2);font-size:12px;margin-bottom:10px">PINs saved to Firebase — works on all devices.</div>`
-    +USERS.map(u=>`
-      <label class="fl" style="margin-top:4px">${AVATARS[USERS.indexOf(u)]} ${u} PIN</label>
-      <div class="irow"><input class="iinp" type="password" id="pin_${u}" maxlength="4" inputmode="numeric" placeholder="New 4-digit PIN"><button class="isave" onclick="savPin('${u}')">Save</button></div>`).join('');
-}
 function renderSettings(){
-  const inc=settings.income||{};
-  const gs=document.getElementById('iGS'); if(gs) gs.value=inc.salary||'';
-  const gr=document.getElementById('iGR'); if(gr) gr.value=inc.rent||'';
-  const ui=document.getElementById('iUI'); if(ui) ui.value=inc.uma||'';
-  const lf=document.getElementById('limForm'); if(!lf) return;
-  const savedLims=settings.limits||{};
-  lf.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
-    <label class="fl">${c.i} ${c.en}</label>
-    <div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">${'Save'}</button></div>`).join('');
+  const role=getUserRole(curUser);
+  const admin=role==='Admin';
+  const av=AVATARS[USERS.indexOf(curUser)];
+
+  // Update header banner
+  const setUserAv=document.getElementById('setUserAv'); if(setUserAv) setUserAv.textContent=av;
+  const setUserName=document.getElementById('setUserName'); if(setUserName) setUserName.textContent=curUser;
+  const setUserRole=document.getElementById('setUserRole'); if(setUserRole)
+    setUserRole.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
+
+  // Member management — admin only
+  const memberSection=document.getElementById('memberSection');
+  if(memberSection){
+    if(!admin){
+      memberSection.innerHTML='<div style="color:var(--text3);font-size:12px;padding:8px 0">🔒 Only Admins can manage members.</div>';
+    } else {
+      renderMemberList();
+    }
+  }
+
+  // Show/hide income & limits sections for non-admin
+  const incSec=document.getElementById('incomeSettingsSection');
+  const limSec=document.getElementById('limForm');
+  const incLbl=document.getElementById('incomeSettingsLbl');
+  const rulesSec=document.getElementById('rulesSection');
+  const rulesBox=document.getElementById('rulesBox');
+  [incSec,incLbl,rulesSec,rulesBox].forEach(el=>{if(el) el.style.display=admin?'':'none'});
+
+  if(admin){
+    // Fill income fields
+    const inc=settings.income||{};
+    const gs=document.getElementById('iGS'); if(gs) gs.value=inc.salary||'';
+    const gr=document.getElementById('iGR'); if(gr) gr.value=inc.rent||'';
+    const ui=document.getElementById('iUI'); if(ui) ui.value=inc.uma||'';
+    // Fill limits
+    if(limSec){
+      const savedLims=settings.limits||{};
+      limSec.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
+        <label class="fl">${c.i} ${c.en}</label>
+        <div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">Save</button></div>`).join('');
+    }
+  }
+
+  // My PIN section — always visible
+  const myPinLbl=document.getElementById('myPinLbl');
+  if(myPinLbl) myPinLbl.textContent='New PIN for '+curUser;
 }
+
+function renderMemberList(){
+  const ml=document.getElementById('memberList'); if(!ml) return;
+  ml.innerHTML=USERS.map((u,i)=>{
+    const role=getUserRole(u);
+    const isMe=u===curUser;
+    const badgeCls=role==='Admin'?'badge-admin':role==='Child'?'badge-child':'badge-member';
+    const canPromote=!isMe&&role!=='Admin';
+    const canDemote=!isMe&&role==='Admin';
+    return `<div class="member-card">
+      <div class="member-av">${AVATARS[i]}</div>
+      <div class="member-info">
+        <div class="member-name">${u}${isMe?' (You)':''}</div>
+        <div class="member-role-badge ${badgeCls}">${role}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">${roleDesc(role)}</div>
+      </div>
+      <div class="member-actions">
+        ${canPromote?`<button class="mem-btn promote" onclick="changeRole('${u}','Admin')">⬆️ Make Admin</button>`:''}
+        ${canDemote?`<button class="mem-btn demote" onclick="changeRole('${u}','Member')">⬇️ Remove Admin</button>`:''}
+        ${!isMe?`<button class="mem-btn resetpin" onclick="adminResetPin('${u}')">🔑 Reset PIN</button>`:''}
+        ${isMe?`<div style="font-size:10px;color:var(--text3);text-align:center">Current<br>user</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function roleDesc(role){
+  if(role==='Admin') return 'Add · Edit · Delete · Manage settings';
+  if(role==='Child') return 'Add expenses only · Read all';
+  return 'Add · Edit · Read all · Cannot delete';
+}
+
+async function changeRole(who, newRole){
+  if(!requireAdmin('change member roles')) return;
+  if(who===curUser){ showToast("Can't change your own role",true); return; }
+  if(!confirm(`Change ${who}'s role to ${newRole}?`)) return;
+  try{
+    await db.collection('users').doc(who).set({
+      name:who, role:newRole,
+      pin:pinCache[who]||DEF_PINS[who],
+      avatar:AVATARS[USERS.indexOf(who)]
+    },{merge:true});
+    if(!userCache[who]) userCache[who]={};
+    userCache[who].role=newRole;
+    showToast(`✅ ${who} is now ${newRole}`);
+    renderSettings();
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function adminResetPin(who){
+  if(!requireAdmin('reset PINs')) return;
+  const newPin=prompt(`Enter new 4-digit PIN for ${who}:`);
+  if(!newPin||newPin.length!==4||isNaN(newPin)){ showToast('PIN must be 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(who).set({pin:newPin},{merge:true});
+    pinCache[who]=newPin;
+    showToast(`✅ ${who}'s PIN reset!`);
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function savMyPin(){
+  const el=document.getElementById('myPinInput'); if(!el) return;
+  const v=el.value.trim();
+  if(v.length!==4||isNaN(v)){ showToast('PIN must be exactly 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(curUser).set({pin:v},{merge:true});
+    pinCache[curUser]=v; el.value='';
+    showToast('✅ Your PIN updated!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function savPin(who){
+  const el=document.getElementById('pin_'+who); if(!el) return;
+  const v=el.value.trim();
+  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(who).set({name:who,pin:v,role:getUserRole(who),avatar:AVATARS[USERS.indexOf(who)]},{merge:true});
+    pinCache[who]=v; el.value='';
+    showToast('✅ '+who+' PIN saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
 async function savInc(src){
+  if(!requireAdmin('edit income settings')) return;
   const inc={...(settings.income||{})};
   if(src==='salary') inc.salary=+document.getElementById('iGS').value||0;
   if(src==='rent')   inc.rent  =+document.getElementById('iGR').value||0;
@@ -1479,6 +1755,7 @@ async function savInc(src){
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 async function savLim(id){
+  if(!requireAdmin('edit budget limits')) return;
   const val=+document.getElementById('lim_'+id).value||0;
   const lims={...(settings.limits||{}),[id]:val};
   try{
