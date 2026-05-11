@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ಹಟ್ಟಿ ಕುಟುಂಬ ಬಜೆಟ್</title>
+<title>MY BUDGET</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -235,7 +235,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Your Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -288,7 +288,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
         <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan RX</div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
@@ -310,7 +310,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent Rx</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
             <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Rx</button>
             <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
@@ -373,7 +373,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <!-- HISTORY -->
     <div class="page" id="pgHistory">
       <div class="ph">📜 History</div>
-      <button class="export-btn" onclick="exportCSV()">📥 📥 Export CSV</button>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
       <div class="frow" id="filterRow"></div>
       <div id="histList"></div>
     </div>
@@ -448,7 +448,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <!-- ── INCOME (admin only) ── -->
       <div class="sh" id="incomeSettingsLbl">💰 Monthly Base Income <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
       <div class="fc" id="incomeSettingsSection">
-        <label class="fl">💼 Salary (₹)</label>
+        <label class="fl">💼 Gavi Salary (₹)</label>
         <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
         <label class="fl" style="margin-top:6px">🏠 Rent Rx (₹/month)</label>
         <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
@@ -556,54 +556,34 @@ service cloud.firestore {
   </div>
 </div>
 
-<!-- GOAL MODAL -->
-<!-- GOAL MODAL -->
+<!-- GOAL MODAL (Add + Edit) -->
 <div class="mo" id="gModal">
   <div class="modal">
-    <button class="mclose" onclick="closeGM()">✕</button>
-
-    <input type="hidden" id="gEditId">
-
+    <button class="mclose" onclick="closeGM()">&#x2715;</button>
     <div class="mtitle" id="gModalTitle">New Savings Goal</div>
-
+    <input type="hidden" id="gEditId">
     <label class="fl">Goal Name</label>
     <input class="fi" id="gName" placeholder="e.g. Rachana Education">
-
     <label class="fl">For</label>
     <select class="fi" id="gFor">
-      <option>Family</option>
-      <option>Gavi</option>
-      <option>Uma</option>
-      <option>Rachana</option>
-      <option>Sanchita</option>
+      <option value="Family">Family</option>
+      <option value="Gavi">Gavi</option>
+      <option value="Uma">Uma</option>
+      <option value="Rachana">Rachana</option>
+      <option value="Sanchita">Sanchita</option>
     </select>
-
-    <label class="fl">Target Amount (₹)</label>
-    <input class="fi" type="number" id="gTarget" placeholder="100000">
-
-    <label class="fl">Already Saved (₹)</label>
-    <input class="fi" type="number" id="gSaved" placeholder="0">
-
-    <label class="fl">Add Savings (₹)</label>
-    <input class="fi" type="number" id="gAddSaved" placeholder="0">
-
-    <label class="fl">Subtract Savings (₹)</label>
-    <input class="fi" type="number" id="gSubSaved" placeholder="0">
-
-    <label class="fl">Icon</label>
-    <input class="fi" id="gIcon" placeholder="🎯" maxlength="2">
-
-    <button class="sbtn" id="gSaveBtn" onclick="doSaveGoal()">
-      ✅ Save Goal
-    </button>
-
-    <button
-      class="g-del-btn"
-      id="gDeleteBtn"
-      onclick="doDeleteGoal()"
-      style="width:100%;margin-top:10px;display:none">
-      🗑️ Delete Goal
-    </button>
+    <label class="fl">Target Amount (Rs)</label>
+    <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
+    <label class="fl">Current Saved Amount (Rs)</label>
+    <input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Add to Saved (Rs) <span style="font-size:10px;color:var(--text3)">adds on top of saved</span></label>
+    <input class="fi" type="number" id="gAddSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Deduct from Saved (Rs) <span style="font-size:10px;color:var(--text3)">removes from saved</span></label>
+    <input class="fi" type="number" id="gSubSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Icon (emoji)</label>
+    <input class="fi" id="gIcon" placeholder="e.g. skull" maxlength="2">
+    <button class="sbtn" onclick="doSaveGoal()" id="gSaveBtn">Save Goal</button>
+    <button style="width:100%;margin-top:8px;padding:12px;background:rgba(251,113,133,.15);color:var(--rose);border:1px solid rgba(251,113,133,.3);border-radius:13px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:none" id="gDeleteBtn" onclick="doDeleteGoal()">Delete Goal</button>
   </div>
 </div>
 
@@ -697,44 +677,44 @@ const ROLES    = ['Admin','Member','Child','Child'];
 const DEF_PINS = {Gavi:'1234',Uma:'5678',Rachana:'1111',Sanchita:'2222'};
 
 const CATS = [
-  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',     kn:'ಆಟೋ/ಬಸ್',   c:'#facc15',lim:1500},  
-  {id:'Food',       i:'🍽️',en:'Food',         kn:'ಆಹಾರ',        c:'#ef4444',lim:10000},
-  {id:'Groceries',  i:'🛒', en:'Groceries',    kn:'ದಿನಸಿ',        c:'#22c55e',lim:8000},
-  {id:'Vegetables', i:'🥦', en:'Vegetables',   kn:'ತರಕಾರಿ',      c:'#4ade80',lim:3000},
-  {id:'Milk',       i:'🥛', en:'Milk',         kn:'ಹಾಲು',         c:'#bfdbfe',lim:2000},
-  {id:'School',     i:'🎓', en:'School',       kn:'ಶಾಲೆ',         c:'#38bdf8',lim:8000},
-  {id:'Books',      i:'📚', en:'Books',        kn:'ಪುಸ್ತಕ',       c:'#818cf8',lim:2000},
-  {id:'Tuition',    i:'✏️', en:'Tuition',      kn:'ಟ್ಯೂಷನ್',    c:'#a78bfa',lim:3000},
-  {id:'BLR_Rent',   i:'🏙️',en:'Rent Rx',       kn:'ಬೆಂಗಳೂರು ಬಾಡಿಗೆ',c:'#fb923c',lim:20000},
-  {id:'Travel',     i:'🚗', en:'Travel',       kn:'ಪ್ರಯಾಣ',      c:'#f59e0b',lim:3000},
-  {id:'Petrol',     i:'⛽', en:'Petrol',       kn:'ಪೆಟ್ರೋಲ್',   c:'#fbbf24',lim:2000},
-  {id:'Electricity',i:'💡', en:'Electricity',  kn:'ವಿದ್ಯುತ್',   c:'#fde047',lim:2000},
-  {id:'Water',      i:'💧', en:'Water',        kn:'ನೀರು',         c:'#7dd3fc',lim:500},
-  {id:'Internet',   i:'📡', en:'Internet',     kn:'ಇಂಟರ್ನೆಟ್',  c:'#6ee7b7',lim:1000},
-  {id:'Phone',      i:'📱', en:'Phone',        kn:'ಫೋನ್',         c:'#86efac',lim:500},
-  {id:'Gas_LPG',    i:'🔥', en:'Gas/LPG',      kn:'ಗ್ಯಾಸ್',      c:'#fdba74',lim:1000},
-  {id:'Medical',    i:'🏥', en:'Medical',      kn:'ವೈದ್ಯಕೀಯ',  c:'#f87171',lim:2000},
-  {id:'Medicine',   i:'💊', en:'Medicine',     kn:'ಔಷಧಿ',        c:'#fca5a5',lim:1000},
-  {id:'Clothing',   i:'👕', en:'Clothing',     kn:'ಬಟ್ಟೆ',        c:'#ec4899',lim:3000},
-  {id:'Children',   i:'👧', en:'Children',     kn:'ಮಕ್ಕಳು',      c:'#f9a8d4',lim:3000},
-  {id:'Festival',   i:'🪔', en:'Festival',     kn:'ಹಬ್ಬ',         c:'#fcd34d',lim:5000},
-  {id:'LoanTx',     i:'🤝', en:'Loan Transfer',kn:'ಸಾಲ ವರ್ಗಾವಣೆ',c:'#f472b6',lim:0},
-  {id:'Savings',    i:'🏦', en:'Savings',      kn:'ಉಳಿತಾಯ',    c:'#2dd4bf',lim:0},
-  {id:'Investment', i:'📈', en:'Investment',   kn:'ಹೂಡಿಕೆ',    c:'#34d399',lim:0},
-  {id:'Insurance',  i:'🛡️',en:'Insurance',    kn:'ವಿಮೆ',        c:'#6ee7b7',lim:2000},
-  {id:'HouseMaint', i:'🔧', en:'House Maint',  kn:'ಮನೆ ನಿರ್ವಹಣೆ',c:'#94a3b8',lim:2000},
-  {id:'PropertyTax',i:'📋', en:'Prop Tax',     kn:'ಆಸ್ತಿ ತೆರಿಗೆ',c:'#64748b',lim:2000},
-  {id:'EatingOut',  i:'🍜', en:'Eating Out',   kn:'ಹೊರಗೆ ತಿನ್ನುವಿಕೆ',c:'#fb7185',lim:2000},
-  {id:'EntertainMt',i:'🎬', en:'Entertainment',kn:'ಮನರಂಜನೆ',  c:'#c084fc',lim:1000},
-  {id:'Haircut',    i:'✂️', en:'Haircut',      kn:'ಹೇರ್‌ಕಟ್',  c:'#a3e635',lim:500},
-  {id:'Other',      i:'📦', en:'Other',        kn:'ಇತರ',         c:'#94a3b8',lim:0},
+  {id:'Food',       i:'🍽️',en:'Food',        c:'#ef4444',lim:10000},
+  {id:'Groceries',  i:'🛒', en:'Groceries',        c:'#22c55e',lim:8000},
+  {id:'Vegetables', i:'🥦', en:'Vegetables',      c:'#4ade80',lim:3000},
+  {id:'Milk',       i:'🥛', en:'Milk',         c:'#bfdbfe',lim:2000},
+  {id:'School',     i:'🎓', en:'School',         c:'#38bdf8',lim:8000},
+  {id:'Books',      i:'📚', en:'Books',       c:'#818cf8',lim:2000},
+  {id:'Tuition',    i:'✏️', en:'Tuition',    c:'#a78bfa',lim:3000},
+  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',c:'#fb923c',lim:20000},
+  {id:'Travel',     i:'🚗', en:'Travel',      c:'#f59e0b',lim:3000},
+  {id:'Petrol',     i:'⛽', en:'Petrol',   c:'#fbbf24',lim:2000},
+  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',   c:'#facc15',lim:1500},
+  {id:'Electricity',i:'💡', en:'Electricity',   c:'#fde047',lim:2000},
+  {id:'Water',      i:'💧', en:'Water',         c:'#7dd3fc',lim:500},
+  {id:'Internet',   i:'📡', en:'Internet',  c:'#6ee7b7',lim:1000},
+  {id:'Phone',      i:'📱', en:'Phone',         c:'#86efac',lim:500},
+  {id:'Gas_LPG',    i:'🔥', en:'Gas/LPG',      c:'#fdba74',lim:1000},
+  {id:'Medical',    i:'🏥', en:'Medical',  c:'#f87171',lim:2000},
+  {id:'Medicine',   i:'💊', en:'Medicine',        c:'#fca5a5',lim:1000},
+  {id:'Clothing',   i:'👕', en:'Clothing',        c:'#ec4899',lim:3000},
+  {id:'Children',   i:'👧', en:'Children',      c:'#f9a8d4',lim:3000},
+  {id:'Festival',   i:'🪔', en:'Festival',         c:'#fcd34d',lim:5000},
+  {id:'LoanTx',     i:'🤝', en:'Loan Transfer',c:'#f472b6',lim:0},
+  {id:'Savings',    i:'🏦', en:'Savings',    c:'#2dd4bf',lim:0},
+  {id:'Investment', i:'📈', en:'Investment',    c:'#34d399',lim:0},
+  {id:'Insurance',  i:'🛡️',en:'Insurance',        c:'#6ee7b7',lim:2000},
+  {id:'HouseMaint', i:'🔧', en:'House Maint',c:'#94a3b8',lim:2000},
+  {id:'PropertyTax',i:'📋', en:'Prop Tax',c:'#64748b',lim:2000},
+  {id:'EatingOut',  i:'🍜', en:'Eating Out',c:'#fb7185',lim:2000},
+  {id:'EntertainMt',i:'🎬', en:'Entertainment',  c:'#c084fc',lim:1000},
+  {id:'Haircut',    i:'✂️', en:'Haircut',  c:'#a3e635',lim:500},
+  {id:'Other',      i:'📦', en:'Other',         c:'#94a3b8',lim:0},
 ];
 
 const INC_SRCS = [
-  {id:'salary',       i:'💼',en:'Salary',       kn:'ಸಂಬಳ'},
-  {id:'rent',         i:'🏠',en:'Rent Rx', kn:'ಗಿನಿಗೇರ ಬಾಡಿಗೆ'},
-  {id:'loan_received',i:'💳',en:'Loan Rx', kn:'ಸ್ವೀಕರಿಸಿದ ಸಾಲ'},
-  {id:'other_income', i:'📦',en:'Others',        kn:'ಇತರ ಆದಾಯ'},
+  {id:'salary',       i:'💼',en:'Salary',},
+  {id:'rent',         i:'🏠',en:'Rent Rx',},
+  {id:'loan_received',i:'💳',en:'Loan Rx',},
+  {id:'other_income', i:'📦',en:'Others',},
 ];
 
 const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash'};
@@ -755,7 +735,7 @@ let userCache = {}; // {Gavi:{role:'Admin',...}, Uma:{role:'Member',...}}
 let settings  = {income:{salary:0,rent:0,uma:0},limits:{}};
 let unsubTx, unsubGoals, unsubBanks;
 
-const L = (en,kn) => en; // English only
+const L = (en) => en; // English only — single arg
 const C = id => CATS.find(c=>c.id===id);
 
 /* ── Role helpers ── */
@@ -785,7 +765,7 @@ function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
 /* ══ STARTUP ══ */
 async function startup(){
-  setMsg('Loading Your Budget…');
+  setMsg('Loading Hatti Budget…');
   try{
     // ── FIX: load income, limits, and users in parallel with individual error handling ──
     const results = await Promise.allSettled([
@@ -1076,9 +1056,7 @@ function renderBanks(){
         <div class="bank-bal ${balCol}">₹${fmt(bal)}</div>
       </div>
       <div class="bank-actions">
-        ${isAdmin()?`<button class="bank-edit-btn" onclick="openBankEdit('${b.id}')">✏️ Edit</button>`:''}
-        ${isAdmin()?`<button class="bank-del-btn" onclick="deleteBank('${b.id}')">🗑️</button>`:''}
-        ${!isAdmin()?'<span style="font-size:10px;color:var(--text3)">View only</span>':''}
+        ${isAdmin()?'<button class="bank-edit-btn" onclick="openBankEdit(\''+b.id+'\')">✏️ Edit</button>'+'<button class="bank-del-btn" onclick="deleteBank(\''+b.id+'\')">🗑️</button>':'<span style="font-size:10px;color:var(--text3)">View only</span>'}
       </div>
     </div>`;
   }).join('');
@@ -1286,7 +1264,7 @@ function renderGoals(){
       <div class="gcrd-actions">
         <button class="g-edit-btn" onclick="openEditGoal('${g.id}')">✏️ Edit Goal</button>
         <button class="g-add-btn" onclick="openQuickAdd('${g.id}','${g.name}',${g.saved||0})">+ Add Savings</button>
-        ${isAdmin()?`<button class="g-del-btn" onclick="doDeleteGoal('${g.id}')">🗑️</button>`:''}
+        ${isAdmin()?'<button class="g-del-btn" onclick="doDeleteGoal(\''+g.id+'\')">🗑️</button>':''}
       </div>
     </div>`;
   }).join('');
@@ -1347,36 +1325,44 @@ function closeGM(){ document.getElementById('gModal').classList.remove('open'); 
 async function doSaveGoal(){
   const name=document.getElementById('gName').value.trim();
   const target=Number(document.getElementById('gTarget').value);
-  if(!name||!target){ showToast('Please fill Goal Name and Target Amount',true); return; }
+  if(!name){ showToast('Please enter a Goal Name',true); return; }
+  if(!target||target<=0){ showToast('Please enter a Target Amount',true); return; }
 
-  const editId=document.getElementById('gEditId').value;
-  const baseSaved=Number(document.getElementById('gSaved').value)||0;
-  const addAmt=Number(document.getElementById('gAddSaved').value)||0;
-  const subAmt=Number(document.getElementById('gSubSaved').value)||0;
-  const finalSaved=Math.max(0, baseSaved+addAmt-subAmt);
+  const editId   = document.getElementById('gEditId').value.trim();
+  const baseSaved= Number(document.getElementById('gSaved').value)||0;
+  const addAmt   = Number(document.getElementById('gAddSaved').value)||0;
+  const subAmt   = Number(document.getElementById('gSubSaved').value)||0;
+  const finalSaved= Math.max(0, baseSaved+addAmt-subAmt);
 
   const data={
-    name,
-    forPerson: document.getElementById('gFor').value,
-    target,
+    name:      name,
+    forPerson: document.getElementById('gFor').value||'Family',
+    target:    target,
     saved:     finalSaved,
     icon:      document.getElementById('gIcon').value||'🎯',
+    updatedBy: curUser,
     ts:        Date.now()
   };
 
   try{
     if(editId){
-      await db.collection('goals').doc(editId).update(data);
+      // use set with merge so it works regardless of existing doc structure
+      await db.collection('goals').doc(editId).set(data,{merge:true});
       showToast('✅ Goal updated!');
     } else {
       await db.collection('goals').add(data);
       showToast('✅ Goal saved!');
     }
     closeGM();
+    // Clear fields
     ['gName','gTarget','gSaved','gAddSaved','gSubSaved','gIcon'].forEach(id=>{
       const el=document.getElementById(id); if(el) el.value='';
     });
-  }catch(e){ showToast('Error: '+e.message,true); }
+    document.getElementById('gEditId').value='';
+  }catch(e){
+    console.error('doSaveGoal error:',e);
+    showToast('Error saving goal: '+e.message,true);
+  }
 }
 
 async function doDeleteGoal(id){
@@ -1406,7 +1392,7 @@ function setFilt(f){ filtCat=f; renderHistory(); }
 
 /* ══ TX HTML ══ */
 function txHTML(tx,showActions){
-  const cat=C(tx.category)||C(tx.category?.replace('Income_',''))||{i:tx.type==='income'?'💵':'📦',en:tx.category||'Other',kn:tx.category||'ಇತರ',c:'#94a3b8'};
+  const cat=C(tx.category)||C(tx.category?.replace('Income_',''))||{i:tx.type==='income'?'💵':'📦',en:tx.category||'Other',c:'#94a3b8'};
   const sign=tx.type==='income'?'+':'-';
   const col=tx.type==='income'?'var(--green)':'var(--rose)';
   const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
@@ -1426,7 +1412,7 @@ function txHTML(tx,showActions){
       ${audit?`<div class="txby">${audit}</div>`:''}
     </div>
     <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
-    ${showActions?`<div class="tx-actions"><button class="txedit" onclick="openEditModal('${tx.id}')">✏️</button>${isAdmin()?`<button class="txdel" onclick="deleteTx('${tx.id}')">🗑️</button>`:''}</div>`:''}
+    ${showActions?'<div class="tx-actions"><button class="txedit" onclick="openEditModal(\''+tx.id+'\')">✏️</button>'+(isAdmin()?'<button class="txdel" onclick="deleteTx(\''+tx.id+'\')">🗑️</button>':'')+'</div>':''}
   </div>`;
 }
 
@@ -1704,20 +1690,19 @@ function renderMemberList(){
     const badgeCls=role==='Admin'?'badge-admin':role==='Child'?'badge-child':'badge-member';
     const canPromote=!isMe&&role!=='Admin';
     const canDemote=!isMe&&role==='Admin';
-    return `<div class="member-card">
-      <div class="member-av">${AVATARS[i]}</div>
-      <div class="member-info">
-        <div class="member-name">${u}${isMe?' (You)':''}</div>
-        <div class="member-role-badge ${badgeCls}">${role}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:3px">${roleDesc(role)}</div>
-      </div>
-      <div class="member-actions">
-        ${canPromote?`<button class="mem-btn promote" onclick="changeRole('${u}','Admin')">⬆️ Make Admin</button>`:''}
-        ${canDemote?`<button class="mem-btn demote" onclick="changeRole('${u}','Member')">⬇️ Remove Admin</button>`:''}
-        ${!isMe?`<button class="mem-btn resetpin" onclick="adminResetPin('${u}')">🔑 Reset PIN</button>`:''}
-        ${isMe?`<div style="font-size:10px;color:var(--text3);text-align:center">Current<br>user</div>`:''}
-      </div>
-    </div>`;
+    const promoteBtn = canPromote ? '<button class="mem-btn promote" onclick="changeRole(\''+u+'\',\'Admin\')">⬆️ Make Admin</button>' : '';
+    const demoteBtn  = canDemote  ? '<button class="mem-btn demote" onclick="changeRole(\''+u+'\',\'Member\')">⬇️ Remove Admin</button>' : '';
+    const resetBtn   = !isMe ? '<button class="mem-btn resetpin" onclick="adminResetPin(\''+u+'\')">🔑 Reset PIN</button>' : '';
+    const meLabel    = isMe  ? '<div style="font-size:10px;color:var(--text3);text-align:center">Current<br>user</div>' : '';
+    return '<div class="member-card">'
+      +'<div class="member-av">'+AVATARS[i]+'</div>'
+      +'<div class="member-info">'
+        +'<div class="member-name">'+u+(isMe?' (You)':'')+'</div>'
+        +'<div class="member-role-badge '+badgeCls+'">'+role+'</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:3px">'+roleDesc(role)+'</div>'
+      +'</div>'
+      +'<div class="member-actions">'+promoteBtn+demoteBtn+resetBtn+meLabel+'</div>'
+    +'</div>';
   }).join('');
 }
 
