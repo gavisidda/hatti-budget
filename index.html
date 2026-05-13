@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MY BUDGET</title>
+<title>BUDGET</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -126,6 +126,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .tbtn{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:12px;padding:11px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
 .tbtn.exp.on{border-color:var(--rose);background:rgba(251,113,133,.12);color:var(--rose)}
 .tbtn.inc.on{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
+.tbtn.tfr.on{border-color:var(--sky);background:rgba(56,189,248,.12);color:var(--sky)}
 .fc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:16px;margin-bottom:12px}
 .fl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
 .fi{width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:10px;padding:12px 13px;font-family:var(--font);font-size:14px;font-weight:600;margin-bottom:10px;outline:none;transition:border .2s;-webkit-appearance:none}
@@ -182,6 +183,11 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.err{border-color:var(--rose);color:var(--rose)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+/* TRANSFER BUTTON */
+.tbtn.tfr{font-size:12px}
+.tbtn.tfr.on{border-color:var(--sky);background:rgba(56,189,248,.12);color:var(--sky)}
+/* FIREBASE AUTH LOGIN */
+
 /* MEMBER MANAGEMENT */
 .member-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
 .member-av{font-size:30px;flex-shrink:0}
@@ -231,11 +237,12 @@ canvas{width:100%!important;border-radius:6px;display:block}
 </style>
 </head>
 <body>
+<!-- FIREBASE AUTH SCREEN -->
 <!-- LOADING -->
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Your Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -264,7 +271,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
     <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
-      <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
+      <button class="tb-btn logout" onclick="doLogout()">Logout</button>
     </div>
   </div>
   <div class="pages">
@@ -288,7 +295,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
         <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan RX</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
@@ -304,19 +311,76 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="trow">
         <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
         <button class="tbtn inc" id="btnInc" onclick="setTyp('income')">💵 Income</button>
+        <button class="tbtn tfr" id="btnTfr" onclick="setTyp('transfer')">🔄 Transfer</button>
+      </div>
+      <!-- TRANSFER PANEL — shown only for Transfer type -->
+      <div id="transferPanel" style="display:none">
+        <div class="fc" style="border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.05)">
+          <div style="font-size:14px;font-weight:800;color:var(--sky);margin-bottom:12px">🔄 Account Transfer / ATM Withdrawal</div>
+
+          <!-- Quick presets -->
+          <div class="fl" style="margin-bottom:6px">Quick Presets</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <button onclick="applyTransferPreset('atm')" style="background:var(--s3);color:var(--orange);border:1px solid rgba(251,146,60,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏧 ATM Withdrawal</button>
+            <button onclick="applyTransferPreset('upi2cash')" style="background:var(--s3);color:var(--teal);border:1px solid rgba(45,212,191,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">💳→💵 UPI to Cash</button>
+            <button onclick="applyTransferPreset('bank2bank')" style="background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏦→🏦 Bank to Bank</button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-end">
+            <div style="flex:1">
+              <label class="fl">From Account</label>
+              <select class="fi" id="tfrFrom" style="margin-bottom:0" onchange="updateTransferNote()">
+                <option value="">-- Select --</option>
+              </select>
+            </div>
+            <div style="font-size:26px;margin-bottom:6px;flex-shrink:0;color:var(--sky)">→</div>
+            <div style="flex:1">
+              <label class="fl">To Account</label>
+              <select class="fi" id="tfrTo" style="margin-bottom:0" onchange="updateTransferNote()">
+                <option value="">-- Select --</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="fl">Amount (₹)</label>
+          <input class="fi" type="number" id="tfrAmt" placeholder="0" inputmode="numeric">
+
+          <label class="fl">Who is transferring?</label>
+          <select class="fi" id="tfrWho">
+            <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
+            <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
+          </select>
+
+          <label class="fl">Date</label>
+          <input class="fi" type="date" id="tfrDate">
+
+          <label class="fl">Note (optional)</label>
+          <input class="fi" type="text" id="tfrNote" placeholder="e.g. Monthly transfer to savings">
+
+          <!-- Live preview -->
+          <div style="background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:12px;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.8" id="tfrPreview">
+            Select From and To accounts to see preview
+          </div>
+
+          <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px">
+            💡 Creates 2 transactions automatically — debit from <em>From</em>, credit to <em>To</em>. Both tagged as Transfer so they don't affect income/expense totals.
+          </div>
+
+          <button class="sbtn" style="background:var(--sky);color:#000" onclick="doTransfer()">🔄 Execute Transfer</button>
+        </div>
       </div>
       <div id="incSrcBox" style="display:none">
         <div class="fc">
           <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent Rx</button>
             <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Rx</button>
             <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
         </div>
       </div>
-      <div class="fc">
+      <div class="fc" id="stdTxPanel">
         <label class="fl">Amount (₹)</label>
         <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
         <label class="fl">Who?</label>
@@ -326,20 +390,21 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </select>
         <label class="fl">Date</label>
         <input class="fi" type="date" id="fDate">
-        <!-- YOUR ADDITION: Transaction Type -->
-        <label class="fl">Transaction Type</label>
+        <label class="fl">Payment Method</label>
         <select class="fi" id="fTxType">
-          <option value="">Select type</option>
-          <option value="ATM">ATM</option>
+          <option value="">Select method</option>
+          <option value="ATM">ATM Withdrawal</option>
           <option value="Cash">Cash</option>
           <option value="Paytm">Paytm (UPI)</option>
           <option value="PhonePe">PhonePe (UPI)</option>
+          <option value="GPay">Google Pay (UPI)</option>
+          <option value="NetBanking">Net Banking</option>
           <option value="BankTransfer">Bank Transfer (NEFT/RTGS)</option>
+          <option value="Cheque">Cheque</option>
         </select>
-        <!-- BANK ACCOUNT SELECTOR -->
-        <label class="fl" id="bankAccLbl">Bank Account <span style="color:var(--text3);font-size:10px">(optional)</span></label>
+        <label class="fl">Bank Account <span style="color:var(--text3);font-size:10px">(optional — updates balance)</span></label>
         <select class="fi" id="fBankAcc">
-          <option value="">-- Select Account --</option>
+          <option value="">-- No Account --</option>
         </select>
         <label class="fl">Note (optional)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
@@ -445,16 +510,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </div>
       </div>
 
-      <!-- ── INCOME (admin only) ── -->
-      <div class="sh" id="incomeSettingsLbl">💰 Monthly Base Income <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
-      <div class="fc" id="incomeSettingsSection">
-        <label class="fl">💼 Gavi Salary (₹)</label>
-        <div class="irow"><input class="iinp" type="number" id="iGS" inputmode="numeric"><button class="isave" onclick="savInc('salary')">Save</button></div>
-        <label class="fl" style="margin-top:6px">🏠 Rent Rx (₹/month)</label>
-        <div class="irow"><input class="iinp" type="number" id="iGR" inputmode="numeric"><button class="isave" onclick="savInc('rent')">Save</button></div>
-        <label class="fl" style="margin-top:6px">👩 Uma Income (₹)</label>
-        <div class="irow"><input class="iinp" type="number" id="iUI" inputmode="numeric"><button class="isave" onclick="savInc('uma')">Save</button></div>
-      </div>
+      <!-- Monthly base income removed — use Add Transaction tab to record income -->
 
       <!-- ── BUDGET LIMITS (admin only) ── -->
       <div class="sh">📊 Budget Limits (₹/month) <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
@@ -485,50 +541,45 @@ service cloud.firestore {
     // Anyone can read (needed at login to verify PINs)
     // Only admins can write user records (role changes)
     match /users/{userId} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
     }
 
-    // ── SETTINGS (income, limits) ──
-    // Anyone can read, only admin can write
+    // ── SETTINGS (limits) ──
     match /settings/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
     }
 
     // ── TRANSACTIONS ──
-    // All members: create + read + update
-    // Only admin: delete
     match /transactions/{txId} {
-      allow read, create: if true;
-      allow update: if true;
-      allow delete: if isAdmin();
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn(); // Admin enforced client-side
     }
 
     // ── GOALS ──
-    // All members: create + read + update
-    // Only admin: delete
     match /goals/{goalId} {
-      allow read, create, update: if true;
-      allow delete: if isAdmin();
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn();
     }
 
     // ── BANK ACCOUNTS ──
-    // All members: read + create
-    // Only admin: update + delete
     match /bankAccounts/{bankId} {
-      allow read, create: if true;
-      allow update, delete: if isAdmin();
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn();
     }
 
     // ── HELPER FUNCTION ──
-    // Checks if the requesting user's document has role == 'Admin'
-    // Since we use PIN-based auth (not Firebase Auth), we use a
-    // shared secret header approach — set adminToken in app config
+    // request.auth is the Firebase Authentication user.
+    // Since all family members share one Firebase account,
+    // all authenticated requests are trusted.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    // isAdmin() check — all authenticated users are trusted.
+    // Admin enforcement is done client-side via PIN roles.
     function isAdmin() {
-      // For PIN-based app: allow all writes (PIN login is client-side)
-      // For production: integrate Firebase Authentication
-      return true;
+      return request.auth != null;
     }
   }
 }</div>
@@ -684,7 +735,7 @@ const CATS = [
   {id:'School',     i:'🎓', en:'School',         c:'#38bdf8',lim:8000},
   {id:'Books',      i:'📚', en:'Books',       c:'#818cf8',lim:2000},
   {id:'Tuition',    i:'✏️', en:'Tuition',    c:'#a78bfa',lim:3000},
-  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',c:'#fb923c',lim:20000},
+  {id:'BLR_Rent',   i:'🏙️',en:'Rent Tx',c:'#fb923c',lim:20000},
   {id:'Travel',     i:'🚗', en:'Travel',      c:'#f59e0b',lim:3000},
   {id:'Petrol',     i:'⛽', en:'Petrol',   c:'#fbbf24',lim:2000},
   {id:'AutoBus',    i:'🚌', en:'Auto/Bus',   c:'#facc15',lim:1500},
@@ -699,6 +750,7 @@ const CATS = [
   {id:'Children',   i:'👧', en:'Children',      c:'#f9a8d4',lim:3000},
   {id:'Festival',   i:'🪔', en:'Festival',         c:'#fcd34d',lim:5000},
   {id:'LoanTx',     i:'🤝', en:'Loan Transfer',c:'#f472b6',lim:0},
+  {id:'Transfer',   i:'🔄', en:'Transfer',     c:'#38bdf8',lim:0},
   {id:'Savings',    i:'🏦', en:'Savings',    c:'#2dd4bf',lim:0},
   {id:'Investment', i:'📈', en:'Investment',    c:'#34d399',lim:0},
   {id:'Insurance',  i:'🛡️',en:'Insurance',        c:'#6ee7b7',lim:2000},
@@ -712,9 +764,10 @@ const CATS = [
 
 const INC_SRCS = [
   {id:'salary',       i:'💼',en:'Salary',},
-  {id:'rent',         i:'🏠',en:'Rent Rx',},
-  {id:'loan_received',i:'💳',en:'Loan Rx',},
+  {id:'rent',         i:'🏠',en:'GinRent',},
+  {id:'loan_received',i:'💳',en:'Loan Received',},
   {id:'other_income', i:'📦',en:'Others',},
+  {id:'transfer',     i:'🔄',en:'Transfer In',},
 ];
 
 const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash'};
@@ -732,7 +785,7 @@ let goalCache = [];
 let bankCache = [];
 let pinCache  = {};
 let userCache = {}; // {Gavi:{role:'Admin',...}, Uma:{role:'Member',...}}
-let settings  = {income:{salary:0,rent:0,uma:0},limits:{}};
+let settings  = {limits:{}}; // income tracked via transactions only
 let unsubTx, unsubGoals, unsubBanks;
 
 const L = (en) => en; // English only — single arg
@@ -765,76 +818,70 @@ function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
 /* ══ STARTUP ══ */
 async function startup(){
-  setMsg('Loading Hatti Budget…');
+  setMsg('Connecting to Firebase…');
   try{
-    // ── FIX: load income, limits, and users in parallel with individual error handling ──
     const results = await Promise.allSettled([
-      db.collection('settings').doc('income').get(),
       db.collection('settings').doc('limits').get(),
       db.collection('users').get()
     ]);
 
-    // Income — CRITICAL for balance display
+    // Budget limits
     if(results[0].status==='fulfilled' && results[0].value.exists){
-      settings.income = results[0].value.data();
-    } else {
-      settings.income = {salary:0, rent:0, uma:0};
-      if(results[0].status==='rejected') console.warn('Income load failed:',results[0].reason);
-    }
-
-    // Limits
-    if(results[1].status==='fulfilled' && results[1].value.exists){
-      settings.limits = results[1].value.data();
+      settings.limits = results[0].value.data();
     } else {
       settings.limits = {};
     }
 
     // Users / PINs / Roles
-    if(results[2].status==='fulfilled' && !results[2].value.empty){
-      results[2].value.forEach(doc => {
+    if(results[1].status==='fulfilled' && !results[1].value.empty){
+      results[1].value.forEach(doc => {
         const d = doc.data();
-        pinCache[doc.id]  = d.pin || DEF_PINS[doc.id] || '1234';
-        userCache[doc.id] = d; // store full user object incl role
+        pinCache[doc.id]  = d.pin  || DEF_PINS[doc.id] || '1234';
+        userCache[doc.id] = d;
       });
     } else {
       await seedUsers();
     }
-    USERS.forEach(u => { if(!pinCache[u]) pinCache[u]=DEF_PINS[u]; });
+    USERS.forEach(u => { if(!pinCache[u]) pinCache[u] = DEF_PINS[u]; });
 
-    document.getElementById('fbStatus').textContent = '✅ Connected · '+new Date().toLocaleTimeString();
+    const fbEl = document.getElementById('fbStatus');
+    if(fbEl) fbEl.textContent = '✅ Connected · ' + new Date().toLocaleTimeString();
+
   } catch(e){
-    console.error('Startup error:',e);
-    document.getElementById('fbStatus').textContent = '⚠️ Error: '+e.message;
-    USERS.forEach(u => pinCache[u]=DEF_PINS[u]);
-    settings = {income:{salary:0,rent:0,uma:0},limits:{}};
+    console.error('Startup error:', e);
+    const fbEl = document.getElementById('fbStatus');
+    if(fbEl) fbEl.textContent = '⚠️ ' + e.message;
+    // Use defaults so app still works offline
+    USERS.forEach(u => { if(!pinCache[u]) pinCache[u] = DEF_PINS[u]; });
+    settings = {limits:{}};
   }
 
-  document.getElementById('loading').style.display='none';
+  // Always hide loading and show login — never hang
+  document.getElementById('loading').style.display = 'none';
 
-  // Check existing session → skip login
+  // Restore session if valid (survived page refresh)
   const session = getSession();
   if(session && USERS.includes(session.user)){
     curUser = session.user;
     enterApp();
-    // Restore last page
     const pg = getSavedPage();
-    const navEl = document.querySelector(`.ni[onclick*="'${pg}'"]`);
-    if(navEl && pg!=='Dash') goPage(pg, navEl);
+    if(pg !== 'Dash'){
+      // Find the nav item for the saved page and activate it
+      const allNav = document.querySelectorAll('.ni');
+      allNav.forEach(n => {
+        if(n.getAttribute('onclick') && n.getAttribute('onclick').indexOf("'"+pg+"'") !== -1){
+          goPage(pg, n);
+        }
+      });
+    }
   } else {
-    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('loginScreen').style.display = 'flex';
   }
 }
-async function seedUsers(){
-  const batch = db.batch();
-  USERS.forEach((u,i) => {
-    const ref = db.collection('users').doc(u);
-    batch.set(ref,{name:u,pin:DEF_PINS[u],role:ROLES[i],avatar:AVATARS[i]});
-    pinCache[u]=DEF_PINS[u];
-  });
-  try{ await batch.commit(); } catch(e){ console.warn('Seed failed:',e); }
-}
+function setMsg(m){ const el=document.getElementById('loadMsg'); if(el) el.textContent=m; }
 startup();
-function setMsg(m){ document.getElementById('loadMsg').textContent=m; }
+
+// Firebase Email Auth removed — using PIN-based login only
 
 /* ══ LOGIN ══ */
 let pinBuf='', selIdx=0;
@@ -854,13 +901,30 @@ function enterApp(){
   const role = getUserRole(curUser);
   const av   = AVATARS[USERS.indexOf(curUser)];
   document.getElementById('tbUser').textContent = av+' '+curUser+' ['+role+']';
-  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('fDate').value=today;
+  const tfrDateEl=document.getElementById('tfrDate'); if(tfrDateEl) tfrDateEl.value=today;
   document.getElementById('fWho').value=curUser;
   buildCatGrid(); buildEditCatSelect();
   subscribeRT();
   renderSettings();
   saveSession();
 }
+function doFullSignOut(){
+  // Same as logout — clears session and returns to login
+  if(unsubTx) unsubTx();
+  if(unsubGoals) unsubGoals();
+  if(unsubBanks) unsubBanks();
+  txCache=[]; goalCache=[]; bankCache=[];
+  clearSession();
+  curUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  selIdx=0; document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',j===0));
+  pinBuf=''; updateDots();
+  document.getElementById('lerr').textContent='';
+}
+
 function doLogout(){
   [unsubTx,unsubGoals,unsubBanks].forEach(u=>u&&u());
   txCache=[]; goalCache=[]; bankCache=[];
@@ -949,16 +1013,10 @@ function getDataMonthCount(){
 /* ══ DASHBOARD ══ */
 function renderDash(){
   const now=new Date(), mm=now.getMonth(), yy=now.getFullYear();
-  const inc = settings.income || {salary:0,rent:0,uma:0};
-  const baseInc = (+inc.salary||0) + (+inc.rent||0) + (+inc.uma||0);
-
-  // ── CURRENT BALANCE = ALL TIME (all transactions, not just this month) ──
-  const allIncTx  = txCache.filter(t=>t.type==='income');
-  const allExpTx  = txCache.filter(t=>t.type==='expense');
-  const allAddlInc = allIncTx.reduce((s,t)=>s+(+t.amount||0),0);
-  // baseInc is monthly — multiply by number of months we have data for
-  const months = getDataMonthCount();
-  const allTotalInc = baseInc * months + allAddlInc;
+  // ── CURRENT BALANCE = ALL TIME transactions only (no manual base income) ──
+  const allIncTx  = txCache.filter(t=>t.type==='income'&&t.category!=='Income_transfer'); // exclude transfers
+  const allExpTx  = txCache.filter(t=>t.type==='expense'&&t.category!=='Transfer');       // exclude transfers
+  const allTotalInc = allIncTx.reduce((s,t)=>s+(+t.amount||0),0);
   const allTotalExp = allExpTx.reduce((s,t)=>s+(+t.amount||0),0);
   const allBal = allTotalInc - allTotalExp;
   const allPct = allTotalInc>0 ? Math.round(allBal/allTotalInc*100) : 0;
@@ -968,12 +1026,13 @@ function renderDash(){
   setText('hSpent','₹'+fmt(allTotalExp));
   setText('hPct',  allPct+'%');
 
-  // Income source breakdown (all time)
+  // Income source breakdown (all time, from transactions only)
   const srcAmt = s => allIncTx.filter(t=>t.incSrc===s).reduce((a,t)=>a+(+t.amount||0),0);
-  setText('iSal',  '₹'+fmt(baseInc*months + srcAmt('salary')));
+  setText('iSal',  '₹'+fmt(srcAmt('salary')));
   setText('iRent', '₹'+fmt(srcAmt('rent')));
   setText('iLoan', '₹'+fmt(srcAmt('loan_received')));
   setText('iOther','₹'+fmt(srcAmt('other_income')));
+
 
   // Labels
   const heroLbl = document.getElementById('heroLbl');
@@ -988,7 +1047,7 @@ function renderDash(){
     const d=new Date(t.date);
     return d.getMonth()===mm && d.getFullYear()===yy;
   });
-  const incTx = mTx.filter(t=>t.type==='income');
+  // incTx not used (base income removed)
 
   // Budget warnings
   const lims={...Object.fromEntries(CATS.map(c=>[c.id,c.lim])),...(settings.limits||{})};
@@ -1026,7 +1085,7 @@ function renderDash(){
     strip.innerHTML+=`<div class="bchip" style="border-color:var(--gold)"><div class="bchip-name">📊 Total</div><div class="bchip-bal" style="color:var(--gold)">₹${fmt(totalBankBal)}</div></div>`;
   }
 
-  drawTrend(baseInc);
+  drawTrend();
 
   const rl=document.getElementById('recentTx');
   rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')
@@ -1125,12 +1184,116 @@ async function deleteBank(id){
 
 // Refresh bank dropdowns in Add & Edit forms
 function refreshBankDropdowns(){
-  const opts = `<option value="">-- No Account --</option>` +
-    bankCache.map(b=>`<option value="${b.id}">${b.icon||'🏦'} ${b.name}</option>`).join('');
-  const fAcc=document.getElementById('fBankAcc');
-  const eAcc=document.getElementById('editBankAcc');
-  if(fAcc) fAcc.innerHTML=opts;
-  if(eAcc) eAcc.innerHTML=opts;
+  const opts='<option value="">-- No Account --</option>'
+    +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+'</option>').join('');
+  const tfrOpts='<option value="">-- Select Account --</option>'
+    +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+' (₹'+fmt(getBankBalance(b.id))+')</option>').join('');
+  const fAcc=document.getElementById('fBankAcc'); if(fAcc) fAcc.innerHTML=opts;
+  const eAcc=document.getElementById('editBankAcc'); if(eAcc) eAcc.innerHTML=opts;
+  const tFrom=document.getElementById('tfrFrom'); if(tFrom) tFrom.innerHTML=tfrOpts;
+  const tTo=document.getElementById('tfrTo'); if(tTo) tTo.innerHTML=tfrOpts;
+}
+
+
+/* ══ TRANSFER BETWEEN ACCOUNTS ══ */
+function updateTransferNote(){
+  const fromId=document.getElementById('tfrFrom')?.value;
+  const toId=document.getElementById('tfrTo')?.value;
+  const prev=document.getElementById('tfrPreview'); if(!prev) return;
+  const fromBank=bankCache.find(b=>b.id===fromId);
+  const toBank=bankCache.find(b=>b.id===toId);
+  if(!fromBank||!toBank){
+    prev.innerHTML='Select From and To accounts to see preview';
+    return;
+  }
+  const fromBal=getBankBalance(fromId);
+  const toBal=getBankBalance(toId);
+  const amt=Number(document.getElementById('tfrAmt')?.value)||0;
+  prev.innerHTML=
+    '<span style="color:var(--rose)">📤 '+fromBank.icon+' '+fromBank.name+'</span>: ₹'+fmt(fromBal)+(amt?' → ₹'+fmt(fromBal-amt):'')+'<br>'+
+    '<span style="color:var(--green)">📥 '+toBank.icon+' '+toBank.name+'</span>: ₹'+fmt(toBal)+(amt?' → ₹'+fmt(toBal+amt):'');
+}
+document.addEventListener('input', e=>{ if(e.target&&e.target.id==='tfrAmt') updateTransferNote(); });
+
+function applyTransferPreset(type){
+  const cashBank=bankCache.find(b=>b.type==='cash');
+  const salaryBank=bankCache.find(b=>b.type==='salary');
+  const savingsBank=bankCache.find(b=>b.type==='savings');
+  const firstBank=bankCache[0];
+  const tfrFrom=document.getElementById('tfrFrom');
+  const tfrTo=document.getElementById('tfrTo');
+  if(!tfrFrom||!tfrTo) return;
+  if(type==='atm'){
+    // ATM: from salary/savings bank → cash in hand
+    const fromB=salaryBank||savingsBank||firstBank;
+    const toB=cashBank||bankCache.find(b=>b.type!==fromB?.type);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='ATM Withdrawal';
+  } else if(type==='upi2cash'){
+    const walletBank=bankCache.find(b=>b.type==='wallet');
+    const fromB=walletBank||firstBank;
+    const toB=cashBank||bankCache.find(b=>b.id!==fromB?.id);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='UPI to Cash';
+  } else if(type==='bank2bank'){
+    const fromB=salaryBank||firstBank;
+    const toB=savingsBank||bankCache.find(b=>b.id!==fromB?.id);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='Bank to Bank Transfer';
+  }
+  updateTransferNote();
+}
+
+async function doTransfer(){
+  const fromId=document.getElementById('tfrFrom').value;
+  const toId=document.getElementById('tfrTo').value;
+  const amt=Number(document.getElementById('tfrAmt').value);
+  const who=document.getElementById('tfrWho').value;
+  const date=document.getElementById('tfrDate').value||new Date().toISOString().split('T')[0];
+  const note=document.getElementById('tfrNote').value.trim();
+  const fromBank=bankCache.find(b=>b.id===fromId);
+  const toBank=bankCache.find(b=>b.id===toId);
+  if(!fromId||!toId){ showToast('Select both From and To accounts',true); return; }
+  if(fromId===toId){ showToast('From and To accounts must be different',true); return; }
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
+  const transferRef='TFR-'+Date.now();
+  const baseNote=note||(fromBank.name+' → '+toBank.name);
+  try{
+    const batch=db.batch();
+    // Debit from source account
+    batch.set(db.collection('transactions').doc(), {
+      type:'expense', amount:amt,
+      category:'Transfer',
+      incSrc:null,
+      who, date,
+      txType:'Bank Transfer',
+      bankAccountId:fromId,
+      note:baseNote+' [Transfer Out]',
+      addedBy:curUser, editedBy:null, editedAt:null,
+      transferRef, ts:Date.now()
+    });
+    // Credit to destination account
+    batch.set(db.collection('transactions').doc(), {
+      type:'income', amount:amt,
+      category:'Income_transfer',
+      incSrc:'transfer',
+      who, date,
+      txType:'Bank Transfer',
+      bankAccountId:toId,
+      note:baseNote+' [Transfer In]',
+      addedBy:curUser, editedBy:null, editedAt:null,
+      transferRef, ts:Date.now()+1
+    });
+    await batch.commit();
+    // Clear fields
+    document.getElementById('tfrAmt').value='';
+    document.getElementById('tfrNote').value='';
+    document.getElementById('tfrPreview').innerHTML='Select From and To accounts to see preview';
+    showToast('✅ Transfer done! '+fromBank.name+' → '+toBank.name);
+  }catch(e){ showToast('Transfer error: '+e.message,true); }
 }
 
 /* ══ ADD TRANSACTION ══ */
@@ -1138,9 +1301,18 @@ function setTyp(t){
   curType=t;
   document.getElementById('btnExp').classList.toggle('on',t==='expense');
   document.getElementById('btnInc').classList.toggle('on',t==='income');
-  document.getElementById('incSrcBox').style.display=t==='income'?'block':'none';
-  document.getElementById('catBox').style.display=t==='expense'?'block':'none';
+  const tfrBtn=document.getElementById('btnTfr'); if(tfrBtn) tfrBtn.classList.toggle('on',t==='transfer');
+  document.getElementById('incSrcBox').style.display   = t==='income'   ? 'block' : 'none';
+  document.getElementById('catBox').style.display      = t==='expense'  ? 'block' : 'none';
+  document.getElementById('transferPanel').style.display = t==='transfer' ? 'block' : 'none';
+  // stdTxPanel wraps amount/who/date/note — hide when transfer mode
+  const stdPanel = document.getElementById('stdTxPanel');
+  if(stdPanel) stdPanel.style.display = t==='transfer' ? 'none' : 'block';
+  // Save button: hide when transfer (transfer has its own Execute button)
+  const saveBtn = document.querySelector('#pgAdd .sbtn:last-of-type');
+  if(saveBtn) saveBtn.style.display = t==='transfer' ? 'none' : 'block';
 }
+
 function setIS(s){
   curIS=s;
   ['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>document.getElementById(id).classList.remove('on'));
@@ -1163,24 +1335,67 @@ function buildEditCatSelect(){
   s.innerHTML=CATS.map(c=>`<option value="${c.id}">${c.i} ${c.en}</option>`).join('');
 }
 async function doAdd(){
+  // Transfer mode uses its own Execute button → doTransfer()
+  if(curType==='transfer'){ doTransfer(); return; }
+
   const amt=Number(document.getElementById('fAmt').value);
   if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
-  const bankAccId = document.getElementById('fBankAcc').value;
+  const date=document.getElementById('fDate').value||new Date().toISOString().split('T')[0];
+  const who=document.getElementById('fWho').value;
+  const txType=document.getElementById('fTxType').value;
+  const note=document.getElementById('fNote').value.trim();
+  const now=Date.now();
+
+  // ── TRANSFER MODE: create 2 linked transactions ──
+  if(curType==='transfer'){
+    const fromId=document.getElementById('tfrFrom').value;
+    const toId=document.getElementById('tfrTo').value;
+    if(!fromId||!toId){ showToast('Select both From and To accounts',true); return; }
+    if(fromId===toId){ showToast('From and To cannot be the same account',true); return; }
+    const fromB=bankCache.find(b=>b.id===fromId);
+    const toB=bankCache.find(b=>b.id===toId);
+    const transferNote=(note||'Transfer')+': '+(fromB?fromB.name:'?')+' → '+(toB?toB.name:'?');
+    const transferRef='TFR-'+now; // link ID to pair the two transactions
+    try{
+      // Expense from source account
+      await db.collection('transactions').add({
+        type:'expense', amount:amt, category:'Transfer',
+        who, date, txType:txType||'BankTransfer',
+        bankAccountId:fromId, note:transferNote,
+        transferRef, transferDir:'out',
+        addedBy:curUser, editedBy:null, editedAt:null, ts:now
+      });
+      // Income to destination account
+      await db.collection('transactions').add({
+        type:'income', amount:amt, category:'Income_transfer',
+        incSrc:'transfer',
+        who, date, txType:txType||'BankTransfer',
+        bankAccountId:toId, note:transferNote,
+        transferRef, transferDir:'in',
+        addedBy:curUser, editedBy:null, editedAt:null, ts:now+1
+      });
+      document.getElementById('fAmt').value='';
+      document.getElementById('fNote').value='';
+      showToast('✅ Transfer recorded! Both accounts updated.');
+    }catch(e){ showToast('Transfer error: '+e.message,true); }
+    return;
+  }
+
+  // ── NORMAL INCOME / EXPENSE ──
+  const bankAccId=document.getElementById('fBankAcc').value;
   try{
     await db.collection('transactions').add({
       type:          curType,
       amount:        amt,
       category:      curType==='expense' ? curCat : 'Income_'+curIS,
       incSrc:        curType==='income' ? curIS : null,
-      who:           document.getElementById('fWho').value,
-      date:          document.getElementById('fDate').value||new Date().toISOString().split('T')[0],
-      txType:        document.getElementById('fTxType').value,   // ATM/Cash/UPI etc
+      who, date,
+      txType,
       bankAccountId: bankAccId||null,
-      note:          document.getElementById('fNote').value.trim(),
+      note,
       addedBy:       curUser,
-      editedBy:      null,
-      editedAt:      null,
-      ts:            Date.now()
+      editedBy:      null, editedAt:null,
+      ts:            now
     });
     document.getElementById('fAmt').value='';
     document.getElementById('fNote').value='';
@@ -1392,7 +1607,13 @@ function setFilt(f){ filtCat=f; renderHistory(); }
 
 /* ══ TX HTML ══ */
 function txHTML(tx,showActions){
-  const cat=C(tx.category)||C(tx.category?.replace('Income_',''))||{i:tx.type==='income'?'💵':'📦',en:tx.category||'Other',c:'#94a3b8'};
+  // Special categories for transfer
+  let cat;
+  if(tx.category==='Transfer'||tx.category==='Income_transfer'){
+    cat={i:'🔄',en:tx.category==='Transfer'?'Transfer Out':'Transfer In',c:'#38bdf8'};
+  } else {
+    cat=C(tx.category)||C(tx.category?.replace('Income_',''))||{i:tx.type==='income'?'💵':'📦',en:tx.category||'Other',c:'#94a3b8'};
+  }
   const sign=tx.type==='income'?'+':'-';
   const col=tx.type==='income'?'var(--green)':'var(--rose)';
   const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
@@ -1407,7 +1628,7 @@ function txHTML(tx,showActions){
   return `<div class="tx">
     <div class="txico">${cat.i}</div>
     <div class="txinf">
-      <div class="txcat">${L(cat.en,cat.kn)}</div>
+      <div class="txcat">${cat.en||cat.id||'Other'}</div>
       <div class="txmeta">${tx.who||''} · ${dateStr}${txTypeTag}${bankTag}${tx.note?' · '+tx.note:''}</div>
       ${audit?`<div class="txby">${audit}</div>`:''}
     </div>
@@ -1459,8 +1680,6 @@ function renderReports(){
   const isAll=selVal==='all';
 
   const now=new Date();
-  const inc=settings.income||{};
-  const baseInc=(+inc.salary||0)+(+inc.rent||0)+(+inc.uma||0);
   const sM=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
   // Filter transactions
@@ -1475,15 +1694,15 @@ function renderReports(){
     days=new Date(yy,mm+1,0).getDate();
   }
 
-  const months=isAll?getDataMonthCount():1;
-  const effectiveBase=isAll?(baseInc*months):baseInc;
-  const totalInc=effectiveBase+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0);
-  const totalExp=mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
+  // Income/expense excluding pure account transfers
+  const totalInc=mTx.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0);
+  const totalExp=mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0);
   const saved=totalInc-totalExp;
   const savePct=totalInc>0?Math.round(saved/totalInc*100):0;
-  const avgExp=isAll?Math.round(totalExp/months):Math.round(totalExp/days);
+  const repMonths=isAll?getDataMonthCount():1;
+  const avgExp=isAll?Math.round(totalExp/repMonths):Math.round(totalExp/days);
   const avgLbl=isAll?'Monthly Avg Expense':'Daily Avg';
-  const largest=mTx.filter(t=>t.type==='expense').sort((a,b)=>b.amount-a.amount)[0];
+  const largest=mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').sort((a,b)=>b.amount-a.amount)[0];
 
   // Summary title
   const repSummTitle=document.getElementById('repSummTitle');
@@ -1516,7 +1735,7 @@ function renderReports(){
     const rows=sorted.map(ym=>{
       const [y,m]=ym.split('-').map(Number);
       const mTxRow=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===(m-1)&&d.getFullYear()===y;});
-      const mInc=baseInc+mTxRow.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0);
+      const mInc=mTxRow.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0);
       const mExp=mTxRow.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
       const mBal=mInc-mExp;
       return {ym,y,m,mInc,mExp,mBal,label:sM[m-1]+' '+y};
@@ -1562,17 +1781,15 @@ function renderReports(){
   drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
 
   // Income sources (filtered)
-  const incSrcAmt=INC_SRCS.map(s=>{
-    const base=isAll
-      ?(s.id==='salary'?(+inc.salary||0)*months:s.id==='rent'?(+inc.rent||0)*months:s.id==='other_income'?(+inc.uma||0)*months:0)
-      :(s.id==='salary'?(+inc.salary||0):s.id==='rent'?(+inc.rent||0):s.id==='other_income'?(+inc.uma||0):0);
-    return base+mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0);
+  const incSrcAmt=INC_SRCS.filter(s=>s.id!=='transfer').map(s=>{
+    return mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0);
   });
+  const incSrcLabels=INC_SRCS.filter(s=>s.id!=='transfer').map(s=>s.i+s.en);
   drawBarChart(document.getElementById('incC'),INC_SRCS.map(s=>s.i+s.en),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
 }
 
 /* ══ CHARTS ══ */
-function drawTrend(baseInc){
+function drawTrend(){
   const canvas=document.getElementById('trendC'); if(!canvas)return;
   const now=new Date();
   const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1655,7 +1872,7 @@ function renderSettings(){
   }
 
   // Show/hide income & limits sections for non-admin
-  const incSec=document.getElementById('incomeSettingsSection');
+  const incSec=null; // removed
   const limSec=document.getElementById('limForm');
   const incLbl=document.getElementById('incomeSettingsLbl');
   const rulesSec=document.getElementById('rulesSection');
@@ -1663,11 +1880,6 @@ function renderSettings(){
   [incSec,incLbl,rulesSec,rulesBox].forEach(el=>{if(el) el.style.display=admin?'':'none'});
 
   if(admin){
-    // Fill income fields
-    const inc=settings.income||{};
-    const gs=document.getElementById('iGS'); if(gs) gs.value=inc.salary||'';
-    const gr=document.getElementById('iGR'); if(gr) gr.value=inc.rent||'';
-    const ui=document.getElementById('iUI'); if(ui) ui.value=inc.uma||'';
     // Fill limits
     if(limSec){
       const savedLims=settings.limits||{};
@@ -1762,19 +1974,7 @@ async function savPin(who){
   }catch(e){ showToast('Error: '+e.message,true); }
 }
 
-async function savInc(src){
-  if(!requireAdmin('edit income settings')) return;
-  const inc={...(settings.income||{})};
-  if(src==='salary') inc.salary=+document.getElementById('iGS').value||0;
-  if(src==='rent')   inc.rent  =+document.getElementById('iGR').value||0;
-  if(src==='uma')    inc.uma   =+document.getElementById('iUI').value||0;
-  try{
-    await db.collection('settings').doc('income').set(inc);
-    settings.income=inc;
-    showToast('✅ Income saved!');
-    renderDash();
-  }catch(e){ showToast('Error: '+e.message,true); }
-}
+// Monthly base income removed — all income tracked via transactions
 async function savLim(id){
   if(!requireAdmin('edit budget limits')) return;
   const val=+document.getElementById('lim_'+id).value||0;
@@ -1785,17 +1985,6 @@ async function savLim(id){
     showToast('✅ Limit saved!');
   }catch(e){ showToast('Error: '+e.message,true); }
 }
-async function savPin(who){
-  const el=document.getElementById('pin_'+who); if(!el) return;
-  const v=el.value.trim();
-  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
-  try{
-    await db.collection('users').doc(who).set({name:who,pin:v,role:ROLES[USERS.indexOf(who)],avatar:AVATARS[USERS.indexOf(who)]},{merge:true});
-    pinCache[who]=v; el.value='';
-    showToast('✅ '+who+' PIN saved!');
-  }catch(e){ showToast('Error: '+e.message,true); }
-}
-
 /* ══ UTILS ══ */
 function fmt(n){ return Number(n||0).toLocaleString('en-IN'); }
 function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
