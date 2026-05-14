@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BUDGET</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b14;--s1:#0e1422;--s2:#141c30;--s3:#1c263e;--s4:#253050;
+  --gold:#f0b429;--teal:#2dd4bf;--rose:#fb7185;--green:#4ade80;
+  --violet:#a78bfa;--sky:#38bdf8;--orange:#fb923c;
+  --text:#eef2ff;--text2:#8892b0;--text3:#4a5568;
+  --font:'Baloo Tamma 2',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden}
+/* LOADING */
+#loading{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.spin{width:44px;height:44px;border:3px solid var(--s3);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto;background:var(--bg) radial-gradient(ellipse 80% 50% at 30% 20%,rgba(42,99,160,.18) 0%,transparent 60%)}
+.login-logo{font-size:56px;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 18px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 32px rgba(240,180,41,.9))}}
+.login-title{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:14px;text-align:center}
+.user-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;width:100%;max-width:320px}
+.ucard{background:var(--s1);border:2px solid var(--s3);border-radius:16px;padding:13px 8px;cursor:pointer;transition:all .2s;text-align:center}
+.ucard.sel{border-color:var(--gold);background:var(--s2);box-shadow:0 0 20px rgba(240,180,41,.2)}
+.ucard .av{font-size:28px;margin-bottom:4px}.ucard .un{font-size:13px;font-weight:700}.ucard .ur{font-size:10px;color:var(--text2)}
+.pin-lbl{font-size:12px;color:var(--text2);margin-bottom:8px}
+.pdots{display:flex;gap:14px;margin-bottom:14px}
+.pd{width:16px;height:16px;border-radius:50%;background:var(--s3);border:2px solid var(--s4);transition:all .15s}
+.pd.on{background:var(--gold);border-color:var(--gold);transform:scale(1.3)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;width:100%;max-width:270px}
+.nb{background:var(--s1);color:var(--text);border:1.5px solid var(--s3);border-radius:13px;font-family:var(--font);font-size:22px;font-weight:700;height:62px;cursor:pointer;transition:all .12s;width:100%}
+.nb:active{background:var(--s3);transform:scale(.92)}.nb.ok{background:var(--gold);color:#000;border-color:var(--gold);font-size:14px}
+.lerr{color:var(--rose);font-size:12px;margin-top:10px;min-height:18px;text-align:center}
+/* APP */
+#app{position:fixed;inset:0;z-index:40;display:none;flex-direction:column}
+@media(min-width:600px){#app{left:50%;transform:translateX(-50%);width:520px;border-left:1px solid var(--s2);border-right:1px solid var(--s2);box-shadow:0 0 60px rgba(0,0,0,.6)}html,body{background:#040810}}
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px;background:var(--s1);border-bottom:1px solid var(--s2);flex-shrink:0;gap:8px}
+.tb-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.tb-logo{font-size:22px;flex-shrink:0}.tb-title{font-size:16px;font-weight:800;color:var(--gold);white-space:nowrap}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite;flex-shrink:0}
+.sdot.off{background:var(--rose);animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-user{font-size:11px;color:var(--text2);font-weight:600;white-space:nowrap}
+.tb-btn{background:var(--s2);color:var(--text);border:1px solid var(--s3);border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tb-btn.logout{background:rgba(251,113,133,.15);color:var(--rose);border-color:rgba(251,113,133,.3)}
+/* PAGES */
+.pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:76px}
+.page{display:none;padding:16px}.page.on{display:block}
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--s2);display:flex;padding-bottom:env(safe-area-inset-bottom,0)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 2px 7px;cursor:pointer}
+.ni.on .nico{transform:scale(1.2)}.ni.on .nlbl{color:var(--gold)}
+.nico{font-size:20px;margin-bottom:2px;transition:transform .15s}.nlbl{font-size:9px;font-weight:700;color:var(--text2)}
+/* TYPOGRAPHY */
+.sh{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 10px}
+.ph{font-size:21px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* HERO */
+.hero{background:linear-gradient(135deg,#0a2240,#071830);border:1px solid rgba(56,189,248,.15);border-radius:20px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:'₹';position:absolute;right:-8px;top:-18px;font-size:110px;color:rgba(255,255,255,.03);font-weight:900;pointer-events:none}
+.hlbl{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px}
+.hbal{font-size:38px;font-weight:800;color:#fff;line-height:1;margin-bottom:14px}
+.hbal sup{font-size:18px}
+.hrow{display:flex;gap:10px}.hs{flex:1}
+.hslbl{font-size:10px;color:rgba(255,255,255,.45);margin-bottom:1px}.hsval{font-size:17px;font-weight:800}
+/* INCOME SPLIT */
+.inc-split{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.ic{flex:1;min-width:calc(50% - 4px);background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:11px 8px;text-align:center}
+.ic-ico{font-size:20px;margin-bottom:3px}.ic-lbl{font-size:9px;color:var(--text2);font-weight:600;margin-bottom:2px;line-height:1.3}.ic-amt{font-size:16px;font-weight:800;color:var(--green)}
+/* STAT GRID */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
+.sc-ico{font-size:20px;margin-bottom:4px}.sc-lbl{font-size:10px;color:var(--text2);margin-bottom:1px}.sc-val{font-size:19px;font-weight:800}
+/* BANK ACCOUNT CARDS */
+.bank-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.bank-card{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.bank-card.positive{border-left:3px solid var(--green)}.bank-card.negative{border-left:3px solid var(--rose)}.bank-card.zero{border-left:3px solid var(--s4)}
+.bank-ico{font-size:28px;flex-shrink:0}
+.bank-info{flex:1;min-width:0}
+.bank-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bank-type{font-size:10px;color:var(--text2);margin-bottom:2px}
+.bank-bal{font-size:20px;font-weight:800}
+.bank-bal.pos{color:var(--green)}.bank-bal.neg{color:var(--rose)}.bank-bal.zer{color:var(--text2)}
+.bank-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.bank-edit-btn{background:var(--s3);color:var(--sky);border:none;border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer}
+.bank-del-btn{background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.2);border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer}
+.add-bank-btn{width:100%;background:transparent;color:var(--gold);border:2px dashed rgba(240,180,41,.3);border-radius:14px;padding:12px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px}
+/* DASH BANK STRIP */
+.bank-strip{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px}
+.bank-strip::-webkit-scrollbar{display:none}
+.bchip{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:10px 12px;flex-shrink:0;min-width:130px;text-align:center}
+.bchip-name{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:2px}
+.bchip-bal{font-size:18px;font-weight:800}
+/* CHART BOX */
+.cbox{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:14px;margin-bottom:12px}
+.ctitle{font-size:13px;font-weight:700;margin-bottom:10px}
+.cbrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.cblbl{font-size:11px;font-weight:600;width:76px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbtrack{flex:1;background:var(--s3);border-radius:6px;height:9px;overflow:hidden}
+.cbfill{height:100%;border-radius:6px;transition:width .7s}.cbamt{font-size:11px;font-weight:700;width:60px;text-align:right;flex-shrink:0}
+canvas{width:100%!important;border-radius:6px;display:block}
+/* WARN */
+.warn{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;color:#fca5a5;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+/* TX */
+.tx{display:flex;align-items:flex-start;gap:10px;background:var(--s1);border:1px solid var(--s2);border-radius:13px;padding:12px 13px;margin-bottom:7px;animation:fu .3s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.txico{font-size:24px;width:32px;text-align:center;flex-shrink:0;margin-top:2px}
+.txinf{flex:1;min-width:0}
+.txcat{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txmeta{font-size:10px;color:var(--text2);margin-top:1px}
+.txby{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--s3);color:var(--text2);margin-top:3px;display:inline-block}
+.txamt{font-size:15px;font-weight:800;flex-shrink:0;margin-top:2px}
+.tx-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.txdel{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:2px 4px}
+.txedit{background:none;border:none;color:var(--sky);font-size:14px;cursor:pointer;padding:2px 4px}
+.empty{text-align:center;padding:36px 16px;color:var(--text2)}.empty .big{font-size:44px;margin-bottom:8px}.empty p{font-size:13px}
+/* FORM */
+.trow{display:flex;gap:9px;margin-bottom:14px}
+.tbtn{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:12px;padding:11px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.tbtn.exp.on{border-color:var(--rose);background:rgba(251,113,133,.12);color:var(--rose)}
+.tbtn.inc.on{border-color:var(--green);background:rgba(74,222,128,.12);color:var(--green)}
+.tbtn.tfr.on{border-color:var(--sky);background:rgba(56,189,248,.12);color:var(--sky)}
+.fc{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:16px;margin-bottom:12px}
+.fl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.fi{width:100%;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:10px;padding:12px 13px;font-family:var(--font);font-size:14px;font-weight:600;margin-bottom:10px;outline:none;transition:border .2s;-webkit-appearance:none}
+.fi:focus{border-color:var(--gold)}.fi option{background:var(--s2)}
+.isrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.isbtn{background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:10px;padding:9px 6px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+.isbtn.on{border-color:var(--teal);background:rgba(45,212,191,.12);color:var(--teal)}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.cbtn{background:var(--s2);border:1.5px solid var(--s3);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;color:var(--text);font-family:var(--font);display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .12s}
+.cbtn.on{border-color:var(--gold);background:rgba(240,180,41,.12)}
+.cbtn .ci{font-size:18px}.cbtn .cn{font-size:9px;font-weight:700;line-height:1.1}
+.sbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:13px;padding:15px;font-family:var(--font);font-size:16px;font-weight:800;cursor:pointer;margin-top:4px}
+.sbtn:active{transform:scale(.97);opacity:.9}
+/* GOALS */
+.gcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px;margin-bottom:10px}
+.gh{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.gico{font-size:26px}.ginf{flex:1}.gname{font-size:14px;font-weight:700}.gsub{font-size:10px;color:var(--text2)}
+.gpct{font-size:14px;font-weight:800;color:var(--gold)}
+.gtrack{background:var(--s3);border-radius:6px;height:9px;overflow:hidden;margin-bottom:6px}
+.gfill{height:100%;border-radius:6px;transition:width .8s}
+.gamts{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}.gamts strong{color:var(--text)}
+
+/* GOAL CARD ACTIONS */
+.gcrd-actions{display:flex;gap:8px;margin-top:10px}
+.g-edit-btn{flex:1;background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.2);border-radius:9px;padding:8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+.g-del-btn{background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.2);border-radius:9px;padding:8px 12px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
+.g-add-btn{flex:1;background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2);border-radius:9px;padding:8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center}
+.agbtn{width:100%;background:transparent;color:var(--gold);border:2px dashed rgba(240,180,41,.25);border-radius:14px;padding:12px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px}
+/* FILTER */
+.frow{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:3px}
+.frow::-webkit-scrollbar{display:none}
+.fchip{background:var(--s2);border:1.5px solid var(--s3);border-radius:18px;padding:6px 12px;font-family:var(--font);font-size:11px;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;flex-shrink:0}
+.fchip.on{background:var(--gold);color:#000;border-color:var(--gold)}
+/* EXPORT */
+.export-btn{display:flex;align-items:center;gap:8px;background:var(--s2);color:var(--teal);border:1.5px solid rgba(45,212,191,.3);border-radius:12px;padding:10px 16px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px;width:100%;justify-content:center}
+/* REPORTS */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.rcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
+.rlbl{font-size:11px;color:var(--text2);margin-bottom:3px}.rval{font-size:20px;font-weight:800}
+/* SETTINGS */
+.irow{display:flex;gap:7px;align-items:center;margin-bottom:8px}
+.iinp{flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:9px;padding:9px 12px;font-family:var(--font);font-size:14px;font-weight:700;outline:none;transition:border .2s}
+.iinp:focus{border-color:var(--gold)}
+.isave{background:var(--gold);color:#000;border:none;border-radius:9px;padding:9px 14px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
+.mo.open{display:flex}
+.modal{background:var(--s1);border-radius:20px 20px 0 0;padding:22px 18px 34px;width:100%;max-width:520px;animation:su .22s ease;max-height:90vh;overflow-y:auto}
+@keyframes su{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtitle{font-size:17px;font-weight:800;margin-bottom:14px}
+.mclose{float:right;background:var(--s3);border:none;color:var(--text);border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;line-height:28px;text-align:center;margin-top:-2px}
+.mupdate-btn{width:100%;background:var(--sky);color:#000;border:none;border-radius:13px;padding:14px;font-family:var(--font);font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
+/* TOAST */
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.err{border-color:var(--rose);color:var(--rose)}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+/* TRANSFER BUTTON */
+.tbtn.tfr{font-size:12px}
+.tbtn.tfr.on{border-color:var(--sky);background:rgba(56,189,248,.12);color:var(--sky)}
+/* FIREBASE AUTH LOGIN */
+
+/* MEMBER MANAGEMENT */
+.member-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.member-av{font-size:30px;flex-shrink:0}
+.member-info{flex:1;min-width:0}
+.member-name{font-size:15px;font-weight:800}
+.member-role-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:3px}
+.badge-admin{background:rgba(240,180,41,.2);color:var(--gold);border:1px solid rgba(240,180,41,.3)}
+.badge-member{background:rgba(56,189,248,.15);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
+.badge-child{background:rgba(167,139,250,.15);color:var(--violet);border:1px solid rgba(167,139,250,.3)}
+.member-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.mem-btn{background:var(--s3);color:var(--text);border:1px solid var(--s4);border-radius:8px;padding:5px 10px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;text-align:center;white-space:nowrap}
+.mem-btn.promote{background:rgba(240,180,41,.15);color:var(--gold);border-color:rgba(240,180,41,.3)}
+.mem-btn.demote{background:rgba(56,189,248,.1);color:var(--sky);border-color:rgba(56,189,248,.25)}
+.mem-btn.resetpin{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.25)}
+/* ACCESS DENIED OVERLAY */
+.access-denied{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:24px}
+.access-denied.show{display:flex}
+.ad-icon{font-size:56px}
+.ad-title{font-size:20px;font-weight:800;color:var(--rose)}
+.ad-msg{font-size:14px;color:var(--text2);max-width:280px;line-height:1.6}
+.ad-btn{background:var(--s2);color:var(--text);border:1px solid var(--s3);border-radius:12px;padding:12px 24px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:8px}
+/* RULES BOX */
+.rules-box{background:var(--bg);border:1px solid var(--s4);border-radius:10px;padding:12px;font-family:monospace;font-size:10px;color:var(--teal);white-space:pre;overflow-x:auto;margin-top:8px;line-height:1.7}
+
+/* MONTH SELECTOR */
+.month-sel-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.month-sel{flex:1;background:var(--s3);color:var(--text);border:1.5px solid var(--s4);border-radius:10px;padding:9px 12px;font-family:var(--font);font-size:13px;font-weight:700;outline:none;-webkit-appearance:none;cursor:pointer}
+.month-sel:focus{border-color:var(--gold)}
+.month-sel option{background:var(--s2)}
+/* OVERALL SUMMARY CARDS */
+.summ-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.summ-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:13px}
+.summ-lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.summ-val{font-size:19px;font-weight:800}
+.summ-card.highlight{border-color:var(--gold);background:rgba(240,180,41,.06)}
+/* CURRENT BALANCE HERO — different gradient */
+.hero.all-time{background:linear-gradient(135deg,#1a1040,#0a0820)}
+/* MONTH TABLE */
+.month-table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.month-table th{font-size:10px;font-weight:700;color:var(--text2);text-align:left;padding:6px 8px;border-bottom:1px solid var(--s3);text-transform:uppercase}
+.month-table td{font-size:12px;padding:8px 8px;border-bottom:1px solid var(--s2)}
+.month-table tr:last-child td{border-bottom:none}
+.month-table .pos{color:var(--green);font-weight:700}
+.month-table .neg{color:var(--rose);font-weight:700}
+.month-table .gold{color:var(--gold);font-weight:700}
+
+</style>
+</head>
+<body>
+<!-- FIREBASE AUTH SCREEN -->
+<!-- LOADING -->
+<div id="loading">
+  <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
+  <div class="spin"></div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading yOUR Budget…</div>
+</div>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <!--<div class="login-logo">🏡</div>
+  <div class="login-title">Hatti Family Budget</div>
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>-->
+  <div class="user-cards">
+    <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
+    <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
+    <div class="ucard" onclick="selUser(2)" id="uc2"><div class="av">👧</div><div class="un">Rachana</div><div class="ur">Child</div></div>
+    <div class="ucard" onclick="selUser(3)" id="uc3"><div class="av">👶</div><div class="un">Sanchita</div><div class="ur">Child</div></div>
+  </div>
+  <div class="pin-lbl" id="pinLbl">Enter 4-digit PIN</div>
+  <div class="pdots"><div class="pd" id="pd0"></div><div class="pd" id="pd1"></div><div class="pd" id="pd2"></div><div class="pd" id="pd3"></div></div>
+  <div class="numpad">
+    <button class="nb" onclick="pk('1')">1</button><button class="nb" onclick="pk('2')">2</button><button class="nb" onclick="pk('3')">3</button>
+    <button class="nb" onclick="pk('4')">4</button><button class="nb" onclick="pk('5')">5</button><button class="nb" onclick="pk('6')">6</button>
+    <button class="nb" onclick="pk('7')">7</button><button class="nb" onclick="pk('8')">8</button><button class="nb" onclick="pk('9')">9</button>
+    <button class="nb" onclick="pdel()">⌫</button><button class="nb" onclick="pk('0')">0</button><button class="nb ok" onclick="pok()">OK</button>
+  </div>
+  <div class="lerr" id="lerr"></div>
+</div>
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-right">
+      <span class="tb-user" id="tbUser"></span>
+      <button class="tb-btn logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="pages">
+    <!-- DASHBOARD -->
+    <div class="page on" id="pgDash">
+      <div id="warnBox"></div>
+      <div class="hero all-time">
+        <div class="hlbl" id="heroLbl">Current Balance (All Time)</div>
+        <div class="hbal"><sup>₹</sup><span id="hBal">0</span></div>
+        <div class="hrow">
+          <div class="hs"><div class="hslbl" id="hIncLbl">Total Income</div><div class="hsval" style="color:var(--green)" id="hInc">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="hSpentLbl">Total Spent</div><div class="hsval" style="color:var(--rose)" id="hSpent">₹0</div></div>
+          <div class="hs"><div class="hslbl" id="hSavedLbl">Saved %</div><div class="hsval" style="color:var(--violet)" id="hPct">0%</div></div>
+        </div>
+      </div>
+      <!-- BANK BALANCE STRIP -->
+      <div class="sh">🏦 Bank Accounts</div>
+      <div class="bank-strip" id="dashBankStrip"></div>
+      <!-- INCOME SOURCES -->
+      <div class="sh">Income Sources</div>
+      <div class="inc-split">
+        <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent </div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan </div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
+      </div>
+      <div class="sh">Key Expenses</div>
+      <div class="sgrid" id="topStats"></div>
+      <div class="cbox"><div class="ctitle">📊 Spending by Category</div><div id="catBars"></div></div>
+      <div class="cbox"><div class="ctitle">📈 6-Month Trend</div><canvas id="trendC" height="155"></canvas></div>
+      <div class="sh">Recent Transactions</div>
+      <div id="recentTx"></div>
+    </div>
+    <!-- ADD -->
+    <div class="page" id="pgAdd">
+      <div class="ph">➕ Add Transaction</div>
+      <div class="trow">
+        <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
+        <button class="tbtn inc" id="btnInc" onclick="setTyp('income')">💵 Income</button>
+        <button class="tbtn tfr" id="btnTfr" onclick="setTyp('transfer')">🔄 Transfer</button>
+      </div>
+      <!-- TRANSFER PANEL — shown only for Transfer type -->
+      <div id="transferPanel" style="display:none">
+        <div class="fc" style="border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.05)">
+          <div style="font-size:14px;font-weight:800;color:var(--sky);margin-bottom:12px">🔄 Account Transfer / ATM Withdrawal</div>
+
+          <!-- Quick presets -->
+          <div class="fl" style="margin-bottom:6px">Quick Presets</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <button onclick="applyTransferPreset('bank2bank')" style="background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏦→🏦 Bank to Bank</button>
+            <button onclick="applyTransferPreset('atm')" style="background:var(--s3);color:var(--orange);border:1px solid rgba(251,146,60,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏧 ATM Withdrawal</button>
+            <!--<button onclick="applyTransferPreset('upi2cash')" style="background:var(--s3);color:var(--teal);border:1px solid rgba(45,212,191,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">💳→💵 UPI to Cash</button>-->
+          </div>
+
+          <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-end">
+            <div style="flex:1">
+              <label class="fl">From Account</label>
+              <select class="fi" id="tfrFrom" style="margin-bottom:0" onchange="updateTransferNote()">
+                <option value="">-- Select --</option>
+              </select>
+            </div>
+            <div style="font-size:26px;margin-bottom:6px;flex-shrink:0;color:var(--sky)">→</div>
+            <div style="flex:1">
+              <label class="fl">To Account</label>
+              <select class="fi" id="tfrTo" style="margin-bottom:0" onchange="updateTransferNote()">
+                <option value="">-- Select --</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="fl">Amount (₹)</label>
+          <input class="fi" type="number" id="tfrAmt" placeholder="0" inputmode="numeric">
+
+          <label class="fl">Who is transferring?</label>
+          <select class="fi" id="tfrWho">
+            <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
+            <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
+          </select>
+
+          <label class="fl">Date</label>
+          <input class="fi" type="date" id="tfrDate">
+
+          <label class="fl">Note (optional)</label>
+          <input class="fi" type="text" id="tfrNote" placeholder="e.g. Monthly transfer to savings">
+
+          <!-- Live preview -->
+          <div style="background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:12px;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.8" id="tfrPreview">
+            Select From and To accounts to see preview
+          </div>
+
+          <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px">
+            💡 Creates 2 transactions automatically — debit from <em>From</em>, credit to <em>To</em>. Both tagged as Transfer so they don't affect income/expense totals.
+          </div>
+
+          <button class="sbtn" style="background:var(--sky);color:#000" onclick="doTransfer()">🔄 Execute Transfer</button>
+        </div>
+      </div>
+      <div id="incSrcBox" style="display:none">
+        <div class="fc">
+          <div class="fl">Income Source</div>
+          <div class="isrow">
+            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent </button>
+            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan </button>
+            <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
+          </div>
+        </div>
+      </div>
+      <div class="fc" id="stdTxPanel">
+        <label class="fl">Amount (₹)</label>
+        <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
+        <label class="fl">Who?</label>
+        <select class="fi" id="fWho">
+          <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
+          <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
+        </select>
+        <label class="fl">Date</label>
+        <input class="fi" type="date" id="fDate">
+        <label class="fl">Payment Method</label>
+        <select class="fi" id="fTxType">
+          <option value="">Select method</option>
+          <option value="ATM">ATM Withdrawal</option>
+          <option value="Cash">Cash</option>
+          <option value="Paytm">Paytm (UPI)</option>
+          <option value="PhonePe">PhonePe (UPI)</option>
+          <option value="GPay">Google Pay (UPI)</option>
+          <option value="NetBanking">Net Banking</option>
+          <option value="BankTransfer">Bank Transfer (NEFT/RTGS)</option>
+          <option value="Cheque">Cheque</option>
+        </select>
+        <label class="fl">Bank Account <span style="color:var(--text3);font-size:10px">(optional — updates balance)</span></label>
+        <select class="fi" id="fBankAcc">
+          <option value="">-- No Account --</option>
+        </select>
+        <label class="fl">Note (optional)</label>
+        <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
+      </div>
+      <div class="fc" id="catBox">
+        <div class="fl">Category</div>
+        <div class="cgrid" id="catGrid"></div>
+      </div>
+      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
+    </div>
+    <!-- BANK ACCOUNTS -->
+    <div class="page" id="pgBanks">
+      <div class="ph">🏦 Bank Accounts</div>
+      <div id="bankList"></div>
+      <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account</button>
+      <div class="sh">All Accounts Summary</div>
+      <div class="cbox">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;font-weight:700">Total Balance</span>
+          <span style="font-size:22px;font-weight:800;color:var(--green)" id="totalBankBal">₹0</span>
+        </div>
+        <canvas id="bankChart" height="160"></canvas>
+      </div>
+    </div>
+    <!-- GOALS -->
+    <div class="page" id="pgGoals">
+      <div class="ph">🎯 Savings Goals</div>
+      <div id="goalList"></div>
+      <button class="agbtn" onclick="openGM()">+ Add New Goal</button>
+    </div>
+    <!-- HISTORY -->
+    <div class="page" id="pgHistory">
+      <div class="ph">📜 History</div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+      <div class="frow" id="filterRow"></div>
+      <div id="histList"></div>
+    </div>
+    <!-- REPORTS -->
+    <div class="page" id="pgReports">
+      <div class="ph">📊 Reports</div>
+      <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+
+      <!-- ── MONTH SELECTOR ── -->
+      <div class="month-sel-row">
+        <select class="month-sel" id="repMonthSel" onchange="renderReports()">
+          <option value="all">📊 All Time</option>
+        </select>
+      </div>
+
+      <!-- ── SUMMARY CARDS ── -->
+      <div class="sh" id="repSummTitle">Overall Summary</div>
+      <div class="summ-grid" id="repSummGrid"></div>
+
+      <!-- ── MONTH TABLE (All Time only) ── -->
+      <div id="monthlyTableBox" style="display:none">
+        <div class="sh">Month-wise Breakdown</div>
+        <div class="cbox" style="padding:0;overflow:hidden">
+          <table class="month-table" id="monthTable">
+            <thead><tr>
+              <th>Month</th>
+              <th>Income</th>
+              <th>Expense</th>
+              <th>Balance</th>
+            </tr></thead>
+            <tbody id="monthTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CHARTS ── -->
+      <div class="cbox">
+        <div class="ctitle" id="whoTitle">Who Spent What</div>
+        <canvas id="whoC" height="155"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="ctitle">📈 12-Month Trend</div>
+        <canvas id="yearC" height="155"></canvas>
+      </div>
+      <div class="cbox">
+        <div class="ctitle" id="incSrcTitle">Income Sources</div>
+        <canvas id="incC" height="155"></canvas>
+      </div>
+    </div>
+    <!-- SETTINGS -->
+    <div class="page" id="pgSettings">
+      <div class="ph">⚙️ Settings</div>
+
+      <!-- ── LOGGED IN AS banner ── -->
+      <div style="background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.2);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px" id="setUserAv">👨</span>
+        <div>
+          <div style="font-size:13px;font-weight:800" id="setUserName">Gavi</div>
+          <div style="font-size:11px;color:var(--text2)" id="setUserRole">Admin · Full Access</div>
+        </div>
+      </div>
+
+      <!-- ── MEMBER MANAGEMENT (admin only) ── -->
+      <div class="sh">👥 Member Management</div>
+      <div id="memberSection">
+        <div id="memberList"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;margin-bottom:12px">
+          ⚠️ Only visible to Admins. Promote a member to give them full admin access.
+        </div>
+      </div>
+
+      <!-- Monthly base income removed — use Add Transaction tab to record income -->
+
+      <!-- ── BUDGET LIMITS (admin only) ── -->
+      <div class="sh">📊 Budget Limits (₹/month) <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
+      <div class="fc" id="limForm"></div>
+
+      <!-- ── CHANGE MY PIN (all users) ── -->
+      <div class="sh">🔑 Change My PIN</div>
+      <div class="fc" id="myPinForm">
+        <div style="color:var(--text2);font-size:12px;margin-bottom:10px">Enter your new 4-digit PIN. Saved securely to Firebase.</div>
+        <label class="fl" id="myPinLbl">New PIN for Gavi</label>
+        <div class="irow">
+          <input class="iinp" type="password" id="myPinInput" maxlength="4" inputmode="numeric" placeholder="Enter new 4-digit PIN">
+          <button class="isave" onclick="savMyPin()">Save</button>
+        </div>
+      </div>
+
+      <!-- ── FIREBASE RULES (admin only) ── -->
+      <div class="sh" id="rulesSection">🔐 Firestore Security Rules <span style="font-size:10px;color:var(--text3)">(Admin only)</span></div>
+      <div class="fc" id="rulesBox">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">
+          Copy these rules into <strong style="color:var(--gold)">Firebase Console → Firestore → Rules → Publish</strong>
+        </div>
+        <div class="rules-box">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── USERS collection ──
+    // Anyone can read (needed at login to verify PINs)
+    // Only admins can write user records (role changes)
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // ── SETTINGS (limits) ──
+    match /settings/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // ── TRANSACTIONS ──
+    match /transactions/{txId} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn(); // Admin enforced client-side
+    }
+
+    // ── GOALS ──
+    match /goals/{goalId} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    // ── BANK ACCOUNTS ──
+    match /bankAccounts/{bankId} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    // ── HELPER FUNCTION ──
+    // request.auth is the Firebase Authentication user.
+    // Since all family members share one Firebase account,
+    // all authenticated requests are trusted.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    // isAdmin() check — all authenticated users are trusted.
+    // Admin enforcement is done client-side via PIN roles.
+    function isAdmin() {
+      return request.auth != null;
+    }
+  }
+}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6">
+          <strong style="color:var(--gold)">Note:</strong> Since this app uses PIN-based login (not Firebase Auth), Firestore rules cannot technically verify who is logged in on the server side. The admin access control is enforced in the app UI. For full server-side security, integrate Firebase Authentication.
+        </div>
+      </div>
+
+      <!-- ── FIREBASE STATUS ── -->
+      <div class="sh">🔥 Firebase Status</div>
+      <div class="fc" style="text-align:center">
+        Project: <strong style="color:var(--teal)">hatti-budget</strong><br>
+        <span id="fbStatus" style="font-size:11px;margin-top:4px;display:block;color:var(--text2)"></span>
+      </div>
+    </div>
+  </div><!-- /pages -->
+  <div class="bnav">
+    <div class="ni on"  onclick="goPage('Dash',this)"><div class="nico">🏠</div><div class="nlbl">Home</div></div>
+    <div class="ni"     onclick="goPage('Add',this)"><div class="nico">➕</div><div class="nlbl">Add</div></div>
+    <div class="ni"     onclick="goPage('Banks',this)"><div class="nico">🏦</div><div class="nlbl">Banks</div></div>
+    <div class="ni"     onclick="goPage('Goals',this)"><div class="nico">🎯</div><div class="nlbl">Goals</div></div>
+    <div class="ni"     onclick="goPage('History',this)"><div class="nico">📜</div><div class="nlbl">History</div></div>
+    <div class="ni"     onclick="goPage('Reports',this)"><div class="nico">📊</div><div class="nlbl">Reports</div></div>
+    <div class="ni"     onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl">Settings</div></div>
+  </div>
+</div>
+
+<!-- GOAL MODAL (Add + Edit) -->
+<div class="mo" id="gModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeGM()">&#x2715;</button>
+    <div class="mtitle" id="gModalTitle">New Savings Goal</div>
+    <input type="hidden" id="gEditId">
+    <label class="fl">Goal Name</label>
+    <input class="fi" id="gName" placeholder="e.g. Rachana Education">
+    <label class="fl">For</label>
+    <select class="fi" id="gFor">
+      <option value="Family">Family</option>
+      <option value="Gavi">Gavi</option>
+      <option value="Uma">Uma</option>
+      <option value="Rachana">Rachana</option>
+      <option value="Sanchita">Sanchita</option>
+    </select>
+    <label class="fl">Target Amount (Rs)</label>
+    <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
+    <label class="fl">Current Saved Amount (Rs)</label>
+    <input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Add to Saved (Rs) <span style="font-size:10px;color:var(--text3)">adds on top of saved</span></label>
+    <input class="fi" type="number" id="gAddSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Deduct from Saved (Rs) <span style="font-size:10px;color:var(--text3)">removes from saved</span></label>
+    <input class="fi" type="number" id="gSubSaved" placeholder="0" inputmode="numeric">
+    <label class="fl">Icon (emoji)</label>
+    <input class="fi" id="gIcon" placeholder="e.g. skull" maxlength="2">
+    <button class="sbtn" onclick="doSaveGoal()" id="gSaveBtn">Save Goal</button>
+    <button style="width:100%;margin-top:8px;padding:12px;background:rgba(251,113,133,.15);color:var(--rose);border:1px solid rgba(251,113,133,.3);border-radius:13px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;display:none" id="gDeleteBtn" onclick="doDeleteGoal()">Delete Goal</button>
+  </div>
+</div>
+
+<!-- BANK MODAL -->
+<div class="mo" id="bankModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeBankModal()">✕</button>
+    <div class="mtitle" id="bankModalTitle">Add Bank Account</div>
+    <input type="hidden" id="bankEditId">
+    <label class="fl">Bank Name</label>
+    <input class="fi" id="bankName" placeholder="e.g. SBI, HDFC, Canara">
+    <label class="fl">Account Type</label>
+    <select class="fi" id="bankType">
+      <option value="savings">💰 Savings Account</option>
+      <option value="current">🏢 Current Account</option>
+      <option value="salary">💼 Salary Account</option>
+      <option value="fd">📈 Fixed Deposit</option>
+      <option value="wallet">📱 Digital Wallet (Paytm/PhonePe)</option>
+      <option value="cash">💵 Cash in Hand</option>
+    </select>
+    <label class="fl">Opening Balance (₹)</label>
+    <input class="fi" type="number" id="bankBalance" placeholder="0" inputmode="numeric">
+    <label class="fl">Account Icon (emoji)</label>
+    <input class="fi" id="bankIcon" placeholder="🏦" maxlength="2">
+    <label class="fl">Account Number (last 4 digits, optional)</label>
+    <input class="fi" id="bankAccNo" placeholder="e.g. 4521" maxlength="4" inputmode="numeric">
+    <button class="sbtn" onclick="doSaveBank()">✅ Save Account</button>
+  </div>
+</div>
+
+<!-- EDIT TX MODAL -->
+<div class="mo" id="editModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeEditModal()">✕</button>
+    <div class="mtitle">✏️ Edit Transaction</div>
+    <input type="hidden" id="editId">
+    <label class="fl">Type</label>
+    <div class="trow" style="margin-bottom:12px">
+      <button class="tbtn exp on" id="editBtnExp" onclick="setEditTyp('expense')">💸 Expense</button>
+      <button class="tbtn inc" id="editBtnInc" onclick="setEditTyp('income')">💵 Income</button>
+    </div>
+    <label class="fl">Amount (₹)</label><input class="fi" type="number" id="editAmt" inputmode="numeric">
+    <label class="fl">Who?</label>
+    <select class="fi" id="editWho">
+      <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
+      <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
+    </select>
+    <label class="fl">Date</label><input class="fi" type="date" id="editDate">
+    <label class="fl">Transaction Type</label>
+    <select class="fi" id="editTxType">
+      <option value="">Select type</option>
+      <option value="ATM">ATM</option><option value="Cash">Cash</option>
+      <option value="Paytm">Paytm (UPI)</option><option value="PhonePe">PhonePe (UPI)</option>
+      <option value="BankTransfer">Bank Transfer (NEFT/RTGS)</option>
+    </select>
+    <label class="fl">Bank Account</label>
+    <select class="fi" id="editBankAcc"><option value="">-- No Account --</option></select>
+    <label class="fl">Category</label><select class="fi" id="editCat"></select>
+    <label class="fl">Note</label><input class="fi" type="text" id="editNote" placeholder="Optional note">
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px;background:var(--s3);border-radius:8px" id="editAudit"></div>
+    <button class="mupdate-btn" onclick="doUpdateTx()">💾 Update Transaction</button>
+  </div>
+</div>
+
+<div class="access-denied" id="accessDenied">
+  <div class="ad-icon">🔒</div>
+  <div class="ad-title">Access Denied</div>
+  <div class="ad-msg" id="accessDeniedMsg">You don't have permission to perform this action. Only Admins can do this.</div>
+  <button class="ad-btn" onclick="document.getElementById('accessDenied').classList.remove('show')">OK, Got it</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+/* ══ FIREBASE ══ */
+firebase.initializeApp({
+  apiKey:            "AIzaSyDj1REJooFa7GRbQaVSC-AXRipQzmtN05M",
+  authDomain:        "hatti-budget.firebaseapp.com",
+  projectId:         "hatti-budget",
+  appId:             "1:760721015497:web:51980c2d7df610d5594318",
+  storageBucket:     "hatti-budget.firebasestorage.app",
+  messagingSenderId: "760721015497"
+});
+const db = firebase.firestore();
+
+/* ══ CONSTANTS ══ */
+const USERS    = ['Gavi','Uma','Rachana','Sanchita'];
+const AVATARS  = ['👨','👩','👧','👶'];
+const ROLES    = ['Admin','Member','Child','Child'];
+const DEF_PINS = {Gavi:'1234',Uma:'5678',Rachana:'1111',Sanchita:'2222'};
+
+const CATS = [
+  {id:'Food',       i:'🍽️',en:'Food',        c:'#ef4444',lim:10000},
+  {id:'Groceries',  i:'🛒', en:'Groceries',        c:'#22c55e',lim:8000},
+  {id:'Vegetables', i:'🥦', en:'Vegetables',      c:'#4ade80',lim:3000},
+  {id:'Milk',       i:'🥛', en:'Milk',         c:'#bfdbfe',lim:2000},
+  {id:'School',     i:'🎓', en:'School',         c:'#38bdf8',lim:8000},
+  {id:'Books',      i:'📚', en:'Books',       c:'#818cf8',lim:2000},
+  {id:'Tuition',    i:'✏️', en:'Tuition',    c:'#a78bfa',lim:3000},
+  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',c:'#fb923c',lim:20000},
+  {id:'Travel',     i:'🚗', en:'Travel',      c:'#f59e0b',lim:3000},
+  {id:'Petrol',     i:'⛽', en:'Petrol',   c:'#fbbf24',lim:2000},
+  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',   c:'#facc15',lim:1500},
+  {id:'Electricity',i:'💡', en:'Electricity',   c:'#fde047',lim:2000},
+  {id:'Water',      i:'💧', en:'Water',         c:'#7dd3fc',lim:500},
+  {id:'Internet',   i:'📡', en:'Internet',  c:'#6ee7b7',lim:1000},
+  {id:'Phone',      i:'📱', en:'Phone',         c:'#86efac',lim:500},
+  {id:'Gas_LPG',    i:'🔥', en:'Gas/LPG',      c:'#fdba74',lim:1000},
+  {id:'Medical',    i:'🏥', en:'Medical',  c:'#f87171',lim:2000},
+  {id:'Medicine',   i:'💊', en:'Medicine',        c:'#fca5a5',lim:1000},
+  {id:'Clothing',   i:'👕', en:'Clothing',        c:'#ec4899',lim:3000},
+  {id:'Children',   i:'👧', en:'Children',      c:'#f9a8d4',lim:3000},
+  {id:'Festival',   i:'🪔', en:'Festival',         c:'#fcd34d',lim:5000},
+  {id:'LoanTx',     i:'🤝', en:'Loan Transfer',c:'#f472b6',lim:0},
+  {id:'Transfer',   i:'🔄', en:'Transfer',     c:'#38bdf8',lim:0},
+  {id:'Savings',    i:'🏦', en:'Savings',    c:'#2dd4bf',lim:0},
+  {id:'Investment', i:'📈', en:'Investment',    c:'#34d399',lim:0},
+  {id:'Insurance',  i:'🛡️',en:'Insurance',        c:'#6ee7b7',lim:2000},
+  {id:'HouseMaint', i:'🔧', en:'House Maint',c:'#94a3b8',lim:2000},
+  {id:'PropertyTax',i:'📋', en:'Prop Tax',c:'#64748b',lim:2000},
+  {id:'EatingOut',  i:'🍜', en:'Eating Out',c:'#fb7185',lim:2000},
+  {id:'EntertainMt',i:'🎬', en:'Entertainment',  c:'#c084fc',lim:1000},
+  {id:'Haircut',    i:'✂️', en:'Haircut',  c:'#a3e635',lim:500},
+  {id:'Other',      i:'📦', en:'Other',         c:'#94a3b8',lim:0},
+];
+
+const INC_SRCS = [
+  {id:'salary',       i:'💼',en:'Salary',},
+  {id:'rent',         i:'🏠',en:'Rent ',},
+  {id:'loan_received',i:'💳',en:'Loan ',},
+  {id:'other_income', i:'📦',en:'Others',},
+  {id:'transfer',     i:'🔄',en:'Transfer In',},
+];
+
+const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash'};
+
+/* ══ STATE ══ */
+let lang      = 'en'; // English only
+let curUser   = null;
+let curType   = 'expense';
+let curCat    = 'Food';
+let curIS     = 'salary';
+let editType  = 'expense';
+let filtCat   = 'All';
+let txCache   = [];
+let goalCache = [];
+let bankCache = [];
+let pinCache  = {};
+let userCache = {}; // {Gavi:{role:'Admin',...}, Uma:{role:'Member',...}}
+let settings  = {limits:{}}; // income tracked via transactions only
+let unsubTx, unsubGoals, unsubBanks;
+
+const L = (en) => en; // English only — single arg
+const C = id => CATS.find(c=>c.id===id);
+
+/* ── Role helpers ── */
+function isAdmin(){ return getUserRole(curUser) === 'Admin'; }
+function getUserRole(name){
+  if(userCache[name] && userCache[name].role) return userCache[name].role;
+  const idx = USERS.indexOf(name);
+  return ROLES[idx] || 'Member';
+}
+function requireAdmin(action){
+  if(!isAdmin()){
+    const el = document.getElementById('accessDenied');
+    const msg = document.getElementById('accessDeniedMsg');
+    if(msg) msg.textContent = `Only Admins can ${action||'perform this action'}. Ask Gavi to promote you to Admin in Settings.`;
+    if(el) el.classList.add('show');
+    return false;
+  }
+  return true;
+}
+
+/* ══ SESSION ══ */
+function saveSession(){ sessionStorage.setItem('hb_s', JSON.stringify({user:curUser,ts:Date.now()})); }
+function clearSession(){ sessionStorage.removeItem('hb_s'); sessionStorage.removeItem('hb_p'); }
+function getSession(){ try{ const s=JSON.parse(sessionStorage.getItem('hb_s')||'null'); if(!s)return null; if(Date.now()-s.ts>12*3600*1000){clearSession();return null;} return s; }catch(e){return null;} }
+function savePage(n){ sessionStorage.setItem('hb_p',n); }
+function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
+
+/* ══ STARTUP ══ */
+async function startup(){
+  setMsg('Connecting to Firebase…');
+  try{
+    const results = await Promise.allSettled([
+      db.collection('settings').doc('limits').get(),
+      db.collection('users').get()
+    ]);
+
+    // Budget limits
+    if(results[0].status==='fulfilled' && results[0].value.exists){
+      settings.limits = results[0].value.data();
+    } else {
+      settings.limits = {};
+    }
+
+    // Users / PINs / Roles
+    if(results[1].status==='fulfilled' && !results[1].value.empty){
+      results[1].value.forEach(doc => {
+        const d = doc.data();
+        pinCache[doc.id]  = d.pin  || DEF_PINS[doc.id] || '1234';
+        userCache[doc.id] = d;
+      });
+    } else {
+      await seedUsers();
+    }
+    USERS.forEach(u => { if(!pinCache[u]) pinCache[u] = DEF_PINS[u]; });
+
+    const fbEl = document.getElementById('fbStatus');
+    if(fbEl) fbEl.textContent = '✅ Connected · ' + new Date().toLocaleTimeString();
+
+  } catch(e){
+    console.error('Startup error:', e);
+    const fbEl = document.getElementById('fbStatus');
+    if(fbEl) fbEl.textContent = '⚠️ ' + e.message;
+    // Use defaults so app still works offline
+    USERS.forEach(u => { if(!pinCache[u]) pinCache[u] = DEF_PINS[u]; });
+    settings = {limits:{}};
+  }
+
+  // Always hide loading and show login — never hang
+  document.getElementById('loading').style.display = 'none';
+
+  // Restore session if valid (survived page refresh)
+  const session = getSession();
+  if(session && USERS.includes(session.user)){
+    curUser = session.user;
+    enterApp();
+    const pg = getSavedPage();
+    if(pg !== 'Dash'){
+      // Find the nav item for the saved page and activate it
+      const allNav = document.querySelectorAll('.ni');
+      allNav.forEach(n => {
+        if(n.getAttribute('onclick') && n.getAttribute('onclick').indexOf("'"+pg+"'") !== -1){
+          goPage(pg, n);
+        }
+      });
+    }
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+}
+function setMsg(m){ const el=document.getElementById('loadMsg'); if(el) el.textContent=m; }
+startup();
+
+// Firebase Email Auth removed — using PIN-based login only
+
+/* ══ LOGIN ══ */
+let pinBuf='', selIdx=0;
+function selUser(i){ selIdx=i; document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',i===j)); pinBuf=''; updateDots(); document.getElementById('lerr').textContent=''; }
+function updateDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
+function pk(k){ if(pinBuf.length>=4)return; pinBuf+=k; updateDots(); if(pinBuf.length===4)setTimeout(pok,100); }
+function pdel(){ pinBuf=pinBuf.slice(0,-1); updateDots(); }
+function pok(){
+  const user=USERS[selIdx];
+  const correct=pinCache[user]||DEF_PINS[user];
+  if(pinBuf===correct){ curUser=user; enterApp(); }
+  else{ document.getElementById('lerr').textContent='❌ Wrong PIN, try again'; pinBuf=''; updateDots(); }
+}
+function enterApp(){
+  document.getElementById('loginScreen').style.display='none';
+  const app=document.getElementById('app'); app.style.display='flex'; app.style.flexDirection='column';
+  const role = getUserRole(curUser);
+  const av   = AVATARS[USERS.indexOf(curUser)];
+  document.getElementById('tbUser').textContent = av+' '+curUser+' ['+role+']';
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('fDate').value=today;
+  const tfrDateEl=document.getElementById('tfrDate'); if(tfrDateEl) tfrDateEl.value=today;
+  document.getElementById('fWho').value=curUser;
+  buildCatGrid(); buildEditCatSelect();
+  subscribeRT();
+  renderSettings();
+  saveSession();
+}
+function doFullSignOut(){
+  // Same as logout — clears session and returns to login
+  if(unsubTx) unsubTx();
+  if(unsubGoals) unsubGoals();
+  if(unsubBanks) unsubBanks();
+  txCache=[]; goalCache=[]; bankCache=[];
+  clearSession();
+  curUser=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  selIdx=0; document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',j===0));
+  pinBuf=''; updateDots();
+  document.getElementById('lerr').textContent='';
+}
+
+function doLogout(){
+  [unsubTx,unsubGoals,unsubBanks].forEach(u=>u&&u());
+  txCache=[]; goalCache=[]; bankCache=[];
+  clearSession();
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  pinBuf=''; updateDots(); document.getElementById('lerr').textContent='';
+}
+
+/* ══ LANG ══ */
+// Language toggle removed — English only
+
+/* ══ REALTIME LISTENERS ══ */
+function subscribeRT(){
+  if(unsubTx) unsubTx();
+  unsubTx=db.collection('transactions').orderBy('ts','desc').onSnapshot(snap=>{
+    txCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderAll();
+    document.getElementById('sdot').className='sdot';
+  },err=>{ console.error('TX:',err); document.getElementById('sdot').className='sdot off'; });
+
+  if(unsubGoals) unsubGoals();
+  unsubGoals=db.collection('goals').onSnapshot(snap=>{
+    goalCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderGoals();
+  },err=>console.error('Goals:',err));
+
+  // Live user/role updates
+  db.collection('users').onSnapshot(snap=>{
+    snap.forEach(doc=>{ userCache[doc.id]=doc.data(); });
+    if(document.getElementById('pgSettings').classList.contains('on')) renderSettings();
+  },err=>console.warn('Users listener:',err));
+
+  if(unsubBanks) unsubBanks();
+  unsubBanks=db.collection('bankAccounts').orderBy('ts','asc').onSnapshot(snap=>{
+    bankCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    refreshBankDropdowns();
+    renderBanks();
+    renderDash(); // re-render dash to update bank strip
+  },err=>console.error('Banks:',err));
+}
+
+/* ══ NAV ══ */
+function goPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('pg'+name).classList.add('on');
+  el.classList.add('on');
+  savePage(name);
+  if(name==='Reports') renderReports();
+  if(name==='Goals') renderGoals();
+  if(name==='History') renderHistory();
+  if(name==='Settings') renderSettings();
+  if(name==='Banks') renderBanks();
+}
+function renderAll(){ renderDash(); renderHistory(); }
+
+/* ══════════════════════════════════════
+   BANK ACCOUNT BALANCE CALCULATOR
+   Computes running balance from opening + all transactions linked to account
+══════════════════════════════════════ */
+function getBankBalance(bankId){
+  const bank = bankCache.find(b=>b.id===bankId);
+  if(!bank) return 0;
+  const opening = +bank.balance || 0;
+  const linked = txCache.filter(t=>t.bankAccountId===bankId);
+  const txNet = linked.reduce((sum,t)=>{
+    if(t.type==='income') return sum + (+t.amount||0);
+    if(t.type==='expense') return sum - (+t.amount||0);
+    return sum;
+  },0);
+  return opening + txNet;
+}
+
+/* ══ HELPER: count months spanned by data ══ */
+function getDataMonthCount(){
+  if(!txCache.length) return 1;
+  const dates = txCache.map(t=>t.date).filter(Boolean).map(d=>new Date(d));
+  if(!dates.length) return 1;
+  const minD = new Date(Math.min(...dates));
+  const maxD = new Date();
+  const months = (maxD.getFullYear()-minD.getFullYear())*12 + (maxD.getMonth()-minD.getMonth()) + 1;
+  return Math.max(1, months);
+}
+
+/* ══ DASHBOARD ══ */
+function renderDash(){
+  const now=new Date(), mm=now.getMonth(), yy=now.getFullYear();
+  // ── CURRENT BALANCE = ALL TIME transactions only (no manual base income) ──
+  const allIncTx  = txCache.filter(t=>t.type==='income'&&t.category!=='Income_transfer'); // exclude transfers
+  const allExpTx  = txCache.filter(t=>t.type==='expense'&&t.category!=='Transfer');       // exclude transfers
+  const allTotalInc = allIncTx.reduce((s,t)=>s+(+t.amount||0),0);
+  const allTotalExp = allExpTx.reduce((s,t)=>s+(+t.amount||0),0);
+  const allBal = allTotalInc - allTotalExp;
+  const allPct = allTotalInc>0 ? Math.round(allBal/allTotalInc*100) : 0;
+
+  setText('hBal',  fmt(allBal));
+  setText('hInc',  '₹'+fmt(allTotalInc));
+  setText('hSpent','₹'+fmt(allTotalExp));
+  setText('hPct',  allPct+'%');
+
+  // Income source breakdown (all time, from transactions only)
+  const srcAmt = s => allIncTx.filter(t=>t.incSrc===s).reduce((a,t)=>a+(+t.amount||0),0);
+  setText('iSal',  '₹'+fmt(srcAmt('salary')));
+  setText('iRent', '₹'+fmt(srcAmt('rent')));
+  setText('iLoan', '₹'+fmt(srcAmt('loan_received')));
+  setText('iOther','₹'+fmt(srcAmt('other_income')));
+
+
+  // Labels
+  const heroLbl = document.getElementById('heroLbl');
+  if(heroLbl) heroLbl.textContent = 'Current Balance (All Time)';
+  const hIncLbl=document.getElementById('hIncLbl'); if(hIncLbl) hIncLbl.textContent='Total Income';
+  const hSpentLbl=document.getElementById('hSpentLbl'); if(hSpentLbl) hSpentLbl.textContent='Total Spent';
+  const hSavedLbl=document.getElementById('hSavedLbl'); if(hSavedLbl) hSavedLbl.textContent='Saved %';
+
+  // For category bars and warnings still use THIS month
+  const mTx=txCache.filter(t=>{
+    if(!t.date) return false;
+    const d=new Date(t.date);
+    return d.getMonth()===mm && d.getFullYear()===yy;
+  });
+  // incTx not used (base income removed)
+
+  // Budget warnings
+  const lims={...Object.fromEntries(CATS.map(c=>[c.id,c.lim])),...(settings.limits||{})};
+  const catExp={}; CATS.forEach(c=>catExp[c.id]=0);
+  mTx.filter(t=>t.type==='expense').forEach(t=>{ if(catExp[t.category]!==undefined) catExp[t.category]+=(+t.amount||0); });
+  const wb=document.getElementById('warnBox'); wb.innerHTML='';
+  CATS.forEach(c=>{ if(lims[c.id]>0&&catExp[c.id]>lims[c.id]) wb.innerHTML+=`<div class="warn">⚠️ ${c.i} ${c.en} budget exceeded! ₹${fmt(catExp[c.id])} / ₹${fmt(lims[c.id])}</div>`; });
+
+  // Top 4 stat cards
+  const top4=[{id:'BLR_Rent',i:'🏙️'},{id:'School',i:'🎓'},{id:'Food',i:'🍽️'},{id:'Medical',i:'🏥'}];
+  document.getElementById('topStats').innerHTML=top4.map(x=>{
+    const c=C(x.id); return `<div class="sc"><div class="sc-ico">${x.i}</div><div class="sc-lbl">${c?c.en:x.id}</div><div class="sc-val" style="color:${c?c.c:'#fff'}">₹${fmt(catExp[x.id]||0)}</div></div>`;
+  }).join('');
+
+  // Category bars
+  const expCats=CATS.filter(c=>!['Savings','Investment','LoanTx'].includes(c.id)).map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
+  const maxA=Math.max(...expCats.map(c=>c.amt),1);
+  document.getElementById('catBars').innerHTML=expCats.length
+    ?expCats.slice(0,10).map(c=>`<div class="cbrow"><div class="cblbl">${c.i} ${c.en}</div><div class="cbtrack"><div class="cbfill" style="width:${Math.round(c.amt/maxA*100)}%;background:${c.c}"></div></div><div class="cbamt" style="color:${c.c}">₹${fmt(c.amt)}</div></div>`).join('')
+    :`<div style="color:var(--text2);font-size:12px;text-align:center;padding:8px">${'No expenses this month'}</div>`;
+
+  // Bank strip on dashboard
+  const strip=document.getElementById('dashBankStrip');
+  if(bankCache.length===0){
+    strip.innerHTML=`<div style="color:var(--text2);font-size:12px;padding:8px">${'No accounts yet — add in Banks tab'}</div>`;
+  } else {
+    let totalBankBal=0;
+    strip.innerHTML=bankCache.map(b=>{
+      const bal=getBankBalance(b.id);
+      totalBankBal+=bal;
+      const colClass=bal>0?'var(--green)':bal<0?'var(--rose)':'var(--text2)';
+      return `<div class="bchip"><div class="bchip-name">${b.icon||'🏦'} ${b.name}</div><div class="bchip-bal" style="color:${colClass}">₹${fmt(bal)}</div></div>`;
+    }).join('');
+    // Total chip
+    strip.innerHTML+=`<div class="bchip" style="border-color:var(--gold)"><div class="bchip-name">📊 Total</div><div class="bchip-bal" style="color:var(--gold)">₹${fmt(totalBankBal)}</div></div>`;
+  }
+
+  drawTrend();
+
+  const rl=document.getElementById('recentTx');
+  rl.innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')
+    ||`<div class="empty"><div class="big">💸</div><p>${'No transactions yet'}</p></div>`;
+}
+
+/* ══ BANK ACCOUNTS ══ */
+function renderBanks(){
+  const bl=document.getElementById('bankList'); if(!bl) return;
+  let totalBal=0;
+  if(!bankCache.length){
+    bl.innerHTML=`<div class="empty"><div class="big">🏦</div><p>${'No bank accounts yet'}</p></div>`;
+    setText('totalBankBal','₹0');
+    return;
+  }
+  bl.innerHTML=bankCache.map(b=>{
+    const bal=getBankBalance(b.id);
+    totalBal+=bal;
+    const balCol=bal>0?'pos':bal<0?'neg':'zer';
+    const cardCls=bal>0?'positive':bal<0?'negative':'zero';
+    const last4=b.accNo?` ····${b.accNo}`:'';
+    return `<div class="bank-card ${cardCls}">
+      <div class="bank-ico">${b.icon||'🏦'}</div>
+      <div class="bank-info">
+        <div class="bank-name">${b.name}${last4}</div>
+        <div class="bank-type">${BANK_TYPE_LABELS[b.type]||b.type} · Opening: ₹${fmt(b.balance)}</div>
+        <div class="bank-bal ${balCol}">₹${fmt(bal)}</div>
+      </div>
+      <div class="bank-actions">
+        ${isAdmin()?'<button class="bank-edit-btn" onclick="openBankEdit(\''+b.id+'\')">✏️ Edit</button>'+'<button class="bank-del-btn" onclick="deleteBank(\''+b.id+'\')">🗑️</button>':'<span style="font-size:10px;color:var(--text3)">View only</span>'}
+      </div>
+    </div>`;
+  }).join('');
+  setText('totalBankBal','₹'+fmt(totalBal));
+
+  // Bank bar chart
+  if(bankCache.length>0){
+    const labels=bankCache.map(b=>(b.icon||'🏦')+b.name.substring(0,6));
+    const data=bankCache.map(b=>Math.max(0,getBankBalance(b.id))); // show 0 for negatives in chart
+    const colors=bankCache.map((_,i)=>['#38bdf8','#4ade80','#a78bfa','#f0b429','#fb923c','#2dd4bf'][i%6]);
+    drawBarChart(document.getElementById('bankChart'),labels,data,colors);
+  }
+}
+
+function openBankModal(){
+  document.getElementById('bankEditId').value='';
+  document.getElementById('bankModalTitle').textContent='Add Bank Account';
+  document.getElementById('bankName').value='';
+  document.getElementById('bankType').value='savings';
+  document.getElementById('bankBalance').value='';
+  document.getElementById('bankIcon').value='';
+  document.getElementById('bankAccNo').value='';
+  document.getElementById('bankModal').classList.add('open');
+}
+function openBankEdit(id){
+  const b=bankCache.find(x=>x.id===id); if(!b) return;
+  document.getElementById('bankEditId').value=id;
+  document.getElementById('bankModalTitle').textContent='Edit Bank Account';
+  document.getElementById('bankName').value=b.name||'';
+  document.getElementById('bankType').value=b.type||'savings';
+  document.getElementById('bankBalance').value=b.balance||0;
+  document.getElementById('bankIcon').value=b.icon||'';
+  document.getElementById('bankAccNo').value=b.accNo||'';
+  document.getElementById('bankModal').classList.add('open');
+}
+function closeBankModal(){ document.getElementById('bankModal').classList.remove('open'); }
+async function doSaveBank(){
+  const name=document.getElementById('bankName').value.trim();
+  if(!name){ showToast('Enter a bank name',true); return; }
+  const data={
+    name,
+    type:    document.getElementById('bankType').value,
+    balance: +document.getElementById('bankBalance').value||0,
+    icon:    document.getElementById('bankIcon').value||'🏦',
+    accNo:   document.getElementById('bankAccNo').value.trim(),
+    ts:      Date.now()
+  };
+  const editId=document.getElementById('bankEditId').value;
+  try{
+    if(editId){ await db.collection('bankAccounts').doc(editId).update(data); }
+    else { await db.collection('bankAccounts').add(data); }
+    closeBankModal();
+    showToast('✅ Account saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+async function deleteBank(id){
+  if(!requireAdmin('delete bank accounts')) return;
+  const linked=txCache.filter(t=>t.bankAccountId===id).length;
+  const msg=linked>0
+    ? `This account has ${linked} transactions linked. Delete anyway?`
+    : 'Delete this bank account?';
+  if(!confirm(msg)) return;
+  await db.collection('bankAccounts').doc(id).delete();
+  showToast('Account deleted');
+}
+
+// Refresh bank dropdowns in Add & Edit forms
+function refreshBankDropdowns(){
+  const opts='<option value="">-- No Account --</option>'
+    +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+'</option>').join('');
+  const tfrOpts='<option value="">-- Select Account --</option>'
+    +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+' (₹'+fmt(getBankBalance(b.id))+')</option>').join('');
+  const fAcc=document.getElementById('fBankAcc'); if(fAcc) fAcc.innerHTML=opts;
+  const eAcc=document.getElementById('editBankAcc'); if(eAcc) eAcc.innerHTML=opts;
+  const tFrom=document.getElementById('tfrFrom'); if(tFrom) tFrom.innerHTML=tfrOpts;
+  const tTo=document.getElementById('tfrTo'); if(tTo) tTo.innerHTML=tfrOpts;
+}
+
+
+/* ══ TRANSFER BETWEEN ACCOUNTS ══ */
+function updateTransferNote(){
+  const fromId=document.getElementById('tfrFrom')?.value;
+  const toId=document.getElementById('tfrTo')?.value;
+  const prev=document.getElementById('tfrPreview'); if(!prev) return;
+  const fromBank=bankCache.find(b=>b.id===fromId);
+  const toBank=bankCache.find(b=>b.id===toId);
+  if(!fromBank||!toBank){
+    prev.innerHTML='Select From and To accounts to see preview';
+    return;
+  }
+  const fromBal=getBankBalance(fromId);
+  const toBal=getBankBalance(toId);
+  const amt=Number(document.getElementById('tfrAmt')?.value)||0;
+  prev.innerHTML=
+    '<span style="color:var(--rose)">📤 '+fromBank.icon+' '+fromBank.name+'</span>: ₹'+fmt(fromBal)+(amt?' → ₹'+fmt(fromBal-amt):'')+'<br>'+
+    '<span style="color:var(--green)">📥 '+toBank.icon+' '+toBank.name+'</span>: ₹'+fmt(toBal)+(amt?' → ₹'+fmt(toBal+amt):'');
+}
+document.addEventListener('input', e=>{ if(e.target&&e.target.id==='tfrAmt') updateTransferNote(); });
+
+function applyTransferPreset(type){
+  const cashBank=bankCache.find(b=>b.type==='cash');
+  const salaryBank=bankCache.find(b=>b.type==='salary');
+  const savingsBank=bankCache.find(b=>b.type==='savings');
+  const firstBank=bankCache[0];
+  const tfrFrom=document.getElementById('tfrFrom');
+  const tfrTo=document.getElementById('tfrTo');
+  if(!tfrFrom||!tfrTo) return;
+  if(type==='atm'){
+    // ATM: from salary/savings bank → cash in hand
+    const fromB=salaryBank||savingsBank||firstBank;
+    const toB=cashBank||bankCache.find(b=>b.type!==fromB?.type);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='ATM Withdrawal';
+  } else if(type==='upi2cash'){
+    const walletBank=bankCache.find(b=>b.type==='wallet');
+    const fromB=walletBank||firstBank;
+    const toB=cashBank||bankCache.find(b=>b.id!==fromB?.id);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='UPI to Cash';
+  } else if(type==='bank2bank'){
+    const fromB=salaryBank||firstBank;
+    const toB=savingsBank||bankCache.find(b=>b.id!==fromB?.id);
+    if(fromB) tfrFrom.value=fromB.id;
+    if(toB)   tfrTo.value=toB.id;
+    document.getElementById('tfrNote').value='Bank to Bank Transfer';
+  }
+  updateTransferNote();
+}
+
+async function doTransfer(){
+  const fromId=document.getElementById('tfrFrom').value;
+  const toId=document.getElementById('tfrTo').value;
+  const amt=Number(document.getElementById('tfrAmt').value);
+  const who=document.getElementById('tfrWho').value;
+  const date=document.getElementById('tfrDate').value||new Date().toISOString().split('T')[0];
+  const note=document.getElementById('tfrNote').value.trim();
+  const fromBank=bankCache.find(b=>b.id===fromId);
+  const toBank=bankCache.find(b=>b.id===toId);
+  if(!fromId||!toId){ showToast('Select both From and To accounts',true); return; }
+  if(fromId===toId){ showToast('From and To accounts must be different',true); return; }
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
+  const transferRef='TFR-'+Date.now();
+  const baseNote=note||(fromBank.name+' → '+toBank.name);
+  try{
+    const batch=db.batch();
+    // Debit from source account
+    batch.set(db.collection('transactions').doc(), {
+      type:'expense', amount:amt,
+      category:'Transfer',
+      incSrc:null,
+      who, date,
+      txType:'Bank Transfer',
+      bankAccountId:fromId,
+      note:baseNote+' [Transfer Out]',
+      addedBy:curUser, editedBy:null, editedAt:null,
+      transferRef, ts:Date.now()
+    });
+    // Credit to destination account
+    batch.set(db.collection('transactions').doc(), {
+      type:'income', amount:amt,
+      category:'Income_transfer',
+      incSrc:'transfer',
+      who, date,
+      txType:'Bank Transfer',
+      bankAccountId:toId,
+      note:baseNote+' [Transfer In]',
+      addedBy:curUser, editedBy:null, editedAt:null,
+      transferRef, ts:Date.now()+1
+    });
+    await batch.commit();
+    // Clear fields
+    document.getElementById('tfrAmt').value='';
+    document.getElementById('tfrNote').value='';
+    document.getElementById('tfrPreview').innerHTML='Select From and To accounts to see preview';
+    showToast('✅ Transfer done! '+fromBank.name+' → '+toBank.name);
+  }catch(e){ showToast('Transfer error: '+e.message,true); }
+}
+
+/* ══ ADD TRANSACTION ══ */
+function setTyp(t){
+  curType=t;
+  document.getElementById('btnExp').classList.toggle('on',t==='expense');
+  document.getElementById('btnInc').classList.toggle('on',t==='income');
+  const tfrBtn=document.getElementById('btnTfr'); if(tfrBtn) tfrBtn.classList.toggle('on',t==='transfer');
+  document.getElementById('incSrcBox').style.display   = t==='income'   ? 'block' : 'none';
+  document.getElementById('catBox').style.display      = t==='expense'  ? 'block' : 'none';
+  document.getElementById('transferPanel').style.display = t==='transfer' ? 'block' : 'none';
+  // stdTxPanel wraps amount/who/date/note — hide when transfer mode
+  const stdPanel = document.getElementById('stdTxPanel');
+  if(stdPanel) stdPanel.style.display = t==='transfer' ? 'none' : 'block';
+  // Save button: hide when transfer (transfer has its own Execute button)
+  const saveBtn = document.querySelector('#pgAdd .sbtn:last-of-type');
+  if(saveBtn) saveBtn.style.display = t==='transfer' ? 'none' : 'block';
+}
+
+function setIS(s){
+  curIS=s;
+  ['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};
+  if(map[s]) document.getElementById(map[s]).classList.add('on');
+}
+function buildCatGrid(){
+  const g=document.getElementById('catGrid'); if(!g) return;
+  g.innerHTML='';
+  CATS.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='cbtn'+(c.id===curCat?' on':'');
+    b.innerHTML=`<span class="ci">${c.i}</span><span class="cn">${c.en}</span>`;
+    b.onclick=()=>{ curCat=c.id; buildCatGrid(); };
+    g.appendChild(b);
+  });
+}
+function buildEditCatSelect(){
+  const s=document.getElementById('editCat'); if(!s) return;
+  s.innerHTML=CATS.map(c=>`<option value="${c.id}">${c.i} ${c.en}</option>`).join('');
+}
+async function doAdd(){
+  // Transfer mode uses its own Execute button → doTransfer()
+  if(curType==='transfer'){ doTransfer(); return; }
+
+  const amt=Number(document.getElementById('fAmt').value);
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
+  const date=document.getElementById('fDate').value||new Date().toISOString().split('T')[0];
+  const who=document.getElementById('fWho').value;
+  const txType=document.getElementById('fTxType').value;
+  const note=document.getElementById('fNote').value.trim();
+  const now=Date.now();
+
+  // ── TRANSFER MODE: create 2 linked transactions ──
+  if(curType==='transfer'){
+    const fromId=document.getElementById('tfrFrom').value;
+    const toId=document.getElementById('tfrTo').value;
+    if(!fromId||!toId){ showToast('Select both From and To accounts',true); return; }
+    if(fromId===toId){ showToast('From and To cannot be the same account',true); return; }
+    const fromB=bankCache.find(b=>b.id===fromId);
+    const toB=bankCache.find(b=>b.id===toId);
+    const transferNote=(note||'Transfer')+': '+(fromB?fromB.name:'?')+' → '+(toB?toB.name:'?');
+    const transferRef='TFR-'+now; // link ID to pair the two transactions
+    try{
+      // Expense from source account
+      await db.collection('transactions').add({
+        type:'expense', amount:amt, category:'Transfer',
+        who, date, txType:txType||'BankTransfer',
+        bankAccountId:fromId, note:transferNote,
+        transferRef, transferDir:'out',
+        addedBy:curUser, editedBy:null, editedAt:null, ts:now
+      });
+      // Income to destination account
+      await db.collection('transactions').add({
+        type:'income', amount:amt, category:'Income_transfer',
+        incSrc:'transfer',
+        who, date, txType:txType||'BankTransfer',
+        bankAccountId:toId, note:transferNote,
+        transferRef, transferDir:'in',
+        addedBy:curUser, editedBy:null, editedAt:null, ts:now+1
+      });
+      document.getElementById('fAmt').value='';
+      document.getElementById('fNote').value='';
+      showToast('✅ Transfer recorded! Both accounts updated.');
+    }catch(e){ showToast('Transfer error: '+e.message,true); }
+    return;
+  }
+
+  // ── NORMAL INCOME / EXPENSE ──
+  const bankAccId=document.getElementById('fBankAcc').value;
+  try{
+    await db.collection('transactions').add({
+      type:          curType,
+      amount:        amt,
+      category:      curType==='expense' ? curCat : 'Income_'+curIS,
+      incSrc:        curType==='income' ? curIS : null,
+      who, date,
+      txType,
+      bankAccountId: bankAccId||null,
+      note,
+      addedBy:       curUser,
+      editedBy:      null, editedAt:null,
+      ts:            now
+    });
+    document.getElementById('fAmt').value='';
+    document.getElementById('fNote').value='';
+    showToast('✅ Saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+/* ══ EDIT TRANSACTION ══ */
+function openEditModal(id){
+  const tx=txCache.find(t=>t.id===id); if(!tx) return;
+  document.getElementById('editId').value=id;
+  document.getElementById('editAmt').value=tx.amount;
+  document.getElementById('editWho').value=tx.who||'Gavi';
+  document.getElementById('editDate').value=tx.date||'';
+  document.getElementById('editTxType').value=tx.txType||'';
+  document.getElementById('editBankAcc').value=tx.bankAccountId||'';
+  document.getElementById('editNote').value=tx.note||'';
+  document.getElementById('editCat').value=tx.category?.replace('Income_','')||'Other';
+  setEditTyp(tx.type||'expense');
+  let audit=`Added by: ${tx.addedBy||'Unknown'}`;
+  if(tx.editedBy) audit+=` · Last edited by ${tx.editedBy} on ${new Date(tx.editedAt).toLocaleDateString('en-IN')}`;
+  document.getElementById('editAudit').textContent=audit;
+  document.getElementById('editModal').classList.add('open');
+}
+function setEditTyp(t){ editType=t; document.getElementById('editBtnExp').classList.toggle('on',t==='expense'); document.getElementById('editBtnInc').classList.toggle('on',t==='income'); }
+function closeEditModal(){ document.getElementById('editModal').classList.remove('open'); }
+async function doUpdateTx(){
+  const id=document.getElementById('editId').value;
+  const amt=Number(document.getElementById('editAmt').value);
+  if(!amt||amt<=0){ showToast('Enter a valid amount',true); return; }
+  const cat=document.getElementById('editCat').value;
+  try{
+    await db.collection('transactions').doc(id).update({
+      type:          editType,
+      amount:        amt,
+      category:      editType==='income' ? 'Income_'+cat : cat,
+      who:           document.getElementById('editWho').value,
+      date:          document.getElementById('editDate').value,
+      txType:        document.getElementById('editTxType').value,
+      bankAccountId: document.getElementById('editBankAcc').value||null,
+      note:          document.getElementById('editNote').value.trim(),
+      editedBy:      curUser,
+      editedAt:      Date.now()
+    });
+    closeEditModal();
+    showToast('✅ Updated!');
+  }catch(e){ showToast('Update error: '+e.message,true); }
+}
+async function deleteTx(id){
+  if(!requireAdmin('delete transactions')) return;
+  if(!confirm('Delete this transaction?')) return;
+  await db.collection('transactions').doc(id).delete();
+  showToast('Deleted');
+}
+
+/* ══ GOALS ══ */
+function renderGoals(){
+  const gl=document.getElementById('goalList'); if(!gl) return;
+  if(!goalCache.length){
+    gl.innerHTML=`<div class="empty"><div class="big">🎯</div><p>No goals yet — add one below!</p></div>`;
+    return;
+  }
+  const cols=['#4ade80','#2dd4bf','#a78bfa','#f0b429','#fb923c','#38bdf8'];
+  gl.innerHTML=goalCache.map((g,i)=>{
+    const pct=Math.min(100,Math.round((+g.saved||0)/(+g.target||1)*100));
+    const remaining=Math.max(0,(+g.target||0)-(+g.saved||0));
+    return `<div class="gcrd">
+      <div class="gh">
+        <div class="gico">${g.icon||'🎯'}</div>
+        <div class="ginf">
+          <div class="gname">${g.name}</div>
+          <div class="gsub">For: ${g.forPerson||'Family'} &nbsp;·&nbsp; ₹${fmt(remaining)} remaining</div>
+        </div>
+        <div class="gpct">${pct}%</div>
+      </div>
+      <div class="gtrack"><div class="gfill" style="width:${pct}%;background:${cols[i%cols.length]}"></div></div>
+      <div class="gamts">
+        <span>Saved: <strong style="color:var(--green)">₹${fmt(g.saved||0)}</strong></span>
+        <span>Target: <strong>₹${fmt(g.target||0)}</strong></span>
+      </div>
+      <div class="gcrd-actions">
+        <button class="g-edit-btn" onclick="openEditGoal('${g.id}')">✏️ Edit Goal</button>
+        <button class="g-add-btn" onclick="openQuickAdd('${g.id}','${g.name}',${g.saved||0})">+ Add Savings</button>
+        ${isAdmin()?'<button class="g-del-btn" onclick="doDeleteGoal(\''+g.id+'\')">🗑️</button>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openGM(){
+  // Reset to ADD mode
+  document.getElementById('gEditId').value='';
+  document.getElementById('gModalTitle').textContent='New Savings Goal';
+  document.getElementById('gName').value='';
+  document.getElementById('gFor').value='Family';
+  document.getElementById('gTarget').value='';
+  document.getElementById('gSaved').value='';
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value='';
+  document.getElementById('gSaveBtn').textContent='✅ Save Goal';
+  document.getElementById('gDeleteBtn').style.display='none';
+  document.getElementById('gModal').classList.add('open');
+}
+
+function openEditGoal(id){
+  const g=goalCache.find(x=>x.id===id); if(!g) return;
+  document.getElementById('gEditId').value=id;
+  document.getElementById('gModalTitle').textContent='Edit Goal';
+  document.getElementById('gName').value=g.name||'';
+  document.getElementById('gFor').value=g.forPerson||'Family';
+  document.getElementById('gTarget').value=g.target||'';
+  document.getElementById('gSaved').value=g.saved||0;
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value=g.icon||'🎯';
+  document.getElementById('gSaveBtn').textContent='💾 Update Goal';
+  document.getElementById('gDeleteBtn').style.display='block';
+  document.getElementById('gModal').classList.add('open');
+}
+
+function openQuickAdd(id, name, currentSaved){
+  const g=goalCache.find(x=>x.id===id); if(!g) return;
+  document.getElementById('gEditId').value=id;
+  document.getElementById('gModalTitle').textContent='Update Savings · '+name;
+  document.getElementById('gName').value=g.name||'';
+  document.getElementById('gFor').value=g.forPerson||'Family';
+  document.getElementById('gTarget').value=g.target||'';
+  document.getElementById('gSaved').value=g.saved||0;
+  document.getElementById('gAddSaved').value='';
+  document.getElementById('gSubSaved').value='';
+  document.getElementById('gIcon').value=g.icon||'🎯';
+  document.getElementById('gSaveBtn').textContent='💾 Update Savings';
+  document.getElementById('gDeleteBtn').style.display='block';
+  document.getElementById('gModal').classList.add('open');
+  // Focus add field
+  setTimeout(()=>document.getElementById('gAddSaved').focus(),300);
+}
+
+function closeGM(){ document.getElementById('gModal').classList.remove('open'); }
+
+async function doSaveGoal(){
+  const name=document.getElementById('gName').value.trim();
+  const target=Number(document.getElementById('gTarget').value);
+  if(!name){ showToast('Please enter a Goal Name',true); return; }
+  if(!target||target<=0){ showToast('Please enter a Target Amount',true); return; }
+
+  const editId   = document.getElementById('gEditId').value.trim();
+  const baseSaved= Number(document.getElementById('gSaved').value)||0;
+  const addAmt   = Number(document.getElementById('gAddSaved').value)||0;
+  const subAmt   = Number(document.getElementById('gSubSaved').value)||0;
+  const finalSaved= Math.max(0, baseSaved+addAmt-subAmt);
+
+  const data={
+    name:      name,
+    forPerson: document.getElementById('gFor').value||'Family',
+    target:    target,
+    saved:     finalSaved,
+    icon:      document.getElementById('gIcon').value||'🎯',
+    updatedBy: curUser,
+    ts:        Date.now()
+  };
+
+  try{
+    if(editId){
+      // use set with merge so it works regardless of existing doc structure
+      await db.collection('goals').doc(editId).set(data,{merge:true});
+      showToast('✅ Goal updated!');
+    } else {
+      await db.collection('goals').add(data);
+      showToast('✅ Goal saved!');
+    }
+    closeGM();
+    // Clear fields
+    ['gName','gTarget','gSaved','gAddSaved','gSubSaved','gIcon'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
+    document.getElementById('gEditId').value='';
+  }catch(e){
+    console.error('doSaveGoal error:',e);
+    showToast('Error saving goal: '+e.message,true);
+  }
+}
+
+async function doDeleteGoal(id){
+  if(!requireAdmin('delete goals')) return;
+  const goalId=id||document.getElementById('gEditId').value;
+  if(!goalId){ showToast('No goal selected',true); return; }
+  const g=goalCache.find(x=>x.id===goalId);
+  if(!confirm(`Delete goal "${g?g.name:'this goal'}"? This cannot be undone.`)) return;
+  try{
+    await db.collection('goals').doc(goalId).delete();
+    closeGM();
+    showToast('Goal deleted');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+/* ══ HISTORY ══ */
+function renderHistory(){
+  const fr=document.getElementById('filterRow'); if(!fr) return;
+  const chips=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f||t.category==='Income_'+f));
+  fr.innerHTML=chips.map(f=>{ const c=C(f); return `<div class="fchip${filtCat===f?' on':''}" onclick="setFilt('${f}')">${f==='All'?'All':(c?c.i+' '+c.en:f)}</div>`; }).join('');
+  let list=txCache.slice();
+  if(filtCat!=='All') list=list.filter(t=>t.category===filtCat||t.category==='Income_'+filtCat);
+  const hl=document.getElementById('histList');
+  hl.innerHTML=list.length ? list.map(t=>txHTML(t,true)).join('') : `<div class="empty"><div class="big">📭</div><p>${'No transactions found'}</p></div>`;
+}
+function setFilt(f){ filtCat=f; renderHistory(); }
+
+/* ══ TX HTML ══ */
+function txHTML(tx,showActions){
+  // Special categories for transfer
+  let cat;
+  if(tx.category==='Transfer'||tx.category==='Income_transfer'){
+    cat={i:'🔄',en:tx.category==='Transfer'?'Transfer Out':'Transfer In',c:'#38bdf8'};
+  } else {
+    cat=C(tx.category)||C(tx.category?.replace('Income_',''))||{i:tx.type==='income'?'💵':'📦',en:tx.category||'Other',c:'#94a3b8'};
+  }
+  const sign=tx.type==='income'?'+':'-';
+  const col=tx.type==='income'?'var(--green)':'var(--rose)';
+  const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+  // Bank account name
+  const bank=bankCache.find(b=>b.id===tx.bankAccountId);
+  const bankTag=bank?` · ${bank.icon||'🏦'}${bank.name}`:'';
+  // TX type tag
+  const txTypeTag=tx.txType?` · ${tx.txType}`:'';
+  // Audit
+  let audit=tx.addedBy?'👤 '+tx.addedBy:'';
+  if(tx.editedBy) audit+=' · ✏️ '+tx.editedBy;
+  return `<div class="tx">
+    <div class="txico">${cat.i}</div>
+    <div class="txinf">
+      <div class="txcat">${cat.en||cat.id||'Other'}</div>
+      <div class="txmeta">${tx.who||''} · ${dateStr}${txTypeTag}${bankTag}${tx.note?' · '+tx.note:''}</div>
+      ${audit?`<div class="txby">${audit}</div>`:''}
+    </div>
+    <div class="txamt" style="color:${col}">${sign}₹${fmt(tx.amount)}</div>
+    ${showActions?'<div class="tx-actions"><button class="txedit" onclick="openEditModal(\''+tx.id+'\')">✏️</button>'+(isAdmin()?'<button class="txdel" onclick="deleteTx(\''+tx.id+'\')">🗑️</button>':'')+'</div>':''}
+  </div>`;
+}
+
+/* ══ EXPORT CSV ══ */
+function exportCSV(){
+  if(!txCache.length){ showToast('No data to export',true); return; }
+  const hdr=['Date','Type','Category','Amount','Who','TxType','Bank Account','Added By','Edited By','Note'];
+  const rows=txCache.map(t=>{
+    const bank=bankCache.find(b=>b.id===t.bankAccountId);
+    return [t.date||'',t.type||'',t.category||'',t.amount||0,t.who||'',t.txType||'',bank?bank.name:'',t.addedBy||'',t.editedBy||'','"'+(t.note||'').replace(/"/g,"''")+'"'].join(',');
+  });
+  const csv=[hdr.join(','),...rows].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='HattiBudget_'+new Date().toISOString().split('T')[0]+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('✅ CSV Downloaded!');
+}
+
+/* ══ REPORTS ══ */
+function populateMonthSelector(){
+  const sel=document.getElementById('repMonthSel'); if(!sel) return;
+  // Build list of unique year-month from txCache
+  const seen=new Set();
+  txCache.forEach(t=>{ if(t.date){ const d=new Date(t.date); seen.add(d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')); } });
+  const sorted=[...seen].sort().reverse();
+  const sM=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const prev=sel.value;
+  sel.innerHTML=`<option value="all">📊 All Time</option>`;
+  sorted.forEach(ym=>{
+    const [y,m]=ym.split('-');
+    const lbl=sM[parseInt(m)-1]+' '+y;
+    sel.innerHTML+=`<option value="${ym}">${lbl}</option>`;
+  });
+  // Try restore previous
+  if(prev && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
+}
+
+function renderReports(){
+  populateMonthSelector();
+  const sel=document.getElementById('repMonthSel');
+  const selVal=sel?sel.value:'all';
+  const isAll=selVal==='all';
+
+  const now=new Date();
+  const sM=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Filter transactions
+  let mTx;
+  let mm,yy,days=30;
+  if(isAll){
+    mTx=txCache.slice();
+  } else {
+    const [y,m]=selVal.split('-').map(Number);
+    mm=m-1; yy=y;
+    mTx=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===mm&&d.getFullYear()===yy;});
+    days=new Date(yy,mm+1,0).getDate();
+  }
+
+  // Income/expense excluding pure account transfers
+  const totalInc=mTx.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0);
+  const totalExp=mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0);
+  const saved=totalInc-totalExp;
+  const savePct=totalInc>0?Math.round(saved/totalInc*100):0;
+  const repMonths=isAll?getDataMonthCount():1;
+  const avgExp=isAll?Math.round(totalExp/repMonths):Math.round(totalExp/days);
+  const avgLbl=isAll?'Monthly Avg Expense':'Daily Avg';
+  const largest=mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').sort((a,b)=>b.amount-a.amount)[0];
+
+  // Summary title
+  const repSummTitle=document.getElementById('repSummTitle');
+  if(repSummTitle){
+    if(isAll) repSummTitle.textContent='Overall Summary';
+    else{ const [y,m]=selVal.split('-').map(Number); repSummTitle.textContent=sM[m-1]+' '+y+' '+'Summary'; }
+  }
+
+  // Summary grid — 6 cards
+  const sg=document.getElementById('repSummGrid');
+  sg.innerHTML=[
+    {l:'Total Income',         v:'₹'+fmt(totalInc),                                 c:'var(--green)',  hl:false},
+    {l:'Total Expense',         v:'₹'+fmt(totalExp),                                 c:'var(--rose)',   hl:false},
+    {l:'Net Savings',           v:'₹'+fmt(saved)+' ('+savePct+'%)',                  c:saved>=0?'var(--green)':'var(--rose)',hl:true},
+    {l:avgLbl,                                    v:'₹'+fmt(avgExp),                                   c:'var(--text)',   hl:false},
+    {l:'Biggest Expense',       v:largest?'₹'+fmt(largest.amount)+'\n'+(largest.category||''):'₹0', c:'var(--rose)', hl:false},
+    {l:'Transactions',           v:mTx.length,                                        c:'var(--text)',   hl:false},
+  ].map(r=>`<div class="summ-card${r.hl?' highlight':''}"><div class="summ-lbl">${r.l}</div><div class="summ-val" style="color:${r.c}">${r.v}</div></div>`).join('');
+
+  // Monthly table (only when "All" selected)
+  const tableBox=document.getElementById('monthlyTableBox');
+  if(isAll && tableBox){
+    tableBox.style.display='block';
+    // Build per-month rows
+    const seen=new Set();
+    txCache.forEach(t=>{ if(t.date){ const d=new Date(t.date); seen.add(d.getFullYear()+'-'+(d.getMonth()+1).toString().padStart(2,'0')); } });
+    const sorted=[...seen].sort().reverse();
+    const tbody=document.getElementById('monthTableBody');
+    let runBal=0;
+    const rows=sorted.map(ym=>{
+      const [y,m]=ym.split('-').map(Number);
+      const mTxRow=txCache.filter(t=>{if(!t.date)return false;const d=new Date(t.date);return d.getMonth()===(m-1)&&d.getFullYear()===y;});
+      const mInc=mTxRow.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0);
+      const mExp=mTxRow.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
+      const mBal=mInc-mExp;
+      return {ym,y,m,mInc,mExp,mBal,label:sM[m-1]+' '+y};
+    });
+    // running balance from oldest to newest
+    let running=0;
+    const runMap={};
+    [...rows].reverse().forEach(r=>{ running+=r.mBal; runMap[r.ym]=running; });
+    tbody.innerHTML=rows.map(r=>`<tr>
+      <td class="gold">${r.label}</td>
+      <td class="pos">₹${fmt(r.mInc)}</td>
+      <td class="neg">₹${fmt(r.mExp)}</td>
+      <td class="${runMap[r.ym]>=0?'pos':'neg'}">₹${fmt(runMap[r.ym])}</td>
+    </tr>`).join('');
+    // Total row
+    const grandInc=rows.reduce((s,r)=>s+r.mInc,0);
+    const grandExp=rows.reduce((s,r)=>s+r.mExp,0);
+    tbody.innerHTML+=`<tr style="background:rgba(240,180,41,.08);font-weight:800">
+      <td class="gold">${'Total'}</td>
+      <td class="pos">₹${fmt(grandInc)}</td>
+      <td class="neg">₹${fmt(grandExp)}</td>
+      <td class="${grandInc-grandExp>=0?'pos':'neg'}">₹${fmt(grandInc-grandExp)}</td>
+    </tr>`;
+  } else if(tableBox){
+    tableBox.style.display='none';
+  }
+
+  // Who spent chart (filtered)
+  const byUser=USERS.map(u=>mTx.filter(t=>t.type==='expense'&&t.who===u).reduce((s,t)=>s+(+t.amount||0),0));
+  drawBarChart(document.getElementById('whoC'),USERS.map((u,i)=>AVATARS[i]+u),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d']);
+
+  // 12-month trend (always last 12 months, transfers excluded)
+  const sM2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ml=[],mi=[],me=[];
+  for(let i=11;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    ml.push(sM2[d.getMonth()]);
+    const mo=d.getMonth(),yo=d.getFullYear();
+    const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===mo&&dd.getFullYear()===yo;});
+    mi.push(mTxY.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0));
+    me.push(mTxY.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0));
+  }
+  drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
+
+  // Income sources chart (filtered, transfers excluded from display)
+  const incSrcFiltered = INC_SRCS.filter(s=>s.id!=='transfer');
+  const incSrcAmt = incSrcFiltered.map(s=>
+    mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0)
+  );
+  const incSrcLabels = incSrcFiltered.map(s=>s.i+' '+s.en);
+  drawBarChart(document.getElementById('incC'),incSrcLabels,incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
+}
+
+/* ══ CHARTS ══ */
+function drawTrend(){
+  const canvas=document.getElementById('trendC'); if(!canvas)return;
+  const now=new Date();
+  const sM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const labels=[],incD=[],expD=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    labels.push(sM[d.getMonth()]);
+    const m=d.getMonth(),y=d.getFullYear();
+    const mTx=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y;});
+    incD.push(mTx.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0));
+    expD.push(mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0));
+  }
+  drawLineChart(canvas,labels,incD,expD,'#4ade80','#fb7185','Income','Expense');
+}
+function drawLineChart(canvas,labels,d1,d2,c1,c2,l1,l2){
+  const ctx=canvas.getContext('2d'),W=canvas.parentElement.clientWidth-28,H=155;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const p={t:16,r:14,b:28,l:46},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const maxV=Math.max(...d1,...d2,1),step=cW/(labels.length-1||1);
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=4;i++){
+    const y=p.t+cH/4*i;
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';
+    const v=maxV-maxV/4*i;ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
+  }
+  [[d1,c1],[d2,c2]].forEach(([data,color])=>{
+    const pts=data.map((v,i)=>({x:p.l+step*i,y:p.t+cH-(v/maxV)*cH}));
+    ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));
+    ctx.lineTo(pts[pts.length-1].x,p.t+cH);ctx.lineTo(pts[0].x,p.t+cH);ctx.closePath();
+    const g=ctx.createLinearGradient(0,p.t,0,p.t+cH);g.addColorStop(0,color+'38');g.addColorStop(1,color+'00');ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(pt=>ctx.lineTo(pt.x,pt.y));ctx.stroke();
+    pts.forEach(pt=>{ctx.beginPath();ctx.arc(pt.x,pt.y,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();});
+  });
+  ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='11px sans-serif';ctx.textAlign='center';labels.forEach((l,i)=>ctx.fillText(l,p.l+step*i,H-5));
+  [[c1,l1],[c2,l2]].forEach(([c,l],i)=>{ctx.fillStyle=c;ctx.fillRect(W-88,6+i*13,10,4);ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='10px sans-serif';ctx.textAlign='left';ctx.fillText(l,W-74,12+i*13);});
+}
+function drawBarChart(canvas,labels,data,colors){
+  const ctx=canvas.getContext('2d'),W=canvas.parentElement.clientWidth-28,H=155;
+  canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const p={t:18,r:14,b:36,l:48},cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const maxV=Math.max(...data,1),bw=Math.min(70,cW/labels.length*0.5);
+  const gap=(cW-bw*labels.length)/(labels.length+1);
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=4;i++){
+    const y=p.t+cH/4*i;ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(W-p.r,y);ctx.stroke();
+    const v=maxV-maxV/4*i;ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='10px sans-serif';ctx.textAlign='right';ctx.fillText(v>=1000?Math.round(v/1000)+'k':Math.round(v),p.l-4,y+4);
+  }
+  labels.forEach((lbl,i)=>{
+    const x=p.l+gap+(bw+gap)*i,bh=Math.max(2,(data[i]/maxV)*cH),y=p.t+cH-bh;
+    const g=ctx.createLinearGradient(0,y,0,p.t+cH);g.addColorStop(0,colors[i%colors.length]);g.addColorStop(1,colors[i%colors.length]+'50');
+    ctx.fillStyle=g;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,bw,bh,4);else ctx.rect(x,y,bw,bh);ctx.fill();
+    if(data[i]>0){ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillText('₹'+(data[i]>=1000?Math.round(data[i]/1000)+'k':data[i]),x+bw/2,y-5);}
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10px sans-serif';ctx.fillText(lbl,x+bw/2,H-4);
+  });
+}
+
+/* ══ SETTINGS ══ */
+function renderSettings(){
+  const role=getUserRole(curUser);
+  const admin=role==='Admin';
+  const av=AVATARS[USERS.indexOf(curUser)];
+
+  // Update header banner
+  const setUserAv=document.getElementById('setUserAv'); if(setUserAv) setUserAv.textContent=av;
+  const setUserName=document.getElementById('setUserName'); if(setUserName) setUserName.textContent=curUser;
+  const setUserRole=document.getElementById('setUserRole'); if(setUserRole)
+    setUserRole.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
+
+  // Member management — admin only
+  const memberSection=document.getElementById('memberSection');
+  if(memberSection){
+    if(!admin){
+      memberSection.innerHTML='<div style="color:var(--text3);font-size:12px;padding:8px 0">🔒 Only Admins can manage members.</div>';
+    } else {
+      renderMemberList();
+    }
+  }
+
+  // Show/hide income & limits sections for non-admin
+  const incSec=null; // removed
+  const limSec=document.getElementById('limForm');
+  const incLbl=document.getElementById('incomeSettingsLbl');
+  const rulesSec=document.getElementById('rulesSection');
+  const rulesBox=document.getElementById('rulesBox');
+  [incSec,incLbl,rulesSec,rulesBox].forEach(el=>{if(el) el.style.display=admin?'':'none'});
+
+  if(admin){
+    // Fill limits
+    if(limSec){
+      const savedLims=settings.limits||{};
+      limSec.innerHTML=CATS.filter(c=>c.lim>0).map(c=>`
+        <label class="fl">${c.i} ${c.en}</label>
+        <div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">Save</button></div>`).join('');
+    }
+  }
+
+  // My PIN section — always visible
+  const myPinLbl=document.getElementById('myPinLbl');
+  if(myPinLbl) myPinLbl.textContent='New PIN for '+curUser;
+}
+
+function renderMemberList(){
+  const ml=document.getElementById('memberList'); if(!ml) return;
+  ml.innerHTML=USERS.map((u,i)=>{
+    const role=getUserRole(u);
+    const isMe=u===curUser;
+    const badgeCls=role==='Admin'?'badge-admin':role==='Child'?'badge-child':'badge-member';
+    const canPromote=!isMe&&role!=='Admin';
+    const canDemote=!isMe&&role==='Admin';
+    const promoteBtn = canPromote ? '<button class="mem-btn promote" onclick="changeRole(\''+u+'\',\'Admin\')">⬆️ Make Admin</button>' : '';
+    const demoteBtn  = canDemote  ? '<button class="mem-btn demote" onclick="changeRole(\''+u+'\',\'Member\')">⬇️ Remove Admin</button>' : '';
+    const resetBtn   = !isMe ? '<button class="mem-btn resetpin" onclick="adminResetPin(\''+u+'\')">🔑 Reset PIN</button>' : '';
+    const meLabel    = isMe  ? '<div style="font-size:10px;color:var(--text3);text-align:center">Current<br>user</div>' : '';
+    return '<div class="member-card">'
+      +'<div class="member-av">'+AVATARS[i]+'</div>'
+      +'<div class="member-info">'
+        +'<div class="member-name">'+u+(isMe?' (You)':'')+'</div>'
+        +'<div class="member-role-badge '+badgeCls+'">'+role+'</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:3px">'+roleDesc(role)+'</div>'
+      +'</div>'
+      +'<div class="member-actions">'+promoteBtn+demoteBtn+resetBtn+meLabel+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function roleDesc(role){
+  if(role==='Admin') return 'Add · Edit · Delete · Manage settings';
+  if(role==='Child') return 'Add expenses only · Read all';
+  return 'Add · Edit · Read all · Cannot delete';
+}
+
+async function changeRole(who, newRole){
+  if(!requireAdmin('change member roles')) return;
+  if(who===curUser){ showToast("Can't change your own role",true); return; }
+  if(!confirm(`Change ${who}'s role to ${newRole}?`)) return;
+  try{
+    await db.collection('users').doc(who).set({
+      name:who, role:newRole,
+      pin:pinCache[who]||DEF_PINS[who],
+      avatar:AVATARS[USERS.indexOf(who)]
+    },{merge:true});
+    if(!userCache[who]) userCache[who]={};
+    userCache[who].role=newRole;
+    showToast(`✅ ${who} is now ${newRole}`);
+    renderSettings();
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function adminResetPin(who){
+  if(!requireAdmin('reset PINs')) return;
+  const newPin=prompt(`Enter new 4-digit PIN for ${who}:`);
+  if(!newPin||newPin.length!==4||isNaN(newPin)){ showToast('PIN must be 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(who).set({pin:newPin},{merge:true});
+    pinCache[who]=newPin;
+    showToast(`✅ ${who}'s PIN reset!`);
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function savMyPin(){
+  const el=document.getElementById('myPinInput'); if(!el) return;
+  const v=el.value.trim();
+  if(v.length!==4||isNaN(v)){ showToast('PIN must be exactly 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(curUser).set({pin:v},{merge:true});
+    pinCache[curUser]=v; el.value='';
+    showToast('✅ Your PIN updated!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+async function savPin(who){
+  const el=document.getElementById('pin_'+who); if(!el) return;
+  const v=el.value.trim();
+  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
+  try{
+    await db.collection('users').doc(who).set({name:who,pin:v,role:getUserRole(who),avatar:AVATARS[USERS.indexOf(who)]},{merge:true});
+    pinCache[who]=v; el.value='';
+    showToast('✅ '+who+' PIN saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
+// Monthly base income removed — all income tracked via transactions
+async function savLim(id){
+  if(!requireAdmin('edit budget limits')) return;
+  const val=+document.getElementById('lim_'+id).value||0;
+  const lims={...(settings.limits||{}),[id]:val};
+  try{
+    await db.collection('settings').doc('limits').set(lims);
+    settings.limits=lims;
+    showToast('✅ Limit saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+/* ══ UTILS ══ */
+function fmt(n){ return Number(n||0).toLocaleString('en-IN'); }
+function setText(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+function showToast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(err?' err':'');
+  setTimeout(()=>t.className='toast',2800);
+}
+</script>
+</body>
+</html>
