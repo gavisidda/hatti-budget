@@ -233,12 +233,6 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .month-table .pos{color:var(--green);font-weight:700}
 .month-table .neg{color:var(--rose);font-weight:700}
 .month-table .gold{color:var(--gold);font-weight:700}
-  /* QUICK PRESET STRIP */
-.preset-strip{display:flex;gap:6px;margin-bottom:12px}
-.preset-chip{flex:1;background:var(--s3);border-radius:10px;padding:8px 6px;font-family:var(--font);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.bank{color:var(--sky);border:1px solid rgba(56,189,248,.3)}
-.atm{color:var(--orange);border:1px solid rgba(251,146,60,.3)}
-.upi{color:var(--teal);border:1px solid rgba(45,212,191,.3)}
 
 </style>
 </head>
@@ -248,7 +242,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading yOUR Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -300,8 +294,8 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="sh">Income Sources</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent Rx</div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Rx</div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent </div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan </div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
@@ -324,13 +318,14 @@ canvas{width:100%!important;border-radius:6px;display:block}
         <div class="fc" style="border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.05)">
           <div style="font-size:14px;font-weight:800;color:var(--sky);margin-bottom:12px">🔄 Account Transfer / ATM Withdrawal</div>
 
-          <!-- QUICK PRESETS -->
-              <div class="fl" style="margin-bottom:6px">Quick Presets</div>
-              <div class="preset-strip">
-                <button onclick="applyTransferPreset('bank2bank')" class="preset-chip bank">🏦→🏦 Bank to Bank</button>
-                <button onclick="applyTransferPreset('atm')" class="preset-chip atm">🏧 ATM Withdrawal</button>
-               <!-- <button onclick="applyTransferPreset('upi2cash')" class="preset-chip upi">💳→💵 UPI to Cash</button>-->
-              </div>
+          <!-- Quick presets -->
+          <div class="fl" style="margin-bottom:6px">Quick Presets</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <button onclick="applyTransferPreset('bank2bank')" style="background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏦→🏦 Bank to Bank</button>
+            <button onclick="applyTransferPreset('atm')" style="background:var(--s3);color:var(--orange);border:1px solid rgba(251,146,60,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏧 ATM Withdrawal</button>
+            <!--<button onclick="applyTransferPreset('upi2cash')" style="background:var(--s3);color:var(--teal);border:1px solid rgba(45,212,191,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">💳→💵 UPI to Cash</button>-->
+          </div>
+
           <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-end">
             <div style="flex:1">
               <label class="fl">From Account</label>
@@ -379,8 +374,8 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent Rx</button>
-            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan Rx</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent </button>
+            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan </button>
             <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
           </div>
         </div>
@@ -409,7 +404,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
         </select>
         <label class="fl">Bank Account <span style="color:var(--text3);font-size:10px">(optional — updates balance)</span></label>
         <select class="fi" id="fBankAcc">
-          <option value=""> Select Account </option>
+          <option value="">-- No Account --</option>
         </select>
         <label class="fl">Note (optional)</label>
         <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
@@ -696,7 +691,7 @@ service cloud.firestore {
       <option value="BankTransfer">Bank Transfer (NEFT/RTGS)</option>
     </select>
     <label class="fl">Bank Account</label>
-    <select class="fi" id="editBankAcc"><option value=""> Select Account </option></select>
+    <select class="fi" id="editBankAcc"><option value="">-- No Account --</option></select>
     <label class="fl">Category</label><select class="fi" id="editCat"></select>
     <label class="fl">Note</label><input class="fi" type="text" id="editNote" placeholder="Optional note">
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px;background:var(--s3);border-radius:8px" id="editAudit"></div>
@@ -740,7 +735,7 @@ const CATS = [
   {id:'School',     i:'🎓', en:'School',         c:'#38bdf8',lim:8000},
   {id:'Books',      i:'📚', en:'Books',       c:'#818cf8',lim:2000},
   {id:'Tuition',    i:'✏️', en:'Tuition',    c:'#a78bfa',lim:3000},
-  {id:'BLR_Rent',   i:'🏙️',en:'Rent Tx',c:'#fb923c',lim:20000},
+  {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',c:'#fb923c',lim:20000},
   {id:'Travel',     i:'🚗', en:'Travel',      c:'#f59e0b',lim:3000},
   {id:'Petrol',     i:'⛽', en:'Petrol',   c:'#fbbf24',lim:2000},
   {id:'AutoBus',    i:'🚌', en:'Auto/Bus',   c:'#facc15',lim:1500},
@@ -769,8 +764,8 @@ const CATS = [
 
 const INC_SRCS = [
   {id:'salary',       i:'💼',en:'Salary',},
-  {id:'rent',         i:'🏠',en:'GinRent',},
-  {id:'loan_received',i:'💳',en:'Loan Received',},
+  {id:'rent',         i:'🏠',en:'Rent ',},
+  {id:'loan_received',i:'💳',en:'Loan ',},
   {id:'other_income', i:'📦',en:'Others',},
   {id:'transfer',     i:'🔄',en:'Transfer In',},
 ];
@@ -1189,7 +1184,7 @@ async function deleteBank(id){
 
 // Refresh bank dropdowns in Add & Edit forms
 function refreshBankDropdowns(){
-  const opts='<option value=""> Select Account </option>'
+  const opts='<option value="">-- No Account --</option>'
     +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+'</option>').join('');
   const tfrOpts='<option value="">-- Select Account --</option>'
     +bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+' (₹'+fmt(getBankBalance(b.id))+')</option>').join('');
@@ -1772,7 +1767,7 @@ function renderReports(){
   const byUser=USERS.map(u=>mTx.filter(t=>t.type==='expense'&&t.who===u).reduce((s,t)=>s+(+t.amount||0),0));
   drawBarChart(document.getElementById('whoC'),USERS.map((u,i)=>AVATARS[i]+u),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d']);
 
-  // 12-month trend (always last 12 months)
+  // 12-month trend (always last 12 months, transfers excluded)
   const sM2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const ml=[],mi=[],me=[];
   for(let i=11;i>=0;i--){
@@ -1780,17 +1775,18 @@ function renderReports(){
     ml.push(sM2[d.getMonth()]);
     const mo=d.getMonth(),yo=d.getFullYear();
     const mTxY=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===mo&&dd.getFullYear()===yo;});
-    mi.push(baseInc+mTxY.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0));
-    me.push(mTxY.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0));
+    mi.push(mTxY.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0));
+    me.push(mTxY.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0));
   }
   drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
 
-  // Income sources (filtered)
-  const incSrcAmt=INC_SRCS.filter(s=>s.id!=='transfer').map(s=>{
-    return mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0);
-  });
-  const incSrcLabels=INC_SRCS.filter(s=>s.id!=='transfer').map(s=>s.i+s.en);
-  drawBarChart(document.getElementById('incC'),INC_SRCS.map(s=>s.i+s.en),incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
+  // Income sources chart (filtered, transfers excluded from display)
+  const incSrcFiltered = INC_SRCS.filter(s=>s.id!=='transfer');
+  const incSrcAmt = incSrcFiltered.map(s=>
+    mTx.filter(t=>t.type==='income'&&t.incSrc===s.id).reduce((a,t)=>a+(+t.amount||0),0)
+  );
+  const incSrcLabels = incSrcFiltered.map(s=>s.i+' '+s.en);
+  drawBarChart(document.getElementById('incC'),incSrcLabels,incSrcAmt,['#38bdf8','#f0b429','#fb7185','#94a3b8']);
 }
 
 /* ══ CHARTS ══ */
@@ -1804,8 +1800,8 @@ function drawTrend(){
     labels.push(sM[d.getMonth()]);
     const m=d.getMonth(),y=d.getFullYear();
     const mTx=txCache.filter(t=>{if(!t.date)return false;const dd=new Date(t.date);return dd.getMonth()===m&&dd.getFullYear()===y;});
-    incD.push((baseInc||0)+mTx.filter(t=>t.type==='income').reduce((s,t)=>s+(+t.amount||0),0));
-    expD.push(mTx.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0));
+    incD.push(mTx.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0));
+    expD.push(mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0));
   }
   drawLineChart(canvas,labels,incD,expD,'#4ade80','#fb7185','Income','Expense');
 }
