@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MY BUDGET</title>
+<title>Hatti Family Budget</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -22,7 +22,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 @keyframes spin{to{transform:rotate(360deg)}}
 /* LOGIN */
 #loginScreen{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto;background:var(--bg) radial-gradient(ellipse 80% 50% at 30% 20%,rgba(42,99,160,.18) 0%,transparent 60%)}
-.login-logo{font-size:10px;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
+.login-logo{font-size:56px;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5));animation:glow 3s ease-in-out infinite}
 @keyframes glow{0%,100%{filter:drop-shadow(0 0 18px rgba(240,180,41,.4))}50%{filter:drop-shadow(0 0 32px rgba(240,180,41,.9))}}
 .login-title{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px;text-align:center}
 .login-sub{font-size:13px;color:var(--text2);margin-bottom:14px;text-align:center}
@@ -213,6 +213,69 @@ canvas{width:100%!important;border-radius:6px;display:block}
 /* RULES BOX */
 .rules-box{background:var(--bg);border:1px solid var(--s4);border-radius:10px;padding:12px;font-family:monospace;font-size:10px;color:var(--teal);white-space:pre;overflow-x:auto;margin-top:8px;line-height:1.7}
 
+
+/* ── BEAUTIFUL ADD FORM ── */
+.add-section{background:var(--s1);border:1px solid var(--s3);border-radius:18px;padding:18px;margin-bottom:14px;overflow:hidden}
+.add-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--s2)}
+.add-section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.add-section-title{font-size:14px;font-weight:800;color:var(--text)}
+.add-section-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.amt-input-wrap{position:relative;margin-bottom:14px}
+.amt-prefix{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:800;color:var(--gold);pointer-events:none;z-index:1}
+.amt-input-big{width:100%;background:var(--s3);color:var(--text);border:2px solid var(--s4);border-radius:14px;padding:18px 18px 18px 48px;font-family:var(--font);font-size:28px;font-weight:800;outline:none;-webkit-appearance:none;transition:border .2s}
+.amt-input-big:focus{border-color:var(--gold);background:var(--s2)}
+.type-tab-row{display:flex;gap:0;background:var(--s2);border-radius:14px;padding:4px;margin-bottom:16px}
+.type-tab{flex:1;background:transparent;color:var(--text2);border:none;border-radius:11px;padding:11px 6px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.type-tab.active-exp{background:rgba(251,113,133,.2);color:var(--rose)}
+.type-tab.active-inc{background:rgba(74,222,128,.2);color:var(--green)}
+.type-tab.active-tfr{background:rgba(56,189,248,.2);color:var(--sky)}
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.method-btn{background:var(--s2);border:1.5px solid var(--s3);border-radius:12px;padding:10px 8px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text2);text-align:center;transition:all .15s;display:flex;align-items:center;gap:6px;justify-content:center}
+.method-btn.sel{border-color:var(--gold);background:rgba(240,180,41,.1);color:var(--text)}
+.method-btn .m-ico{font-size:16px}
+.who-row{display:flex;gap:8px;margin-bottom:12px}
+.who-btn{flex:1;background:var(--s2);border:1.5px solid var(--s3);border-radius:12px;padding:10px 6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text2);text-align:center;transition:all .15s}
+.who-btn.sel{border-color:var(--sky);background:rgba(56,189,248,.1);color:var(--sky)}
+
+
+/* ── BEAUTIFUL ADD FORM ── */
+.add-type-row{display:flex;gap:0;margin-bottom:20px;background:var(--s2);border-radius:14px;padding:4px}
+.add-type-btn{flex:1;background:transparent;color:var(--text2);border:none;border-radius:10px;padding:12px 6px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.add-type-btn.exp.on{background:rgba(251,113,133,.2);color:var(--rose);box-shadow:0 2px 8px rgba(251,113,133,.2)}
+.add-type-btn.inc.on{background:rgba(74,222,128,.2);color:var(--green);box-shadow:0 2px 8px rgba(74,222,128,.2)}
+.add-type-btn.tfr.on{background:rgba(56,189,248,.2);color:var(--sky);box-shadow:0 2px 8px rgba(56,189,248,.2)}
+/* Amount big input */
+.amt-hero{background:var(--s1);border:2px solid var(--s3);border-radius:20px;padding:20px;margin-bottom:16px;text-align:center;transition:border .2s}
+.amt-hero:focus-within{border-color:var(--gold);box-shadow:0 0 0 4px rgba(240,180,41,.1)}
+.amt-hero-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px}
+.amt-hero-wrap{display:flex;align-items:center;justify-content:center;gap:8px}
+.amt-hero-currency{font-size:28px;font-weight:800;color:var(--text2)}
+.amt-hero-input{background:transparent;color:var(--text);border:none;outline:none;font-family:var(--font);font-size:42px;font-weight:800;width:180px;text-align:center}
+.amt-hero-input::placeholder{color:var(--s4)}
+/* Row fields */
+.field-row{display:flex;gap:10px;margin-bottom:12px}
+.field-row .fcard{flex:1;margin-bottom:0}
+.fcard{background:var(--s1);border:1.5px solid var(--s3);border-radius:14px;padding:14px 16px;margin-bottom:12px;transition:border .2s}
+.fcard:focus-within{border-color:var(--gold)}
+.fcard-label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;display:block}
+.fcard-input{width:100%;background:transparent;color:var(--text);border:none;outline:none;font-family:var(--font);font-size:15px;font-weight:600;-webkit-appearance:none}
+.fcard-input option{background:var(--s2)}
+/* Payment method pills */
+.pay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+.pay-pill{background:var(--s2);color:var(--text2);border:1.5px solid var(--s3);border-radius:10px;padding:10px 6px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pay-pill .pi{font-size:18px}
+.pay-pill.sel{border-color:var(--gold);background:rgba(240,180,41,.12);color:var(--gold)}
+/* Inc source pills */
+.inc-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.inc-pill{background:var(--s2);color:var(--text2);border:1.5px solid var(--s3);border-radius:10px;padding:10px 8px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.inc-pill.on{border-color:var(--teal);background:rgba(45,212,191,.12);color:var(--teal)}
+/* Save btn */
+.save-tx-btn{width:100%;border:none;border-radius:16px;padding:18px;font-family:var(--font);font-size:18px;font-weight:800;cursor:pointer;margin-top:8px;transition:all .15s;letter-spacing:.3px}
+.save-tx-btn.exp{background:var(--rose);color:#fff}
+.save-tx-btn.inc{background:var(--green);color:#000}
+.save-tx-btn.tfr{background:var(--sky);color:#000}
+.save-tx-btn:active{transform:scale(.97);opacity:.9}
+
 /* MONTH SELECTOR */
 .month-sel-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .month-sel{flex:1;background:var(--s3);color:var(--text);border:1.5px solid var(--s4);border-radius:10px;padding:11px 14px;font-family:var(--font);font-size:15px;font-weight:700;outline:none;-webkit-appearance:none;cursor:pointer}
@@ -243,13 +306,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Your Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-logo">🕉️</div>
-  <!--<div class="login-title">Hatti Family Budget</div>
-  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>-->
+  <div class="login-logo">🏡</div>
+  <div class="login-title">Hatti Family Budget</div>
+  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
   <div class="user-cards">
     <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
     <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
@@ -269,7 +332,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">BUDGET</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">Hatti Budget</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
       <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
@@ -295,8 +358,8 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="sh">Income Sources</div>
       <div class="inc-split">
         <div class="ic"><div class="ic-ico">💼</div><div class="ic-lbl">Salary</div><div class="ic-amt" id="iSal">₹0</div></div>
-        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent </div><div class="ic-amt" id="iRent">₹0</div></div>
-        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan </div><div class="ic-amt" id="iLoan">₹0</div></div>
+        <div class="ic"><div class="ic-ico">🏠</div><div class="ic-lbl">Rent · Ginigera</div><div class="ic-amt" id="iRent">₹0</div></div>
+        <div class="ic"><div class="ic-ico">💳</div><div class="ic-lbl">Loan Received</div><div class="ic-amt" id="iLoan">₹0</div></div>
         <div class="ic"><div class="ic-ico">📦</div><div class="ic-lbl">Others</div><div class="ic-amt" id="iOther">₹0</div></div>
       </div>
       <div class="sh">Key Expenses</div>
@@ -306,115 +369,140 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="sh">Recent Transactions</div>
       <div id="recentTx"></div>
     </div>
-    <!-- ADD -->
+    <!-- ADD — Beautiful Form -->
     <div class="page" id="pgAdd">
-      <div class="ph">➕ Add Transaction</div>
-      <div class="trow">
-        <button class="tbtn exp on" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
-        <button class="tbtn inc" id="btnInc" onclick="setTyp('income')">💵 Income</button>
-        <button class="tbtn tfr" id="btnTfr" onclick="setTyp('transfer')">🔄 Transfer</button>
+
+      <!-- TYPE SELECTOR — pill style -->
+      <div class="type-tab-row">
+        <button class="type-tab active-exp" id="btnExp" onclick="setTyp('expense')">💸 Expense</button>
+        <button class="type-tab" id="btnInc" onclick="setTyp('income')">💵 Income</button>
+        <button class="type-tab" id="btnTfr" onclick="setTyp('transfer')">🔄 Transfer</button>
       </div>
-      <!-- TRANSFER PANEL — shown only for Transfer type -->
+
+      <!-- ── TRANSFER PANEL ── -->
       <div id="transferPanel" style="display:none">
-        <div class="fc" style="border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.05)">
-          <div style="font-size:14px;font-weight:800;color:var(--sky);margin-bottom:12px">🔄 Account Transfer / ATM Withdrawal</div>
-
-          <!-- Quick presets -->
+        <div class="add-section" style="border-color:rgba(56,189,248,.25);background:linear-gradient(135deg,rgba(56,189,248,.06),rgba(14,20,34,.8))">
+          <div class="add-section-hdr">
+            <div class="add-section-icon" style="background:rgba(56,189,248,.15)">🔄</div>
+            <div><div class="add-section-title" style="color:var(--sky)">Account Transfer</div><div class="add-section-sub">Move money between your accounts</div></div>
+          </div>
           <div class="fl" style="margin-bottom:6px">Quick Presets</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-            <button onclick="applyTransferPreset('atm')" style="background:var(--s3);color:var(--orange);border:1px solid rgba(251,146,60,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏧 ATM Withdrawal</button>
-            <button onclick="applyTransferPreset('upi2cash')" style="background:var(--s3);color:var(--teal);border:1px solid rgba(45,212,191,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">💳→💵 UPI to Cash</button>
-            <button onclick="applyTransferPreset('bank2bank')" style="background:var(--s3);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:9px;padding:7px 12px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">🏦→🏦 Bank to Bank</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <button onclick="applyTransferPreset('atm')" style="background:rgba(251,146,60,.1);color:var(--orange);border:1px solid rgba(251,146,60,.3);border-radius:10px;padding:8px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer">🏧 ATM</button>
+            <button onclick="applyTransferPreset('upi2cash')" style="background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.3);border-radius:10px;padding:8px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer">💳→💵 UPI→Cash</button>
+            <button onclick="applyTransferPreset('bank2bank')" style="background:rgba(56,189,248,.1);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:10px;padding:8px 14px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer">🏦→🏦 Bank→Bank</button>
           </div>
-
-          <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-end">
-            <div style="flex:1">
-              <label class="fl">From Account</label>
-              <select class="fi" id="tfrFrom" style="margin-bottom:0" onchange="updateTransferNote()">
-                <option value="">-- Select --</option>
-              </select>
-            </div>
-            <div style="font-size:26px;margin-bottom:6px;flex-shrink:0;color:var(--sky)">→</div>
-            <div style="flex:1">
-              <label class="fl">To Account</label>
-              <select class="fi" id="tfrTo" style="margin-bottom:0" onchange="updateTransferNote()">
-                <option value="">-- Select --</option>
-              </select>
-            </div>
+          <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">
+            <div style="flex:1"><label class="fl">From Account</label><select class="fi" id="tfrFrom" style="margin-bottom:0" onchange="updateTransferNote()"><option value="">-- Select --</option></select></div>
+            <div style="font-size:24px;margin-bottom:8px;color:var(--sky)">→</div>
+            <div style="flex:1"><label class="fl">To Account</label><select class="fi" id="tfrTo" style="margin-bottom:0" onchange="updateTransferNote()"><option value="">-- Select --</option></select></div>
           </div>
-
           <label class="fl">Amount (₹)</label>
-          <input class="fi" type="number" id="tfrAmt" placeholder="0" inputmode="numeric">
+          <div class="amt-input-wrap"><span class="amt-prefix">₹</span><input class="amt-input-big" type="number" id="tfrAmt" placeholder="0" inputmode="numeric" oninput="updateTransferNote()"></div>
+          <div style="display:flex;gap:10px">
+            <div style="flex:1"><label class="fl">Who?</label><select class="fi" id="tfrWho"><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option></select></div>
+            <div style="flex:1"><label class="fl">Date</label><input class="fi" type="date" id="tfrDate"></div>
+          </div>
+          <label class="fl">Note (optional)</label>
+          <input class="fi" type="text" id="tfrNote" placeholder="e.g. Monthly savings transfer">
+          <div style="background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:12px;font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.8" id="tfrPreview">Select accounts to see preview</div>
+          <button class="sbtn" style="background:var(--sky);color:#000" onclick="doTransfer()">🔄 Execute Transfer</button>
+        </div>
+      </div>
 
-          <label class="fl">Who is transferring?</label>
-          <select class="fi" id="tfrWho">
+      <!-- ── STANDARD PANEL (Expense / Income) ── -->
+      <div id="stdTxPanel">
+
+        <!-- SECTION 1: AMOUNT -->
+        <div class="add-section">
+          <div class="add-section-hdr">
+            <div class="add-section-icon" id="amtSecIcon" style="background:rgba(251,113,133,.15)">💰</div>
+            <div><div class="add-section-title">Amount</div><div class="add-section-sub">How much?</div></div>
+          </div>
+          <div class="amt-input-wrap">
+            <span class="amt-prefix">₹</span>
+            <input class="amt-input-big" type="number" id="fAmt" placeholder="0" inputmode="numeric">
+          </div>
+        </div>
+
+        <!-- SECTION 2: INCOME SOURCE (income only) -->
+        <div class="add-section" id="incSrcBox" style="display:none">
+          <div class="add-section-hdr">
+            <div class="add-section-icon" style="background:rgba(74,222,128,.15)">📥</div>
+            <div><div class="add-section-title">Income Source</div><div class="add-section-sub">Where is this from?</div></div>
+          </div>
+          <div class="isrow">
+            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
+            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
+            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan</button>
+            <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
+          </div>
+        </div>
+
+        <!-- SECTION 3: DETAILS -->
+        <div class="add-section">
+          <div class="add-section-hdr">
+            <div class="add-section-icon" style="background:rgba(167,139,250,.15)">📋</div>
+            <div><div class="add-section-title">Details</div><div class="add-section-sub">Who, when and how?</div></div>
+          </div>
+
+          <!-- Who — pill buttons -->
+          <label class="fl">Who?</label>
+          <div class="who-row" id="whoRow">
+            <button class="who-btn sel" onclick="selectWho(this,'Gavi')">👨 Gavi</button>
+            <button class="who-btn" onclick="selectWho(this,'Uma')">👩 Uma</button>
+            <button class="who-btn" onclick="selectWho(this,'Rachana')">👧 Rachana</button>
+            <button class="who-btn" onclick="selectWho(this,'Sanchita')">👶 Sanchita</button>
+          </div>
+          <!-- Hidden select kept for doAdd compatibility -->
+          <select class="fi" id="fWho" style="display:none">
             <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
             <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
           </select>
 
-          <label class="fl">Date</label>
-          <input class="fi" type="date" id="tfrDate">
+          <label class="fl" style="margin-top:4px">Date</label>
+          <input class="fi" type="date" id="fDate">
+
+          <!-- Payment Method — visual grid -->
+          <label class="fl">Payment Method</label>
+          <div class="method-grid" id="methodGrid">
+            <button class="method-btn" onclick="selectMethod(this,'ATM')"><span class="m-ico">🏧</span>ATM</button>
+            <button class="method-btn" onclick="selectMethod(this,'Cash')"><span class="m-ico">💵</span>Cash</button>
+            <button class="method-btn" onclick="selectMethod(this,'Paytm')"><span class="m-ico">📱</span>Paytm</button>
+            <button class="method-btn" onclick="selectMethod(this,'PhonePe')"><span class="m-ico">📲</span>PhonePe</button>
+            <button class="method-btn" onclick="selectMethod(this,'GPay')"><span class="m-ico">🔵</span>GPay</button>
+            <button class="method-btn" onclick="selectMethod(this,'NetBanking')"><span class="m-ico">🌐</span>Net Banking</button>
+            <button class="method-btn" onclick="selectMethod(this,'BankTransfer')"><span class="m-ico">🏦</span>Bank Transfer</button>
+            <button class="method-btn" onclick="selectMethod(this,'Cheque')"><span class="m-ico">📄</span>Cheque</button>
+          </div>
+          <!-- Hidden select for compatibility -->
+          <select class="fi" id="fTxType" onchange="onTxTypeChange()" style="display:none">
+            <option value="">-- Select --</option>
+            <option value="ATM">ATM</option><option value="Cash">Cash</option>
+            <option value="Paytm">Paytm</option><option value="PhonePe">PhonePe</option>
+            <option value="GPay">GPay</option><option value="NetBanking">Net Banking</option>
+            <option value="BankTransfer">Bank Transfer</option><option value="Cheque">Cheque</option>
+          </select>
+
+          <label class="fl" id="bankAccLabel">Bank Account <span style="font-size:11px;color:var(--text3)" id="bankAccHint"></span></label>
+          <select class="fi" id="fBankAcc"><option value="">-- Select Account --</option></select>
 
           <label class="fl">Note (optional)</label>
-          <input class="fi" type="text" id="tfrNote" placeholder="e.g. Monthly transfer to savings">
-
-          <!-- Live preview -->
-          <div style="background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:12px;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.8" id="tfrPreview">
-            Select From and To accounts to see preview
-          </div>
-
-          <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:10px">
-            💡 Creates 2 transactions automatically — debit from <em>From</em>, credit to <em>To</em>. Both tagged as Transfer so they don't affect income/expense totals.
-          </div>
-
-          <button class="sbtn" style="background:var(--sky);color:#000" onclick="doTransfer()">🔄 Execute Transfer</button>
+          <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
         </div>
-      </div>
-      <div id="incSrcBox" style="display:none">
-        <div class="fc">
-          <div class="fl">Income Source</div>
-          <div class="isrow">
-            <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
-            <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
-            <button class="isbtn" id="isLoanBtn" onclick="setIS('loan_received')">💳 Loan </button>
-            <button class="isbtn" id="isOtherBtn" onclick="setIS('other_income')">📦 Others</button>
+
+        <!-- SECTION 4: CATEGORY (expense only) -->
+        <div class="add-section" id="catBox">
+          <div class="add-section-hdr">
+            <div class="add-section-icon" style="background:rgba(240,180,41,.15)">🏷️</div>
+            <div><div class="add-section-title">Category</div><div class="add-section-sub">What is this for?</div></div>
           </div>
+          <div class="cgrid" id="catGrid"></div>
         </div>
-      </div>
-      <div class="fc" id="stdTxPanel">
-        <label class="fl">Amount (₹)</label>
-        <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-        <label class="fl">Who?</label>
-        <select class="fi" id="fWho">
-          <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
-          <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
-        </select>
-        <label class="fl">Date</label>
-        <input class="fi" type="date" id="fDate">
-        <label class="fl">Payment Method</label>
-        <select class="fi" id="fTxType" onchange="onTxTypeChange()">
-          <option value="">-- Select Payment Method --</option>
-          <!--<option value="ATM">ATM Withdrawal</option>-->
-          <option value="Cash">CASH</option>
-          <option value="Paytm">Paytm (UPI)</option>
-          <option value="PhonePe">PhonePe (UPI)</option>
-          <!--<option value="GPay">Google Pay (UPI)</option>-->
-          <option value="NetBanking">Net Banking</option>
-          <option value="BankTransfer">Bank Transfer (NEFT/RTGS)</option>
-          <!--<option value="Cheque">Cheque</option>-->
-        </select>
-        <label class="fl" id="bankAccLabel">Bank Account <span style="color:var(--text3);font-size:11px" id="bankAccHint"></span></label>
-        <select class="fi" id="fBankAcc">
-          <option value="">-- No Account --</option>
-        </select>
-        <label class="fl">Note (optional)</label>
-        <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
-      </div>
-      <div class="fc" id="catBox">
-        <div class="fl">Category</div>
-        <div class="cgrid" id="catGrid"></div>
-      </div>
-      <button class="sbtn" onclick="doAdd()">✅ Save Transaction</button>
+
+      </div><!-- /stdTxPanel -->
+
+      <button class="sbtn" onclick="doAdd()" id="addSaveBtn" style="margin-top:4px">✅ Save Transaction</button>
     </div>
     <!-- BANK ACCOUNTS -->
     <div class="page" id="pgBanks">
@@ -436,6 +524,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <div class="ph">📜 History</div>
       <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
       <div class="frow" id="filterRow"></div>
+      <div class="frow" id="bankFilterRow" style="display:none"></div>
       <div id="histList"></div>
     </div>
     <!-- REPORTS -->
@@ -513,8 +602,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
 
       <!-- Monthly base income removed — use Add Transaction tab to record income -->
 
-
-      <!-- ── CHANGE MY PIN (all users) ── -->
+      <!-- ── BUDGET LIMITS (admin only) ── -->
+      <div id="budgetLimitsSection" style="display:none">
+        <div class="sh">📊 Monthly Budget Limits (₹)</div>
+        <div class="fc" id="limForm">
+          <div style="color:var(--text2);font-size:13px;margin-bottom:10px">Set max spend per category. You'll get a warning when exceeded.</div>
+        </div>
+      </div>
       <div class="sh">🔑 Change My PIN</div>
       <div class="fc" id="myPinForm">
         <div style="color:var(--text2);font-size:12px;margin-bottom:10px">Enter your new 4-digit PIN. Saved securely to Firebase.</div>
@@ -736,14 +830,14 @@ const CATS = [
   {id:'BLR_Rent',   i:'🏙️',en:'BLR Rent',     c:'#fb923c',lim:20000},
   {id:'Travel',     i:'🚗', en:'Travel',       c:'#f59e0b',lim:3000},
   {id:'Petrol',     i:'⛽', en:'Petrol',       c:'#fbbf24',lim:2000},
-  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',     c:'#facc15',lim:3000},
+  {id:'AutoBus',    i:'🚌', en:'Auto/Bus',     c:'#facc15',lim:1500},
   {id:'Electricity',i:'💡', en:'Electricity',  c:'#fde047',lim:2000},
   {id:'Water',      i:'💧', en:'Water',        c:'#7dd3fc',lim:500},
   {id:'Internet',   i:'📡', en:'Internet',     c:'#6ee7b7',lim:1000},
   {id:'Phone',      i:'📱', en:'Phone',        c:'#86efac',lim:500},
   {id:'Gas_LPG',    i:'🔥', en:'Gas/LPG',      c:'#fdba74',lim:1000},
   {id:'Medical',    i:'🏥', en:'Medical',      c:'#f87171',lim:2000},
-  {id:'Medicine',   i:'💊', en:'Medicine',     c:'#fca5a5',lim:2000},
+  {id:'Medicine',   i:'💊', en:'Medicine',     c:'#fca5a5',lim:1000},
   {id:'Clothing',   i:'👕', en:'Clothing',     c:'#ec4899',lim:3000},
   {id:'Children',   i:'👧', en:'Children',     c:'#f9a8d4',lim:3000},
   {id:'Festival',   i:'🪔', en:'Festival',     c:'#fcd34d',lim:5000},
@@ -761,8 +855,8 @@ const CATS = [
 
 const INC_SRCS = [
   {id:'salary',       i:'💼',en:'Salary'},
-  {id:'rent',         i:'🏠',en:'Rent'},
-  {id:'loan_received',i:'💳',en:'Loan '},
+  {id:'rent',         i:'🏠',en:'Ginigera Rent'},
+  {id:'loan_received',i:'💳',en:'Loan Received'},
   {id:'other_income', i:'📦',en:'Others'},
 ];
 
@@ -776,6 +870,7 @@ let curCat    = 'Food';
 let curIS     = 'salary';
 let editType  = 'expense';
 let filtCat   = 'All';
+let filtBank  = 'All';
 let txCache   = [];
 let goalCache = [];
 let bankCache = [];
@@ -902,6 +997,7 @@ function enterApp(){
   document.getElementById('fDate').value=today;
   const td=document.getElementById('tfrDate'); if(td) td.value=today;
   document.getElementById('fWho').value=curUser;
+  setTimeout(syncWhoBtn,100);
   buildCatGrid(); buildEditCatSelect();
   subscribeRT(); renderSettings(); saveSession();
 }
@@ -1142,6 +1238,28 @@ async function doTransfer(){
   }catch(e){ showToast('Transfer error: '+e.message,true); }
 }
 
+
+/* ══ ADD FORM HELPERS ══ */
+function selectWho(btn, name){
+  document.querySelectorAll('.who-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const sel=document.getElementById('fWho'); if(sel) sel.value=name;
+}
+function selectMethod(btn, method){
+  document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const sel=document.getElementById('fTxType');
+  if(sel){ sel.value=method; onTxTypeChange(); }
+}
+function syncWhoBtn(){
+  // Set who button to match curUser on login
+  document.querySelectorAll('.who-btn').forEach(b=>{
+    const name=b.textContent.replace(/[👨👩👧👶]\s*/u,'').trim();
+    b.classList.toggle('sel', name===curUser);
+  });
+  const sel=document.getElementById('fWho'); if(sel) sel.value=curUser;
+}
+
 /* ══ ADD TRANSACTION ══ */
 function setTyp(t){
   curType=t;
@@ -1172,7 +1290,7 @@ function buildEditCatSelect(){
 
 /* ══ PAYMENT METHOD → BANK FILTER ══ */
 function onTxTypeChange(){
-  const txType = document.getElementById('fTxType').value;
+  const txType=(document.getElementById('fTxType')||{}).value||'';
   const bankSel = document.getElementById('fBankAcc');
   const hint = document.getElementById('bankAccHint');
   if(!bankSel) return;
@@ -1342,13 +1460,28 @@ async function doDeleteGoal(id){
 /* ══ HISTORY ══ */
 function renderHistory(){
   const fr=document.getElementById('filterRow'); if(!fr) return;
+  // Category chips
   const chips=['All',...CATS.map(c=>c.id)].filter(f=>f==='All'||txCache.some(t=>t.category===f||t.category==='Income_'+f));
   fr.innerHTML=chips.map(f=>{ const c=C(f); return '<div class="fchip'+(filtCat===f?' on':'')+'" onclick="setFilt(\''+f+'\')">'+(f==='All'?'All':(c?c.i+' '+c.en:f))+'</div>'; }).join('');
+  // Bank account chips — show only if accounts exist
+  const br=document.getElementById('bankFilterRow');
+  if(br){
+    if(bankCache.length>0){
+      br.innerHTML='<div class="fchip'+(filtBank==='All'?' on':'')+'" onclick="setBankFilt(\'All\')">🏦 All Accounts</div>'+
+        bankCache.map(b=>'<div class="fchip'+(filtBank===b.id?' on':'')+'" onclick="setBankFilt(\''+b.id+'\')">'+(b.icon||'🏦')+' '+b.name+'</div>').join('');
+      br.style.display='flex';
+    } else {
+      br.style.display='none';
+    }
+  }
+  // Filter transactions
   let list=txCache.slice();
   if(filtCat!=='All') list=list.filter(t=>t.category===filtCat||t.category==='Income_'+filtCat);
-  document.getElementById('histList').innerHTML=list.length?list.map(t=>txHTML(t,true)):'<div class="empty"><div class="big">📭</div><p>No transactions found</p></div>';
+  if(filtBank!=='All') list=list.filter(t=>t.bankAccountId===filtBank);
+  document.getElementById('histList').innerHTML=list.length?list.map(t=>txHTML(t,true)).join(''):'<div class="empty"><div class="big">📭</div><p>No transactions found</p></div>';
 }
 function setFilt(f){ filtCat=f; renderHistory(); }
+function setBankFilt(id){ filtBank=id; renderHistory(); }
 
 /* ══ TX HTML ══ */
 function txHTML(tx,showActions){
@@ -1359,13 +1492,12 @@ function txHTML(tx,showActions){
   const col=tx.type==='income'?'var(--green)':'var(--rose)';
   const dateStr=tx.date?new Date(tx.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
   const bank=bankCache.find(b=>b.id===tx.bankAccountId);
-  const bankTag=bank?' · '+(bank.icon||'🏦')+bank.name:'';
-  const txTag=tx.txType?' · '+tx.txType:'';
+  const metaParts=[tx.who,dateStr,tx.txType,bank?(bank.icon||'🏦')+' '+bank.name:'',tx.note||''].filter(p=>p&&p.trim());
   let audit=tx.addedBy?'👤 '+tx.addedBy:'';
   if(tx.editedBy) audit+=' · ✏️ '+tx.editedBy;
   const editBtn='<button class="txedit" onclick="openEditModal(\''+tx.id+'\')">✏️</button>';
   const delBtn=isAdmin()?'<button class="txdel" onclick="deleteTx(\''+tx.id+'\')">🗑️</button>':'';
-  return '<div class="tx"><div class="txico">'+cat.i+'</div><div class="txinf"><div class="txcat">'+cat.en+'</div><div class="txmeta">'+(tx.who||'')+' · '+dateStr+txTag+bankTag+(tx.note?' · '+tx.note:'')+'</div>'+(audit?'<div class="txby">'+audit+'</div>':'')+'</div><div class="txamt" style="color:'+col+'">'+sign+'₹'+fmt(tx.amount)+'</div>'+(showActions?'<div class="tx-actions">'+editBtn+delBtn+'</div>':'')+'</div>';
+  return '<div class="tx"><div class="txico">'+cat.i+'</div><div class="txinf"><div class="txcat">'+cat.en+'</div><div class="txmeta">'+metaParts.join(' · ')+'</div>'+(audit?'<div class="txby">'+audit+'</div>':'')+'</div><div class="txamt" style="color:'+col+'">'+sign+'₹'+fmt(tx.amount)+'</div>'+(showActions?'<div class="tx-actions">'+editBtn+delBtn+'</div>':'')+'</div>';
 }
 
 /* ══ EXPORT CSV ══ */
@@ -1480,7 +1612,15 @@ function renderSettings(){
   const srEl=document.getElementById('setUserRole'); if(srEl) srEl.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
   const memSec=document.getElementById('memberSection');
   if(memSec){ if(!admin) memSec.innerHTML='<div style="color:var(--text3);font-size:12px;padding:8px 0">🔒 Only Admins can manage members.</div>'; else renderMemberList(); }
-  ['incomeSettingsSection','incomeSettingsLbl','rulesSection'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=admin?'':'none'; });
+  ['incomeSettingsSection','incomeSettingsLbl','rulesSection','budgetLimitsSection'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=admin?'':'none'; });
+  if(admin){
+    const lf=document.getElementById('limForm');
+    if(lf){
+      const savedLims=settings.limits||{};
+      lf.innerHTML='<div style="color:var(--text2);font-size:13px;margin-bottom:10px">Set max spend per category. Warning shows when exceeded.</div>'
+        +CATS.filter(c=>c.lim>0).map(c=>`<label class="fl">${c.i} ${c.en}</label><div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">Save</button></div>`).join('');
+    }
+  }
   if(admin){
     const lf=document.getElementById('limForm'); if(lf){
       const savedLims=settings.limits||{};
@@ -1516,6 +1656,17 @@ async function adminResetPin(who){
   try{ await db.collection('users').doc(who).set({pin:newPin},{merge:true}); pinCache[who]=newPin; showToast('✅ '+who+" PIN reset!"); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
+async function savLim(id){
+  if(!requireAdmin('edit budget limits')) return;
+  const val=+document.getElementById('lim_'+id).value||0;
+  const lims={...(settings.limits||{}),[id]:val};
+  try{
+    await db.collection('settings').doc('limits').set(lims);
+    settings.limits=lims;
+    showToast('✅ Limit saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
 async function savMyPin(){
   const el=document.getElementById('myPinInput'); if(!el) return;
   const v=el.value.trim();
