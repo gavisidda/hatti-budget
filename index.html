@@ -413,24 +413,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <!-- ── STANDARD PANEL (Expense / Income) ── -->
       <div id="stdTxPanel">
 
-        <!-- SECTION 1: AMOUNT -->
-        <div class="add-section">
-          <div class="add-section-hdr">
-            <div class="add-section-icon" id="amtSecIcon" style="background:rgba(251,113,133,.15)">💰</div>
-            <div><div class="add-section-title">Amount</div><div class="add-section-sub">How much?</div></div>
-          </div>
-          <div class="amt-input-wrap">
-            <span class="amt-prefix">₹</span>
-            <input class="amt-input-big" type="number" id="fAmt" placeholder="0" inputmode="numeric">
-          </div>
-        </div>
-
-        <!-- SECTION 2: INCOME SOURCE (income only) -->
-        <div class="add-section" id="incSrcBox" style="display:none">
-          <div class="add-section-hdr">
-            <div class="add-section-icon" style="background:rgba(74,222,128,.15)">📥</div>
-            <div><div class="add-section-title">Income Source</div><div class="add-section-sub">Where is this from?</div></div>
-          </div>
+        <!-- Income Source (income only) -->
+        <div class="fc" id="incSrcBox" style="display:none">
+          <div class="fl">Income Source</div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
             <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
@@ -439,64 +424,46 @@ canvas{width:100%!important;border-radius:6px;display:block}
           </div>
         </div>
 
-        <!-- SECTION 3: DETAILS -->
-        <div class="add-section">
-          <div class="add-section-hdr">
-            <div class="add-section-icon" style="background:rgba(167,139,250,.15)">📋</div>
-            <div><div class="add-section-title">Details</div><div class="add-section-sub">Who, when and how?</div></div>
-          </div>
+        <div class="fc">
+          <label class="fl">Amount (₹)</label>
+          <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
 
-          <!-- Who — pill buttons -->
           <label class="fl">Who?</label>
-          <div class="who-row" id="whoRow">
-            <button class="who-btn sel" onclick="selectWho(this,'Gavi')">👨 Gavi</button>
-            <button class="who-btn" onclick="selectWho(this,'Uma')">👩 Uma</button>
-            <button class="who-btn" onclick="selectWho(this,'Rachana')">👧 Rachana</button>
-            <button class="who-btn" onclick="selectWho(this,'Sanchita')">👶 Sanchita</button>
-          </div>
-          <!-- Hidden select kept for doAdd compatibility -->
-          <select class="fi" id="fWho" style="display:none">
-            <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
-            <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
+          <select class="fi" id="fWho">
+            <option value="Gavi">👨 Gavi</option>
+            <option value="Uma">👩 Uma</option>
+            <option value="Rachana">👧 Rachana</option>
+            <option value="Sanchita">👶 Sanchita</option>
           </select>
 
-          <label class="fl" style="margin-top:4px">Date</label>
+          <label class="fl">Date</label>
           <input class="fi" type="date" id="fDate">
 
-          <!-- Payment Method — visual grid -->
           <label class="fl">Payment Method</label>
-          <div class="method-grid" id="methodGrid">
-            <button class="method-btn" onclick="selectMethod(this,'ATM')"><span class="m-ico">🏧</span>ATM</button>
-            <button class="method-btn" onclick="selectMethod(this,'Cash')"><span class="m-ico">💵</span>Cash</button>
-            <button class="method-btn" onclick="selectMethod(this,'Paytm')"><span class="m-ico">📱</span>Paytm</button>
-            <button class="method-btn" onclick="selectMethod(this,'PhonePe')"><span class="m-ico">📲</span>PhonePe</button>
-            <button class="method-btn" onclick="selectMethod(this,'GPay')"><span class="m-ico">🔵</span>GPay</button>
-            <button class="method-btn" onclick="selectMethod(this,'NetBanking')"><span class="m-ico">🌐</span>Net Banking</button>
-            <button class="method-btn" onclick="selectMethod(this,'BankTransfer')"><span class="m-ico">🏦</span>Bank Transfer</button>
-            <button class="method-btn" onclick="selectMethod(this,'Cheque')"><span class="m-ico">📄</span>Cheque</button>
-          </div>
-          <!-- Hidden select for compatibility -->
-          <select class="fi" id="fTxType" onchange="onTxTypeChange()" style="display:none">
-            <option value="">-- Select --</option>
-            <option value="ATM">ATM</option><option value="Cash">Cash</option>
-            <option value="Paytm">Paytm</option><option value="PhonePe">PhonePe</option>
-            <option value="GPay">GPay</option><option value="NetBanking">Net Banking</option>
-            <option value="BankTransfer">Bank Transfer</option><option value="Cheque">Cheque</option>
+          <select class="fi" id="fTxType" onchange="onTxTypeChange()">
+            <option value="">-- Select Payment Method --</option>
+            <option value="Cash">💵 Cash</option>
+            <option value="ATM">🏧 ATM Withdrawal</option>
+            <option value="Paytm">📱 Paytm (UPI)</option>
+            <option value="PhonePe">📲 PhonePe (UPI)</option>
+            <option value="GPay">🔵 Google Pay (UPI)</option>
+            <option value="NetBanking">🌐 Net Banking</option>
+            <option value="BankTransfer">🏦 Bank Transfer (NEFT/RTGS)</option>
+            <option value="Cheque">📄 Cheque</option>
           </select>
 
-          <label class="fl" id="bankAccLabel">Bank Account <span style="font-size:11px;color:var(--text3)" id="bankAccHint"></span></label>
-          <select class="fi" id="fBankAcc"><option value="">-- Select Account --</option></select>
+          <label class="fl">Bank Account <span style="font-size:11px;color:var(--text3)" id="bankAccHint"></span></label>
+          <select class="fi" id="fBankAcc">
+            <option value="">-- Select Account --</option>
+          </select>
 
           <label class="fl">Note (optional)</label>
           <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
         </div>
 
-        <!-- SECTION 4: CATEGORY (expense only) -->
-        <div class="add-section" id="catBox">
-          <div class="add-section-hdr">
-            <div class="add-section-icon" style="background:rgba(240,180,41,.15)">🏷️</div>
-            <div><div class="add-section-title">Category</div><div class="add-section-sub">What is this for?</div></div>
-          </div>
+        <!-- Category (expense only) -->
+        <div class="fc" id="catBox">
+          <div class="fl">Category</div>
           <div class="cgrid" id="catGrid"></div>
         </div>
 
