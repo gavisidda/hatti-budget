@@ -214,6 +214,14 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .rules-box{background:var(--bg);border:1px solid var(--s4);border-radius:10px;padding:12px;font-family:monospace;font-size:10px;color:var(--teal);white-space:pre;overflow-x:auto;margin-top:8px;line-height:1.7}
 
 
+
+/* ── VAULT-STYLE FORM SECTIONS ── */
+.vault-section{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:12px}
+.vault-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--s2)}
+.vault-section-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.vault-section-title{font-size:14px;font-weight:800;color:var(--text)}
+.req{color:var(--rose);margin-left:2px}
+
 /* ── BEAUTIFUL ADD FORM ── */
 .add-section{background:var(--s1);border:1px solid var(--s3);border-radius:18px;padding:18px;margin-bottom:14px;overflow:hidden}
 .add-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--s2)}
@@ -238,12 +246,17 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .who-btn.sel{border-color:var(--sky);background:rgba(56,189,248,.1);color:var(--sky)}
 
 
+
+/* ── VAULT-STYLE FORM SECTIONS ── */
+.vault-section{background:var(--s1);border:1px solid var(--s3);border-radius:16px;padding:16px;margin-bottom:12px}
+.vault-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--s2)}
+.vault-section-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.vault-section-title{font-size:14px;font-weight:800;color:var(--text)}
+.req{color:var(--rose);margin-left:2px}
+
 /* ── BEAUTIFUL ADD FORM ── */
-.add-type-row{display:flex;gap:0;margin-bottom:20px;background:var(--s2);border-radius:14px;padding:4px}
-.add-type-btn{flex:1;background:transparent;color:var(--text2);border:none;border-radius:10px;padding:12px 6px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
-.add-type-btn.exp.on{background:rgba(251,113,133,.2);color:var(--rose);box-shadow:0 2px 8px rgba(251,113,133,.2)}
-.add-type-btn.inc.on{background:rgba(74,222,128,.2);color:var(--green);box-shadow:0 2px 8px rgba(74,222,128,.2)}
-.add-type-btn.tfr.on{background:rgba(56,189,248,.2);color:var(--sky);box-shadow:0 2px 8px rgba(56,189,248,.2)}
+/* type-tab-row is the active type toggle */
+/* type-tab-row handles add form type toggle */
 /* Amount big input */
 .amt-hero{background:var(--s1);border:2px solid var(--s3);border-radius:20px;padding:20px;margin-bottom:16px;text-align:center;transition:border .2s}
 .amt-hero:focus-within{border-color:var(--gold);box-shadow:0 0 0 4px rgba(240,180,41,.1)}
@@ -313,14 +326,12 @@ canvas{width:100%!important;border-radius:6px;display:block}
   <div class="login-logo">🏡</div>
   <div class="login-title">Hatti Family Budget</div>
   <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
-  <div class="user-cards">
-    <div class="ucard sel" onclick="selUser(0)" id="uc0"><div class="av">👨</div><div class="un">Gavi</div><div class="ur">Admin</div></div>
-    <div class="ucard" onclick="selUser(1)" id="uc1"><div class="av">👩</div><div class="un">Uma</div><div class="ur">Member</div></div>
-    <div class="ucard" onclick="selUser(2)" id="uc2"><div class="av">👧</div><div class="un">Rachana</div><div class="ur">Child</div></div>
-    <div class="ucard" onclick="selUser(3)" id="uc3"><div class="av">👶</div><div class="un">Sanchita</div><div class="ur">Child</div></div>
+  <div class="user-cards" id="userCards">
+    <!-- Populated dynamically from Firebase members -->
+    <div style="color:var(--text2);font-size:13px;padding:10px">Loading members…</div>
   </div>
-  <div class="pin-lbl" id="pinLbl">Enter 4-digit PIN</div>
-  <div class="pdots"><div class="pd" id="pd0"></div><div class="pd" id="pd1"></div><div class="pd" id="pd2"></div><div class="pd" id="pd3"></div></div>
+  <div class="pin-lbl" id="pinLbl">Enter 6-digit PIN</div>
+  <div class="pdots"><div class="pd" id="pd0"></div><div class="pd" id="pd1"></div><div class="pd" id="pd2"></div><div class="pd" id="pd3"></div><div class="pd" id="pd4"></div><div class="pd" id="pd5"></div></div>
   <div class="numpad">
     <button class="nb" onclick="pk('1')">1</button><button class="nb" onclick="pk('2')">2</button><button class="nb" onclick="pk('3')">3</button>
     <button class="nb" onclick="pk('4')">4</button><button class="nb" onclick="pk('5')">5</button><button class="nb" onclick="pk('6')">6</button>
@@ -400,7 +411,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
           <label class="fl">Amount (₹)</label>
           <div class="amt-input-wrap"><span class="amt-prefix">₹</span><input class="amt-input-big" type="number" id="tfrAmt" placeholder="0" inputmode="numeric" oninput="updateTransferNote()"></div>
           <div style="display:flex;gap:10px">
-            <div style="flex:1"><label class="fl">Who?</label><select class="fi" id="tfrWho"><option>Gavi</option><option>Uma</option><option>Rachana</option><option>Sanchita</option></select></div>
+            <div style="flex:1"><label class="fl">Who?</label><select class="fi" id="tfrWho"></select></div>
             <div style="flex:1"><label class="fl">Date</label><input class="fi" type="date" id="tfrDate"></div>
           </div>
           <label class="fl">Note (optional)</label>
@@ -413,9 +424,9 @@ canvas{width:100%!important;border-radius:6px;display:block}
       <!-- ── STANDARD PANEL (Expense / Income) ── -->
       <div id="stdTxPanel">
 
-        <!-- Income Source (income only) -->
-        <div class="fc" id="incSrcBox" style="display:none">
-          <div class="fl">Income Source</div>
+        <!-- Income Source — income only -->
+        <div class="vault-section" id="incSrcBox" style="display:none">
+          <div class="vault-section-hdr"><span class="vault-section-ico" style="background:rgba(74,222,128,.15)">📥</span><span class="vault-section-title">Income Source</span></div>
           <div class="isrow">
             <button class="isbtn on" id="isSal" onclick="setIS('salary')">💼 Salary</button>
             <button class="isbtn" id="isRentBtn" onclick="setIS('rent')">🏠 Rent</button>
@@ -424,22 +435,20 @@ canvas{width:100%!important;border-radius:6px;display:block}
           </div>
         </div>
 
-        <div class="fc">
-          <label class="fl">Amount (₹)</label>
-          <input class="fi" type="number" id="fAmt" placeholder="0" inputmode="numeric">
+        <!-- Amount -->
+        <div class="vault-section">
+          <div class="vault-section-hdr"><span class="vault-section-ico" style="background:rgba(240,180,41,.15)">💰</span><span class="vault-section-title">Amount <span class="req">*</span></span></div>
+          <div class="amt-input-wrap"><span class="amt-prefix">₹</span><input class="amt-input-big" type="number" id="fAmt" placeholder="0" inputmode="numeric"></div>
+        </div>
 
-          <label class="fl">Who?</label>
-          <select class="fi" id="fWho">
-            <option value="Gavi">👨 Gavi</option>
-            <option value="Uma">👩 Uma</option>
-            <option value="Rachana">👧 Rachana</option>
-            <option value="Sanchita">👶 Sanchita</option>
-          </select>
-
-          <label class="fl">Date</label>
+        <!-- Details -->
+        <div class="vault-section">
+          <div class="vault-section-hdr"><span class="vault-section-ico" style="background:rgba(167,139,250,.15)">📋</span><span class="vault-section-title">Transaction Details</span></div>
+          <label class="fl">Who? <span class="req">*</span></label>
+          <select class="fi" id="fWho"></select>
+          <label class="fl">Date <span class="req">*</span></label>
           <input class="fi" type="date" id="fDate">
-
-          <label class="fl">Payment Method</label>
+          <label class="fl">Payment Method <span class="req">*</span></label>
           <select class="fi" id="fTxType" onchange="onTxTypeChange()">
             <option value="">-- Select Payment Method --</option>
             <option value="Cash">💵 Cash</option>
@@ -451,19 +460,15 @@ canvas{width:100%!important;border-radius:6px;display:block}
             <option value="BankTransfer">🏦 Bank Transfer (NEFT/RTGS)</option>
             <option value="Cheque">📄 Cheque</option>
           </select>
-
-          <label class="fl">Bank Account <span style="font-size:11px;color:var(--text3)" id="bankAccHint"></span></label>
-          <select class="fi" id="fBankAcc">
-            <option value="">-- Select Account --</option>
-          </select>
-
-          <label class="fl">Note (optional)</label>
+          <label class="fl">Bank Account <span class="req">*</span> <span style="font-size:11px;color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0" id="bankAccHint"></span></label>
+          <select class="fi" id="fBankAcc"><option value="">-- Select Account --</option></select>
+          <label class="fl">Note <span style="font-weight:400;color:var(--text3)">(optional)</span></label>
           <input class="fi" type="text" id="fNote" placeholder="e.g. Rachana school fees">
         </div>
 
-        <!-- Category (expense only) -->
-        <div class="fc" id="catBox">
-          <div class="fl">Category</div>
+        <!-- Category — expense only -->
+        <div class="vault-section" id="catBox">
+          <div class="vault-section-hdr"><span class="vault-section-ico" style="background:rgba(251,113,133,.15)">🏷️</span><span class="vault-section-title">Category <span class="req">*</span></span></div>
           <div class="cgrid" id="catGrid"></div>
         </div>
 
@@ -578,10 +583,10 @@ canvas{width:100%!important;border-radius:6px;display:block}
       </div>
       <div class="sh">🔑 Change My PIN</div>
       <div class="fc" id="myPinForm">
-        <div style="color:var(--text2);font-size:12px;margin-bottom:10px">Enter your new 4-digit PIN. Saved securely to Firebase.</div>
+        <div style="color:var(--text2);font-size:12px;margin-bottom:10px">Enter your new 6-digit PIN. Saved securely to Firebase.</div>
         <label class="fl" id="myPinLbl">New PIN for Gavi</label>
         <div class="irow">
-          <input class="iinp" type="password" id="myPinInput" maxlength="4" inputmode="numeric" placeholder="Enter new 4-digit PIN">
+          <input class="iinp" type="password" id="myPinInput" maxlength="6" inputmode="numeric" placeholder="Enter new 6-digit PIN">
           <button class="isave" onclick="savMyPin()">Save</button>
         </div>
       </div>
@@ -666,6 +671,43 @@ service cloud.firestore {
   </div>
 </div>
 
+<!-- ADD MEMBER MODAL -->
+<div class="mo" id="memberModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeMemberModal()">✕</button>
+    <div class="mtitle" id="memberModalTitle">Add Family Member</div>
+    <input type="hidden" id="memberEditId">
+
+    <label class="fl">Avatar (emoji)</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="avatarPicker">
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👨')">👨</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👩')">👩</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👧')">👧</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👶')">👶</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👴')">👴</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👵')">👵</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'🧒')">🧒</span>
+      <span style="font-size:28px;cursor:pointer;padding:6px;border-radius:10px;border:2px solid transparent" onclick="selectAvatar(this,'👦')">👦</span>
+    </div>
+    <input type="hidden" id="memberAvatar" value="👨">
+
+    <label class="fl">Full Name *</label>
+    <input class="fi" id="memberName" placeholder="e.g. Gavi">
+
+    <label class="fl">Role</label>
+    <select class="fi" id="memberRole">
+      <option value="Admin">Admin (full access)</option>
+      <option value="Member" selected>Member (add &amp; view)</option>
+      <option value="Child">Child (view only)</option>
+    </select>
+
+    <label class="fl">Login PIN (6 digits)</label>
+    <input class="fi" type="password" id="memberPin" maxlength="6" inputmode="numeric" placeholder="6-digit PIN">
+
+    <button class="sbtn" onclick="saveMember()" id="memberSaveBtn">💾 Save Member</button>
+  </div>
+</div>
+
 <!-- GOAL MODAL (Add + Edit) -->
 <div class="mo" id="gModal">
   <div class="modal">
@@ -682,7 +724,7 @@ service cloud.firestore {
       <option value="Rachana">Rachana</option>
       <option value="Sanchita">Sanchita</option>
     </select>
-    <label class="fl">Target Amount (Rs)</label>
+    <label class="fl">Target Almount (Rs)</label>
     <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
     <label class="fl">Current Saved Amount (Rs)</label>
     <input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
@@ -737,10 +779,7 @@ service cloud.firestore {
     </div>
     <label class="fl">Amount (₹)</label><input class="fi" type="number" id="editAmt" inputmode="numeric">
     <label class="fl">Who?</label>
-    <select class="fi" id="editWho">
-      <option value="Gavi">Gavi</option><option value="Uma">Uma</option>
-      <option value="Rachana">Rachana</option><option value="Sanchita">Sanchita</option>
-    </select>
+    <select class="fi" id="editWho"></select>
     <label class="fl">Date</label><input class="fi" type="date" id="editDate">
     <label class="fl">Transaction Type</label>
     <select class="fi" id="editTxType" onchange="onEditTxTypeChange()">
@@ -781,10 +820,12 @@ firebase.initializeApp({
 const db = firebase.firestore();
 
 /* ══ CONSTANTS ══ */
-const USERS    = ['Gavi','Uma','Rachana','Sanchita'];
-const AVATARS  = ['👨','👩','👧','👶'];
-const ROLES    = ['Admin','Member','Child','Child'];
-const DEF_PINS = {Gavi:'1234',Uma:'5678',Rachana:'1111',Sanchita:'2222'};
+// Members loaded dynamically from Firebase — no hardcoded list
+// USERS/AVATARS/ROLES built from memberCache at runtime
+let USERS   = [];  // populated after Firebase load
+let AVATARS = {};  // {name: avatar}
+let ROLES   = {};  // {name: role}
+const DEF_PINS = {}; // no default PINs — admin sets them
 
 const CATS = [
   {id:'Food',       i:'🍽️',en:'Food',         c:'#ef4444',lim:10000},
@@ -843,6 +884,7 @@ let goalCache = [];
 let bankCache = [];
 let pinCache  = {};
 let userCache = {};
+let memberCache = []; // [{id,name,avatar,role,pin}] from Firestore
 let settings  = {limits:{}};
 let unsubTx, unsubGoals, unsubBanks;
 
@@ -852,7 +894,7 @@ const C = id => CATS.find(c=>c.id===id);
 function isAdmin(){ return getUserRole(curUser)==='Admin'; }
 function getUserRole(name){
   if(userCache[name] && userCache[name].role) return userCache[name].role;
-  return ROLES[USERS.indexOf(name)] || 'Member';
+  return (typeof ROLES==='object' && !Array.isArray(ROLES)) ? (ROLES[name]||'Member') : 'Member';
 }
 function requireAdmin(action){
   if(!isAdmin()){
@@ -879,17 +921,20 @@ function getSession(){
 function savePage(n){ sessionStorage.setItem('hb_p',n); }
 function getSavedPage(){ return sessionStorage.getItem('hb_p')||'Dash'; }
 
-/* ══ SEED USERS (first time setup) ══ */
+/* ══ SEED USERS — first run only, creates Gavi as Admin ══ */
 async function seedUsers(){
   try{
-    const batch=db.batch();
-    USERS.forEach((u,i)=>{
-      const ref=db.collection('users').doc(u);
-      batch.set(ref,{name:u,pin:DEF_PINS[u],role:ROLES[i],avatar:AVATARS[i]});
-      pinCache[u]=DEF_PINS[u];
-      userCache[u]={name:u,pin:DEF_PINS[u],role:ROLES[i],avatar:AVATARS[i]};
-    });
-    await batch.commit();
+    // Create a default admin so the app is usable
+    const defaultAdmin={name:'Gavi',pin:'123456',role:'Admin',avatar:'👨',createdAt:Date.now()};
+    await db.collection('users').doc('Gavi').set(defaultAdmin);
+    pinCache['Gavi']='123456';
+    userCache['Gavi']=defaultAdmin;
+    memberCache=[{id:'Gavi',...defaultAdmin}];
+    USERS=['Gavi'];
+    AVATARS={Gavi:'👨'};
+    ROLES={Gavi:'Admin'};
+    console.log('First run: Gavi created with PIN 123456 — change in Settings!');
+    buildLoginCards();
   }catch(e){ console.warn('seedUsers failed:',e.message); }
 }
 
@@ -901,16 +946,26 @@ async function startup(){
     settings.limits=d1.exists?d1.data():{};
     const d2=await db.collection('users').get();
     if(!d2.empty){
-      d2.forEach(doc=>{ const d=doc.data(); pinCache[doc.id]=d.pin||DEF_PINS[doc.id]||'1234'; userCache[doc.id]=d; });
+      memberCache=[];
+      d2.forEach(doc=>{
+        const d=doc.data();
+        pinCache[doc.id]=d.pin||'000000';
+        userCache[doc.id]=d;
+        memberCache.push({id:doc.id,...d});
+      });
+      // Build USERS/AVATARS/ROLES from loaded members
+      USERS   = memberCache.map(m=>m.id);
+      AVATARS = Object.fromEntries(memberCache.map(m=>[m.id, m.avatar||'👤']));
+      ROLES   = Object.fromEntries(memberCache.map(m=>[m.id, m.role||'Member']));
+      buildLoginCards(); // build login screen user cards immediately
     } else {
       await seedUsers();
     }
-    USERS.forEach(u=>{ if(!pinCache[u]) pinCache[u]=DEF_PINS[u]; });
     const fbEl=document.getElementById('fbStatus');
     if(fbEl) fbEl.textContent='✅ Connected · '+new Date().toLocaleTimeString();
   }catch(e){
     console.error('startup error:',e);
-    USERS.forEach(u=>{ if(!pinCache[u]) pinCache[u]=DEF_PINS[u]; });
+    // Use whatever members are in memberCache
     settings={limits:{}};
     const fbEl=document.getElementById('fbStatus');
     if(fbEl) fbEl.textContent='⚠️ '+e.message;
@@ -932,11 +987,145 @@ async function startup(){
 function setMsg(m){ const el=document.getElementById('loadMsg'); if(el) el.textContent=m; }
 startup();
 
+
+/* ══ BUILD WHO DROPDOWNS FROM LIVE MEMBER LIST ══ */
+function buildWhoDropdowns(){
+  const opts = memberCache.map(m=>'<option value="'+m.id+'">'+(m.avatar||'👤')+' '+m.name+'</option>').join('');
+  ['fWho','tfrWho','editWho'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.innerHTML=opts;
+  });
+  // Build login user cards
+  const uc=document.getElementById('userCards');
+  if(uc && memberCache.length>0){
+    uc.innerHTML=memberCache.map((m,i)=>`<div class="ucard${i===0?' sel':''}" onclick="selUser(${i})" id="uc${i}"><div class="av">${m.avatar||'👤'}</div><div class="un">${m.name}</div><div class="ur">${m.role||'Member'}</div></div>`).join('');
+  }
+}
+
+/* ══ MEMBER MODAL FUNCTIONS ══ */
+function openAddMemberModal(){
+  if(!requireAdmin('add members')) return;
+  document.getElementById('memberEditId').value='';
+  document.getElementById('memberModalTitle').textContent='Add Family Member';
+  document.getElementById('memberName').value='';
+  document.getElementById('memberRole').value='Member';
+  document.getElementById('memberPin').value='';
+  document.getElementById('memberAvatar').value='👨';
+  document.querySelectorAll('#avatarPicker span').forEach(s=>s.style.borderColor='transparent');
+  document.getElementById('memberModal').classList.add('open');
+}
+function openEditMemberModal(id){
+  if(!requireAdmin('edit members')) return;
+  const m=memberCache.find(x=>x.id===id); if(!m) return;
+  document.getElementById('memberEditId').value=id;
+  document.getElementById('memberModalTitle').textContent='Edit Member · '+m.name;
+  document.getElementById('memberName').value=m.name||'';
+  document.getElementById('memberRole').value=m.role||'Member';
+  document.getElementById('memberPin').value='';
+  document.getElementById('memberAvatar').value=m.avatar||'👨';
+  document.querySelectorAll('#avatarPicker span').forEach(s=>{
+    s.style.borderColor=s.textContent===m.avatar?'var(--gold)':'transparent';
+  });
+  document.getElementById('memberModal').classList.add('open');
+}
+function closeMemberModal(){ document.getElementById('memberModal').classList.remove('open'); }
+function selectAvatar(el,emoji){
+  document.querySelectorAll('#avatarPicker span').forEach(s=>s.style.borderColor='transparent');
+  el.style.borderColor='var(--gold)';
+  document.getElementById('memberAvatar').value=emoji;
+}
+async function saveMember(){
+  if(!requireAdmin('save members')) return;
+  const name=document.getElementById('memberName').value.trim();
+  const role=document.getElementById('memberRole').value;
+  const pin=document.getElementById('memberPin').value.trim();
+  const avatar=document.getElementById('memberAvatar').value||'👨';
+  const editId=document.getElementById('memberEditId').value;
+  if(!name){ showToast('⚠️ Name is required',true); return; }
+  if(!editId && (!pin||pin.length!==6||isNaN(pin))){ showToast('⚠️ 6-digit PIN required for new member',true); return; }
+  if(pin && (pin.length!==6||isNaN(pin))){ showToast('⚠️ PIN must be 6 digits',true); return; }
+  const docId=editId||name.replace(/\s+/g,'_');
+  const data={name,role,avatar,updatedAt:Date.now()};
+  if(pin) data.pin=pin;
+  if(!editId) data.createdAt=Date.now();
+  try{
+    await db.collection('users').doc(docId).set(data,{merge:true});
+    if(pin){ pinCache[docId]=pin; }
+    userCache[docId]={...data};
+    closeMemberModal();
+    showToast(editId?'✅ Member updated!':'✅ Member added!');
+    // Reload member list
+    await reloadMembers();
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+async function deleteMember(id){
+  if(!requireAdmin('delete members')) return;
+  if(id===curUser){ showToast("Can't delete yourself",true); return; }
+  const m=memberCache.find(x=>x.id===id);
+  if(!confirm('Delete '+((m&&m.name)||id)+'? This cannot be undone.')) return;
+  try{
+    await db.collection('users').doc(id).delete();
+    showToast('Member deleted');
+    await reloadMembers();
+    renderSettings();
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+async function reloadMembers(){
+  try{
+    const snap=await db.collection('users').get();
+    memberCache=[];
+    snap.forEach(doc=>{ const d=doc.data(); memberCache.push({id:doc.id,...d}); pinCache[doc.id]=d.pin||''; userCache[doc.id]=d; });
+    USERS=memberCache.map(m=>m.id);
+    AVATARS=Object.fromEntries(memberCache.map(m=>[m.id,m.avatar||'👤']));
+    ROLES=Object.fromEntries(memberCache.map(m=>[m.id,m.role||'Member']));
+    buildWhoDropdowns();
+    renderMemberList();
+  }catch(e){ console.error('reloadMembers:',e); }
+}
+/* ══ BUILD LOGIN SCREEN USER CARDS ══ */
+function buildLoginCards(){
+  const uc=document.getElementById('userCards');
+  if(!uc) return;
+  // Filter out Child role — they cannot log in
+  const loginable = memberCache.filter(m=>m.role!=='Child');
+  if(!loginable.length){
+    uc.innerHTML='<div style="color:var(--text2);font-size:13px;padding:10px">No members found. Check Firebase.</div>';
+    return;
+  }
+  uc.innerHTML = loginable.map((m,i)=>
+    '<div class="ucard'+(i===0?' sel':'')+'" onclick="selUser('+i+')" id="uc'+i+'">'
+    +'<div class="av">'+(m.avatar||'👤')+'</div>'
+    +'<div class="un">'+m.name+'</div>'
+    +'<div class="ur">'+(m.role||'Member')+'</div>'
+    +'</div>'
+  ).join('');
+  selIdx=0; // reset selected index
+}
+
 /* ══ LOGIN ══ */
+function getLoginableMembers(){ return memberCache.filter(m=>m.role!=='Child'); }
+
 let pinBuf='', selIdx=0;
 function selUser(i){ selIdx=i; document.querySelectorAll('.ucard').forEach((c,j)=>c.classList.toggle('sel',i===j)); pinBuf=''; updateDots(); document.getElementById('lerr').textContent=''; }
-function updateDots(){ for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length); }
-function pk(k){ if(pinBuf.length>=4)return; pinBuf+=k; updateDots(); if(pinBuf.length===4)setTimeout(pok,100); }
+function updateDots(){
+  // Support both 4-dot (existing PINs) and 6-dot layouts
+  const loginable=getLoginableMembers();
+  const m=loginable[selIdx];
+  const pinLen=m&&m.pin?m.pin.length:6;
+  for(let i=0;i<6;i++){
+    const el=document.getElementById('pd'+i);
+    if(!el) continue;
+    el.style.display=i<pinLen?'':'none'; // hide extra dots for 4-digit PINs
+    el.classList.toggle('on',i<pinBuf.length);
+  }
+}
+function pk(k){
+  const loginable=getLoginableMembers();
+  const m=loginable[selIdx];
+  const maxLen=m&&m.pin?m.pin.length:6;
+  if(pinBuf.length>=maxLen) return;
+  pinBuf+=k; updateDots();
+  if(pinBuf.length===maxLen) setTimeout(pok,100);
+}
 function pdel(){ pinBuf=pinBuf.slice(0,-1); updateDots(); }
 function pok(){
   const user=USERS[selIdx];
@@ -958,14 +1147,14 @@ function pok(){
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app'); app.style.display='flex'; app.style.flexDirection='column';
-  const role=getUserRole(curUser); const av=AVATARS[USERS.indexOf(curUser)];
-  document.getElementById('tbUser').textContent=av+' '+curUser+' ['+role+']';
+  const role=getUserRole(curUser); const av=(AVATARS&&AVATARS[curUser])||userCache[curUser]?.avatar||'👤';
+  document.getElementById('tbUser').textContent=((AVATARS&&AVATARS[curUser])||'👤')+' '+curUser+' ['+role+']';
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('fDate').value=today;
   const td=document.getElementById('tfrDate'); if(td) td.value=today;
   document.getElementById('fWho').value=curUser;
   setTimeout(syncWhoBtn,100);
-  buildCatGrid(); buildEditCatSelect();
+  buildCatGrid(); buildEditCatSelect(); buildWhoDropdowns();
   subscribeRT(); renderSettings(); saveSession();
 }
 function doLogout(){
@@ -1230,14 +1419,30 @@ function syncWhoBtn(){
 /* ══ ADD TRANSACTION ══ */
 function setTyp(t){
   curType=t;
-  document.getElementById('btnExp').classList.toggle('on',t==='expense');
-  document.getElementById('btnInc').classList.toggle('on',t==='income');
-  const tb=document.getElementById('btnTfr'); if(tb) tb.classList.toggle('on',t==='transfer');
-  document.getElementById('incSrcBox').style.display=t==='income'?'block':'none';
-  document.getElementById('catBox').style.display=t==='expense'?'block':'none';
-  document.getElementById('transferPanel').style.display=t==='transfer'?'block':'none';
-  const sp=document.getElementById('stdTxPanel'); if(sp) sp.style.display=t==='transfer'?'none':'block';
-  const sb=document.querySelector('#pgAdd > .sbtn'); if(sb) sb.style.display=t==='transfer'?'none':'block';
+  // Update type-tab active class
+  ['btnExp','btnInc','btnTfr'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.classList.remove('active-exp','active-inc','active-tfr');
+  });
+  const classMap={expense:'active-exp',income:'active-inc',transfer:'active-tfr'};
+  const idMap={expense:'btnExp',income:'btnInc',transfer:'btnTfr'};
+  const activeEl=document.getElementById(idMap[t]||'btnExp');
+  if(activeEl) activeEl.classList.add(classMap[t]||'active-exp');
+  // Show/hide panels
+  const sp=document.getElementById('stdTxPanel');
+  const tp=document.getElementById('transferPanel');
+  const ib=document.getElementById('incSrcBox');
+  const cb=document.getElementById('catBox');
+  const sb=document.querySelector('#addSaveBtn')||document.querySelector('#pgAdd .sbtn');
+  if(sp) sp.style.display=t==='transfer'?'none':'block';
+  if(tp) tp.style.display=t==='transfer'?'block':'none';
+  if(ib) ib.style.display=t==='income'?'block':'none';
+  if(cb) cb.style.display=t==='expense'?'block':'none';
+  if(sb){
+    sb.style.display=t==='transfer'?'none':'block';
+    if(t==='expense'){ sb.style.background='var(--rose)'; sb.style.color='#fff'; sb.textContent='💸 Save Expense'; }
+    else if(t==='income'){ sb.style.background='var(--green)'; sb.style.color='#000'; sb.textContent='💵 Save Income'; }
+  }
 }
 function setIS(s){
   curIS=s;
@@ -1573,7 +1778,7 @@ function drawBarChart(canvas,labels,data,colors){
 
 /* ══ SETTINGS ══ */
 function renderSettings(){
-  const role=getUserRole(curUser); const admin=role==='Admin'; const av=AVATARS[USERS.indexOf(curUser)];
+  const role=getUserRole(curUser); const admin=role==='Admin'; const av=(AVATARS&&AVATARS[curUser])||userCache[curUser]?.avatar||'👤';
   const sunEl=document.getElementById('setUserAv'); if(sunEl) sunEl.textContent=av;
   const snEl=document.getElementById('setUserName'); if(snEl) snEl.textContent=curUser;
   const srEl=document.getElementById('setUserRole'); if(srEl) srEl.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
@@ -1613,13 +1818,13 @@ async function changeRole(who,newRole){
   if(!requireAdmin('change member roles')) return;
   if(who===curUser){ showToast("Can't change your own role",true); return; }
   if(!confirm('Change '+who+"'s role to "+newRole+'?')) return;
-  try{ await db.collection('users').doc(who).set({name:who,role:newRole,pin:pinCache[who]||DEF_PINS[who],avatar:AVATARS[USERS.indexOf(who)]},{merge:true}); if(!userCache[who])userCache[who]={}; userCache[who].role=newRole; showToast('✅ '+who+' is now '+newRole); renderSettings(); }
+  try{ await db.collection('users').doc(who).set({name:who,role:newRole,pin:pinCache[who]||DEF_PINS[who],avatar:userCache[who]?.avatar||'👤'},{merge:true}); if(!userCache[who])userCache[who]={}; userCache[who].role=newRole; showToast('✅ '+who+' is now '+newRole); renderSettings(); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
 async function adminResetPin(who){
   if(!requireAdmin('reset PINs')) return;
-  const newPin=prompt('Enter new 4-digit PIN for '+who+':');
-  if(!newPin||newPin.length!==4||isNaN(newPin)){ showToast('PIN must be 4 digits',true); return; }
+  const newPin=prompt('Enter new 6-digit PIN for '+who+':');
+  if(!newPin||newPin.length!==6||isNaN(newPin)){ showToast('PIN must be 6 digits',true); return; }
   try{ await db.collection('users').doc(who).set({pin:newPin},{merge:true}); pinCache[who]=newPin; showToast('✅ '+who+" PIN reset!"); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
@@ -1637,15 +1842,15 @@ async function savLim(id){
 async function savMyPin(){
   const el=document.getElementById('myPinInput'); if(!el) return;
   const v=el.value.trim();
-  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
+  if(v.length!==6||isNaN(v)){ showToast('PIN must be 6 digits',true); return; }
   try{ await db.collection('users').doc(curUser).set({pin:v},{merge:true}); pinCache[curUser]=v; el.value=''; showToast('✅ Your PIN updated!'); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
 async function savPin(who){
   const el=document.getElementById('pin_'+who); if(!el) return;
   const v=el.value.trim();
-  if(v.length!==4||isNaN(v)){ showToast('PIN must be 4 digits',true); return; }
-  try{ await db.collection('users').doc(who).set({name:who,pin:v,role:getUserRole(who),avatar:AVATARS[USERS.indexOf(who)]},{merge:true}); pinCache[who]=v; el.value=''; showToast('✅ '+who+' PIN saved!'); }
+  if(v.length!==6||isNaN(v)){ showToast('PIN must be 6 digits',true); return; }
+  try{ await db.collection('users').doc(who).set({name:who,pin:v,role:getUserRole(who),avatar:userCache[who]?.avatar||'👤'},{merge:true}); pinCache[who]=v; el.value=''; showToast('✅ '+who+' PIN saved!'); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
 // savLim removed
