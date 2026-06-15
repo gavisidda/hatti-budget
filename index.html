@@ -724,7 +724,7 @@ service cloud.firestore {
       <option value="Rachana">Rachana</option>
       <option value="Sanchita">Sanchita</option>
     </select>
-    <label class="fl">Target Almount (Rs)</label>
+    <label class="fl">Target Amount (Rs)</label>
     <input class="fi" type="number" id="gTarget" placeholder="100000" inputmode="numeric">
     <label class="fl">Current Saved Amount (Rs)</label>
     <input class="fi" type="number" id="gSaved" placeholder="0" inputmode="numeric">
@@ -965,7 +965,7 @@ async function startup(){
     if(fbEl) fbEl.textContent='✅ Connected · '+new Date().toLocaleTimeString();
   }catch(e){
     console.error('startup error:',e);
-    // Use whatever members are in memberCache
+    // members fallback already handled
     settings={limits:{}};
     const fbEl=document.getElementById('fbStatus');
     if(fbEl) fbEl.textContent='⚠️ '+e.message;
@@ -1128,32 +1128,25 @@ function pk(k){
 }
 function pdel(){ pinBuf=pinBuf.slice(0,-1); updateDots(); }
 function pok(){
-  const user=USERS[selIdx];
-  const correct=pinCache[user]||DEF_PINS[user];
-  if(pinBuf===correct){
-    // Block Child/Other from logging in
-    const role=getUserRole(user);
-    if(role==='Child'){
-      document.getElementById('lerr').textContent='🔒 Children cannot log in. Contact Admin.';
-      pinBuf=''; updateDots(); return;
-    }
-    curUser=user; enterApp();
-  } else {
-    document.getElementById('lerr').textContent='❌ Wrong PIN, try again';
-    pinBuf=''; updateDots();
-  }
+  const loginable=getLoginableMembers();
+  const member=loginable[selIdx];
+  if(!member){ document.getElementById('lerr').textContent='❌ No member selected'; pinBuf=''; updateDots(); return; }
+  const user=member.id||member.name;
+  const stored=member.pin||pinCache[user]||'';
+  if(pinBuf===stored){ curUser=user; enterApp(); }
+  else{ document.getElementById('lerr').textContent='❌ Wrong PIN, try again'; pinBuf=''; updateDots(); }
 }
 
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app'); app.style.display='flex'; app.style.flexDirection='column';
-  const role=getUserRole(curUser); const av=(AVATARS&&AVATARS[curUser])||userCache[curUser]?.avatar||'👤';
-  document.getElementById('tbUser').textContent=((AVATARS&&AVATARS[curUser])||'👤')+' '+curUser+' ['+role+']';
+  const role=getUserRole(curUser);
+  const av=userCache[curUser]?.avatar||(memberCache.find(m=>m.id===curUser)?.avatar)||'👤';
+  document.getElementById('tbUser').textContent=av+' '+curUser+' ['+role+']';
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('fDate').value=today;
   const td=document.getElementById('tfrDate'); if(td) td.value=today;
   document.getElementById('fWho').value=curUser;
-  setTimeout(syncWhoBtn,100);
   buildCatGrid(); buildEditCatSelect(); buildWhoDropdowns();
   subscribeRT(); renderSettings(); saveSession();
 }
@@ -1735,8 +1728,8 @@ function renderReports(){
     let gI=0,gE=0;
     tbody.innerHTML=sorted.map(ym=>{ const[y,m]=ym.split('-').map(Number); const mTxR=txCache.filter(t=>{ if(!t.date)return false; const d=new Date(t.date); return d.getMonth()===(m-1)&&d.getFullYear()===y; }); const mInc=mTxR.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0); const mExp=mTxR.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0); gI+=mInc; gE+=mExp; return '<tr><td class="gold">'+sM[m-1]+' '+y+'</td><td class="pos">₹'+fmt(mInc)+'</td><td class="neg">₹'+fmt(mExp)+'</td><td class="'+(runMap[ym]>=0?'pos':'neg')+'">₹'+fmt(runMap[ym])+'</td></tr>'; }).join('')+'<tr style="background:rgba(240,180,41,.08);font-weight:800"><td class="gold">Total</td><td class="pos">₹'+fmt(gI)+'</td><td class="neg">₹'+fmt(gE)+'</td><td class="'+(gI-gE>=0?'pos':'neg')+'">₹'+fmt(gI-gE)+'</td></tr>';
   }
-  const byUser=USERS.map(u=>mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer'&&t.who===u).reduce((s,t)=>s+(+t.amount||0),0));
-  drawBarChart(document.getElementById('whoC'),USERS.map((u,i)=>AVATARS[i]+u),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d']);
+  const byUser=memberCache.map(m=>mTx.filter(t=>t.type==='expense'&&t.category!=='Transfer'&&t.who===m.id).reduce((s,t)=>s+(+t.amount||0),0));
+  drawBarChart(document.getElementById('whoC'),memberCache.map(m=>(m.avatar||'👤')+' '+(m.name||m.id)),byUser,['#38bdf8','#fb7185','#a78bfa','#fcd34d','#4ade80','#f0b429']);
   const sM2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],ml=[],mi=[],me=[];
   for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); ml.push(sM2[d.getMonth()]); const mo=d.getMonth(),yo=d.getFullYear(); const mTxY=txCache.filter(t=>{ if(!t.date)return false; const dd=new Date(t.date); return dd.getMonth()===mo&&dd.getFullYear()===yo; }); mi.push(mTxY.filter(t=>t.type==='income'&&t.category!=='Income_transfer').reduce((s,t)=>s+(+t.amount||0),0)); me.push(mTxY.filter(t=>t.type==='expense'&&t.category!=='Transfer').reduce((s,t)=>s+(+t.amount||0),0)); }
   drawLineChart(document.getElementById('yearC'),ml,mi,me,'#4ade80','#fb7185','Income','Expense');
@@ -1778,82 +1771,102 @@ function drawBarChart(canvas,labels,data,colors){
 
 /* ══ SETTINGS ══ */
 function renderSettings(){
-  const role=getUserRole(curUser); const admin=role==='Admin'; const av=(AVATARS&&AVATARS[curUser])||userCache[curUser]?.avatar||'👤';
+  const role=getUserRole(curUser); const admin=role==='Admin';
+  const av=memberCache.find(m=>(m.id||m.name)===curUser)?.avatar||'👤';
   const sunEl=document.getElementById('setUserAv'); if(sunEl) sunEl.textContent=av;
   const snEl=document.getElementById('setUserName'); if(snEl) snEl.textContent=curUser;
   const srEl=document.getElementById('setUserRole'); if(srEl) srEl.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
+  // Member section
   const memSec=document.getElementById('memberSection');
-  if(memSec){ if(!admin) memSec.innerHTML='<div style="color:var(--text3);font-size:12px;padding:8px 0">🔒 Only Admins can manage members.</div>'; else renderMemberList(); }
+  if(memSec){ if(!admin) memSec.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0">🔒 Only Admins can manage members.</div>'; else renderMemberList(); }
+  // Admin-only sections
   ['incomeSettingsSection','incomeSettingsLbl','rulesSection','budgetLimitsSection'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=admin?'':'none'; });
+  // Budget limits
   if(admin){
     const lf=document.getElementById('limForm');
     if(lf){
       const savedLims=settings.limits||{};
       lf.innerHTML='<div style="color:var(--text2);font-size:13px;margin-bottom:10px">Set max spend per category. Warning shows when exceeded.</div>'
-        +CATS.filter(c=>c.lim>0).map(c=>`<label class="fl">${c.i} ${c.en}</label><div class="irow"><input class="iinp" type="number" id="lim_${c.id}" value="${savedLims[c.id]!==undefined?savedLims[c.id]:c.lim}" inputmode="numeric"><button class="isave" onclick="savLim('${c.id}')">Save</button></div>`).join('');
-    }
-  }
-  if(admin){
-    const lf=document.getElementById('limForm'); if(lf){
-      const savedLims=settings.limits||{};
-      lf.innerHTML=CATS.filter(c=>c.lim>0).map(c=>'<label class="fl">'+c.i+' '+c.en+'</label><div class="irow"><input class="iinp" type="number" id="lim_'+c.id+'" value="'+(savedLims[c.id]!==undefined?savedLims[c.id]:c.lim)+'" inputmode="numeric"><button class="isave" onclick="savLim(\''+c.id+'\')">Save</button></div>').join('');
+        +CATS.filter(c=>c.lim>0).map(c=>'<label class="fl">'+c.i+' '+c.en+'</label><div class="irow"><input class="iinp" type="number" id="lim_'+c.id+'" value="'+(savedLims[c.id]!==undefined?savedLims[c.id]:c.lim)+'" inputmode="numeric"><button class="isave" onclick="savLim(\''+c.id+'\')">Save</button></div>').join('');
     }
   }
   const mpLbl=document.getElementById('myPinLbl'); if(mpLbl) mpLbl.textContent='New PIN for '+curUser;
 }
+
 function renderMemberList(){
   const ml=document.getElementById('memberList'); if(!ml) return;
-  ml.innerHTML=USERS.map((u,i)=>{
-    const role=getUserRole(u); const isMe=u===curUser;
+  if(!memberCache.length){
+    ml.innerHTML='<div style="color:var(--text2);font-size:13px;padding:10px">No members found.</div>';
+    return;
+  }
+  ml.innerHTML=memberCache.map(m=>{
+    const u=m.id||m.name; const role=m.role||'Member'; const isMe=u===curUser;
+    const av=m.avatar||'👤';
     const bc=role==='Admin'?'badge-admin':role==='Child'?'badge-child':'badge-member';
-    const pBtn=!isMe&&role!=='Admin'?'<button class="mem-btn promote" onclick="changeRole(\''+u+'\',\'Admin\')">⬆️ Make Admin</button>':'';
-    const dBtn=!isMe&&role==='Admin'?'<button class="mem-btn demote" onclick="changeRole(\''+u+'\',\'Member\')">⬇️ Remove Admin</button>':'';
-    const rBtn=!isMe?'<button class="mem-btn resetpin" onclick="adminResetPin(\''+u+'\')">🔑 Reset PIN</button>':'';
-    const meLabel=isMe?'<div style="font-size:10px;color:var(--text3);text-align:center">You</div>':'';
-    return '<div class="member-card"><div class="member-av">'+AVATARS[i]+'</div><div class="member-info"><div class="member-name">'+u+(isMe?' (You)':'')+'</div><div class="member-role-badge '+bc+'">'+role+'</div></div><div class="member-actions">'+pBtn+dBtn+rBtn+meLabel+'</div></div>';
-  }).join('');
+    const editBtn=!isMe?'<button class="mem-btn promote" onclick="openEditMemberModal(\''+u+'\')">✏️ Edit</button>':'';
+    const delBtn=!isMe?'<button class="mem-btn demote" onclick="deleteMember(\''+u+'\')">🗑️</button>':'';
+    const meLabel=isMe?'<div style="font-size:10px;color:var(--text3);text-align:center;padding-top:4px">You</div>':'';
+    return '<div class="member-card">'
+      +'<div class="member-av">'+av+'</div>'
+      +'<div class="member-info">'
+        +'<div class="member-name">'+(m.name||u)+(isMe?' (You)':'')+'</div>'
+        +'<div class="member-role-badge '+bc+'">'+role+'</div>'
+        +'<div style="font-size:11px;color:var(--text3);margin-top:3px">'+roleDesc(role)+'</div>'
+      +'</div>'
+      +'<div class="member-actions">'+editBtn+delBtn+meLabel+'</div>'
+    +'</div>';
+  }).join('')
+  +'<button class="add-bank-btn" style="margin-top:10px" onclick="openAddMemberModal()">+ Add Family Member</button>';
 }
-function roleDesc(r){ return r==='Admin'?'Full access':r==='Child'?'Add only':'Add · Edit · Read'; }
+
+function roleDesc(r){ return r==='Admin'?'Full access · All operations':r==='Child'?'View only':'Add expenses · Edit · Cannot delete'; }
+
 async function changeRole(who,newRole){
   if(!requireAdmin('change member roles')) return;
   if(who===curUser){ showToast("Can't change your own role",true); return; }
   if(!confirm('Change '+who+"'s role to "+newRole+'?')) return;
-  try{ await db.collection('users').doc(who).set({name:who,role:newRole,pin:pinCache[who]||DEF_PINS[who],avatar:userCache[who]?.avatar||'👤'},{merge:true}); if(!userCache[who])userCache[who]={}; userCache[who].role=newRole; showToast('✅ '+who+' is now '+newRole); renderSettings(); }
-  catch(e){ showToast('Error: '+e.message,true); }
+  try{
+    await db.collection('users').doc(who).set({role:newRole},{merge:true});
+    if(!userCache[who])userCache[who]={};
+    userCache[who].role=newRole;
+    const mc=memberCache.find(m=>m.id===who); if(mc) mc.role=newRole;
+    if(ROLES) ROLES[who]=newRole;
+    showToast('✅ '+who+' is now '+newRole);
+    renderMemberList();
+  }catch(e){ showToast('Error: '+e.message,true); }
 }
+
 async function adminResetPin(who){
   if(!requireAdmin('reset PINs')) return;
   const newPin=prompt('Enter new 6-digit PIN for '+who+':');
   if(!newPin||newPin.length!==6||isNaN(newPin)){ showToast('PIN must be 6 digits',true); return; }
-  try{ await db.collection('users').doc(who).set({pin:newPin},{merge:true}); pinCache[who]=newPin; showToast('✅ '+who+" PIN reset!"); }
+  try{ await db.collection('users').doc(who).set({pin:newPin},{merge:true}); pinCache[who]=newPin; showToast('✅ '+who+' PIN reset!'); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
+
 async function savLim(id){
   if(!requireAdmin('edit budget limits')) return;
   const val=+document.getElementById('lim_'+id).value||0;
   const lims={...(settings.limits||{}),[id]:val};
-  try{
-    await db.collection('settings').doc('limits').set(lims);
-    settings.limits=lims;
-    showToast('✅ Limit saved!');
-  }catch(e){ showToast('Error: '+e.message,true); }
+  try{ await db.collection('settings').doc('limits').set(lims); settings.limits=lims; showToast('✅ Limit saved!'); }
+  catch(e){ showToast('Error: '+e.message,true); }
 }
 
 async function savMyPin(){
   const el=document.getElementById('myPinInput'); if(!el) return;
   const v=el.value.trim();
-  if(v.length!==6||isNaN(v)){ showToast('PIN must be 6 digits',true); return; }
+  if(v.length<4||v.length>6||isNaN(v)){ showToast('PIN must be 4–6 digits',true); return; }
   try{ await db.collection('users').doc(curUser).set({pin:v},{merge:true}); pinCache[curUser]=v; el.value=''; showToast('✅ Your PIN updated!'); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
+
 async function savPin(who){
   const el=document.getElementById('pin_'+who); if(!el) return;
   const v=el.value.trim();
-  if(v.length!==6||isNaN(v)){ showToast('PIN must be 6 digits',true); return; }
-  try{ await db.collection('users').doc(who).set({name:who,pin:v,role:getUserRole(who),avatar:userCache[who]?.avatar||'👤'},{merge:true}); pinCache[who]=v; el.value=''; showToast('✅ '+who+' PIN saved!'); }
+  if(v.length<4||v.length>6||isNaN(v)){ showToast('PIN must be 4–6 digits',true); return; }
+  try{ await db.collection('users').doc(who).set({pin:v},{merge:true}); pinCache[who]=v; el.value=''; showToast('✅ '+who+' PIN saved!'); }
   catch(e){ showToast('Error: '+e.message,true); }
 }
-// savLim removed
 
 /* ══ RULES ══ */
 function toggleRules(show){ document.getElementById('rulesContent').style.display=show?'block':'none'; document.getElementById('viewRulesBtn').style.display=show?'none':'block'; }
