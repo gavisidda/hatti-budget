@@ -168,10 +168,10 @@ canvas{width:100%!important;border-radius:6px;display:block}
 .rcrd{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px}
 .rlbl{font-size:13px;color:var(--text2);margin-bottom:3px}.rval{font-size:22px;font-weight:800}
 /* SETTINGS */
-.irow{display:flex;gap:7px;align-items:center;margin-bottom:8px}
-.iinp{flex:1;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:9px;padding:11px 14px;font-family:var(--font);font-size:16px;font-weight:700;outline:none;transition:border .2s}
+.irow{display:flex;gap:8px;align-items:center;margin-bottom:8px;min-width:0}
+.iinp{flex:1;min-width:0;background:var(--s3);color:var(--text);border:1.5px solid transparent;border-radius:9px;padding:10px 12px;font-family:var(--font);font-size:15px;font-weight:700;outline:none;transition:border .2s}
 .iinp:focus{border-color:var(--gold)}
-.isave{background:var(--gold);color:#000;border:none;border-radius:9px;padding:11px 16px;font-family:var(--font);font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.isave{background:var(--gold);color:#000;border:none;border-radius:9px;padding:10px 14px;font-family:var(--font);font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
 /* MODAL */
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center}
 .mo.open{display:flex}
@@ -319,13 +319,13 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <div id="loading">
   <div style="font-size:58px;filter:drop-shadow(0 0 18px rgba(240,180,41,.5))">🏡</div>
   <div class="spin"></div>
-  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading Hatti Budget…</div>
+  <div id="loadMsg" style="font-size:14px;color:var(--text2);font-weight:600">Loading…</div>
 </div>
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-logo">🏡</div>
-  <div class="login-title">Hatti Family Budget</div>
-  <div class="login-sub">Gavi · Uma · Rachana · Sanchita</div>
+  <div class="login-logo" id="loginLogo">🏡</div>
+  <div class="login-title" id="loginTitle">Family Budget</div>
+  <div class="login-sub" id="loginSub"></div>
   <div class="user-cards" id="userCards">
     <!-- Populated dynamically from Firebase members -->
     <div style="color:var(--text2);font-size:13px;padding:10px">Loading members…</div>
@@ -343,7 +343,7 @@ canvas{width:100%!important;border-radius:6px;display:block}
 <!-- APP -->
 <div id="app">
   <div class="topbar">
-    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title">Hatti Budget</span><span class="sdot" id="sdot"></span></div>
+    <div class="tb-left"><span class="tb-logo">🏡</span><span class="tb-title" id="appTitle">Budget</span><span class="sdot" id="sdot"></span></div>
     <div class="tb-right">
       <span class="tb-user" id="tbUser"></span>
       <button class="tb-btn logout" onclick="doLogout()">Logout 🚪</button>
@@ -653,6 +653,20 @@ service cloud.firestore {
         </div>
       </div>
 
+      <!-- ── APP CONFIG (admin only) ── -->
+      <div id="appConfigSection" style="display:none">
+        <div class="sh">🎨 App Branding</div>
+        <div class="fc">
+          <label class="fl">App Icon (emoji)</label>
+          <input class="fi" id="cfgLogo" placeholder="🏡" maxlength="4">
+          <label class="fl">App Name</label>
+          <input class="fi" id="cfgTitle" placeholder="Family Budget">
+          <label class="fl">Subtitle (shown on login)</label>
+          <input class="fi" id="cfgSub" placeholder="e.g. Hatti Family · Gunnal">
+          <button class="sbtn" onclick="saveAppConfig()" style="margin-top:4px">✅ Save App Config</button>
+        </div>
+      </div>
+
       <!-- ── FIREBASE STATUS ── -->
       <div class="sh">🔥 Firebase</div>
       <div class="fc" style="text-align:center;color:var(--text2);font-size:13px">
@@ -825,7 +839,7 @@ const db = firebase.firestore();
 let USERS   = [];  // populated after Firebase load
 let AVATARS = {};  // {name: avatar}
 let ROLES   = {};  // {name: role}
-const DEF_PINS = {}; // no default PINs — admin sets them
+// All user data loaded from Firebase — no hardcoded users
 
 const CATS = [
   {id:'Food',       i:'🍽️',en:'Food',         c:'#ef4444',lim:10000},
@@ -942,7 +956,13 @@ async function seedUsers(){
 async function startup(){
   document.getElementById('loadMsg').textContent='Loading…';
   try{
-    const d1=await db.collection('settings').doc('limits').get();
+    // Load app config (title, logo, subtitle) + limits
+    const [d0,d1] = await Promise.all([
+      db.collection('settings').doc('appConfig').get(),
+      db.collection('settings').doc('limits').get()
+    ]);
+    if(d0.exists){ applyAppConfig(d0.data()); }
+    else { applyAppConfig({}); }
     settings.limits=d1.exists?d1.data():{};
     const d2=await db.collection('users').get();
     if(!d2.empty){
@@ -1081,6 +1101,37 @@ async function reloadMembers(){
     renderMemberList();
   }catch(e){ console.error('reloadMembers:',e); }
 }
+
+/* ══ APP CONFIG ══ */
+let appConfig = {logo:'🏡', title:'Family Budget', subtitle:''};
+
+function applyAppConfig(cfg){
+  if(cfg.logo !== undefined)    appConfig.logo     = cfg.logo;
+  if(cfg.title !== undefined)   appConfig.title    = cfg.title;
+  if(cfg.subtitle !== undefined) appConfig.subtitle = cfg.subtitle;
+  const ll=document.getElementById('loginLogo');   if(ll) ll.textContent=appConfig.logo||'🏡';
+  const lt=document.getElementById('loginTitle');  if(lt) lt.textContent=appConfig.title||'Family Budget';
+  const ls=document.getElementById('loginSub');    if(ls) ls.textContent=appConfig.subtitle||'';
+  const at=document.getElementById('appTitle');    if(at) at.textContent=appConfig.title||'Budget';
+  const ld=document.getElementById('loading');
+  if(ld){
+    const ico=ld.querySelector('div');
+    if(ico && ico.style.fontSize) ico.textContent=appConfig.logo||'🏡';
+  }
+}
+
+async function saveAppConfig(){
+  if(!requireAdmin('edit app settings')) return;
+  const logo  = document.getElementById('cfgLogo')?.value.trim()  || '🏡';
+  const title = document.getElementById('cfgTitle')?.value.trim() || 'Family Budget';
+  const sub   = document.getElementById('cfgSub')?.value.trim()   || '';
+  try{
+    await db.collection('settings').doc('appConfig').set({logo,title,subtitle:sub});
+    applyAppConfig({logo,title,subtitle:sub});
+    showToast('✅ App config saved!');
+  }catch(e){ showToast('Error: '+e.message,true); }
+}
+
 /* ══ BUILD LOGIN SCREEN USER CARDS ══ */
 function buildLoginCards(){
   const uc=document.getElementById('userCards');
@@ -1780,7 +1831,7 @@ function renderSettings(){
   const memSec=document.getElementById('memberSection');
   if(memSec){ if(!admin) memSec.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0">🔒 Only Admins can manage members.</div>'; else renderMemberList(); }
   // Admin-only sections
-  ['incomeSettingsSection','incomeSettingsLbl','rulesSection','budgetLimitsSection'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=admin?'':'none'; });
+  ['incomeSettingsSection','incomeSettingsLbl','rulesSection','budgetLimitsSection','appConfigSection'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=admin?'':'none'; });
   // Budget limits
   if(admin){
     const lf=document.getElementById('limForm');
@@ -1791,6 +1842,12 @@ function renderSettings(){
     }
   }
   const mpLbl=document.getElementById('myPinLbl'); if(mpLbl) mpLbl.textContent='New PIN for '+curUser;
+  // Fill app config fields
+  if(admin){
+    const cl=document.getElementById('cfgLogo');  if(cl)  cl.value=appConfig.logo||'';
+    const ct=document.getElementById('cfgTitle'); if(ct)  ct.value=appConfig.title||'';
+    const cs=document.getElementById('cfgSub');   if(cs)  cs.value=appConfig.subtitle||'';
+  }
 }
 
 function renderMemberList(){
