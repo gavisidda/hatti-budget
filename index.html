@@ -595,12 +595,11 @@ let unsubTx,unsubGoals,unsubBanks;
 
 /* ══ HELPERS ══ */
 const L = en => en;
-const fmt = n => Number(n||0).toLocaleString('en-IN');
 function fmt(n){return Number(n||0).toLocaleString('en-IN');}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2800);}
 // Quick jump to Add tab with preset category
-function quickAddCat(catId){curCat=catId;curType='expense';const ni=document.querySelector('.ni[onclick*="\'Add\'"]');if(ni)goPage('Add',ni);setTyp('expense');buildCatGrid();setTimeout(()=>const fa=document.getElementById('fAmt');if(fa)fa.focus(),200);}
+function quickAddCat(catId){curCat=catId;curType='expense';const ni=document.querySelector('.ni[onclick*="\'Add\'"]');if(ni)goPage('Add',ni);setTyp('expense');buildCatGrid();setTimeout(function(){const fa=document.getElementById('fAmt');if(fa)fa.focus();},200);}
 function isAdmin(){return getUserRole(curUser)==='Admin';}
 function getUserRole(name){if(userCache[name]&&userCache[name].role)return userCache[name].role;return(ROLES&&ROLES[name])||'Member';}
 function requireAdmin(action){if(!isAdmin()){const el=document.getElementById('accessDenied');const msg=document.getElementById('accessDeniedMsg');if(msg)msg.textContent='Only Admins can '+action+'.';if(el)el.classList.add('show');return false;}return true;}
@@ -912,7 +911,7 @@ function setTyp(t){
   const sb=document.getElementById('addSaveBtn');
   if(sb){sb.style.display=t==='transfer'?'none':'block';if(t==='expense'){sb.style.background='var(--gold)';sb.style.color='#000';sb.textContent='💸 Save Expense';}else if(t==='income'){sb.style.background='var(--green)';sb.style.color='#000';sb.textContent='💵 Save Income';}}
 }
-function setIS(s){curIS=s;['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>const el_=document.getElementById(id);if(el_)el_.classList.remove('on'));const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};if(map[s])const ms_=document.getElementById(map[s]);if(ms_)ms_.classList.add('on');}
+function setIS(s){curIS=s;['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(function(id){const el_=document.getElementById(id);if(el_)el_.classList.remove('on');});const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};if(map[s]){const ms_=document.getElementById(map[s]);if(ms_)ms_.classList.add('on');}}
 function buildCatGrid(){
   const g=document.getElementById('catGrid');if(!g)return;g.innerHTML='';
   activeCats().forEach(c=>{const b=document.createElement('button');b.className='cbtn'+(c.id===curCat?' on':'');b.innerHTML='<span class="ci">'+c.i+'</span><span class="cn">'+c.en+'</span>';b.onclick=()=>{curCat=c.id;buildCatGrid();};g.appendChild(b);});
