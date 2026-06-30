@@ -596,8 +596,11 @@ let unsubTx,unsubGoals,unsubBanks;
 /* ══ HELPERS ══ */
 const L = en => en;
 const fmt = n => Number(n||0).toLocaleString('en-IN');
+function fmt(n){return Number(n||0).toLocaleString('en-IN');}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2800);}
+// Quick jump to Add tab with preset category
+function quickAddCat(catId){curCat=catId;curType='expense';const ni=document.querySelector('.ni[onclick*="\'Add\'"]');if(ni)goPage('Add',ni);setTyp('expense');buildCatGrid();setTimeout(()=>const fa=document.getElementById('fAmt');if(fa)fa.focus(),200);}
 function isAdmin(){return getUserRole(curUser)==='Admin';}
 function getUserRole(name){if(userCache[name]&&userCache[name].role)return userCache[name].role;return(ROLES&&ROLES[name])||'Member';}
 function requireAdmin(action){if(!isAdmin()){const el=document.getElementById('accessDenied');const msg=document.getElementById('accessDeniedMsg');if(msg)msg.textContent='Only Admins can '+action+'.';if(el)el.classList.add('show');return false;}return true;}
@@ -624,9 +627,9 @@ function applyAppConfig(cfg){
 }
 async function saveAppConfig(){
   if(!requireAdmin('edit app settings'))return;
-  const logo=document.getElementById('cfgLogo')?.value.trim()||'🏡';
-  const title=document.getElementById('cfgTitle')?.value.trim()||'Family Budget';
-  const sub=document.getElementById('cfgSub')?.value.trim()||'';
+  const logo=(document.getElementById('cfgLogo')||{value:''}).value.trim()||'🏡';
+  const title=(document.getElementById('cfgTitle')||{value:''}).value.trim()||'Family Budget';
+  const sub=(document.getElementById('cfgSub')||{value:''}).value.trim()||'';
   try{await db.collection('settings').doc('appConfig').set({logo,title,subtitle:sub});applyAppConfig({logo,title,subtitle:sub});showToast('✅ App config saved!');}
   catch(e){showToast('Error: '+e.message,true);}
 }
@@ -731,7 +734,7 @@ function pok(){
 function enterApp(){
   document.getElementById('loginScreen').style.display='none';
   const app=document.getElementById('app');app.style.display='flex';app.style.flexDirection='column';
-  const role=getUserRole(curUser);const av=memberCache.find(m=>m.id===curUser)?.avatar||'👤';
+  const role=getUserRole(curUser);const av=(memberCache.find(m=>m.id===curUser)||{avatar:'👤'}).avatar||'👤';
   document.getElementById('tbUser').textContent=av+' '+curUser+' ['+role+']';
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('fDate').value=today;
@@ -806,9 +809,11 @@ function renderDash(){
   CATS.forEach(c=>{if(lims[c.id]>0&&catExp[c.id]>lims[c.id])wb.innerHTML+='<div class="warn">⚠️ '+c.i+' '+c.en+' budget exceeded! ₹'+fmt(catExp[c.id])+' / ₹'+fmt(lims[c.id])+'</div>';});
   const top4=[{id:'Food',i:'🍽️'},{id:'School',i:'🎓'},{id:'Medical',i:'🏥'},{id:'Travel',i:'🚗'}];
   document.getElementById('topStats').innerHTML=top4.map(x=>{const c=C(x.id)||{en:x.id,c:'#fff'};return '<div class="sc"><div class="sc-ico">'+x.i+'</div><div class="sc-lbl">'+c.en+'</div><div class="sc-val" style="color:'+c.c+'">₹'+fmt(catExp[x.id]||0)+'</div></div>';}).join('');
-  const expCats=CATS.filter(c=>!['Savings','Investment','LoanTx'].includes(c.id)).map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
+  const expCats=activeCats().map(c=>({...c,amt:catExp[c.id]||0})).filter(c=>c.amt>0).sort((a,b)=>b.amt-a.amt);
   const maxA=Math.max(...expCats.map(c=>c.amt),1);
-  document.getElementById('catBars').innerHTML=expCats.length?expCats.slice(0,10).map(c=>'<div class="cbrow"><div class="cblbl">'+c.i+' '+c.en+'</div><div class="cbtrack"><div class="cbfill" style="width:'+Math.round(c.amt/maxA*100)+'%;background:'+c.c+'"></div></div><div class="cbamt" style="color:'+c.c+'">₹'+fmt(c.amt)+'</div></div>').join(''):'<div style="color:var(--text2);font-size:13px;text-align:center">No expenses this month</div>';
+  document.getElementById('catBars').innerHTML=expCats.length
+    ?expCats.slice(0,10).map(c=>'<div class="cbrow" onclick="quickAddCat(\''+c.id+'\')" style="cursor:pointer"><div class="cblbl">'+c.i+' '+c.en+'</div><div class="cbtrack"><div class="cbfill" style="width:'+Math.round(c.amt/maxA*100)+'%;background:'+c.c+'"></div></div><div class="cbamt" style="color:'+c.c+'">₹'+fmt(c.amt)+'</div></div>').join('')
+    :'<div style="color:var(--text2);font-size:13px;text-align:center">No expenses this month</div>';
   const strip=document.getElementById('dashBankStrip');
   if(!bankCache.length){strip.innerHTML='<div style="color:var(--text2);font-size:12px;padding:8px">No accounts yet</div>';}
   else{let tot=0;strip.innerHTML=bankCache.map(b=>{const bal=getBankBalance(b.id);tot+=bal;return '<div class="bchip"><div class="bchip-name">'+(b.icon||'🏦')+' '+b.name+'</div><div class="bchip-bal" style="color:'+(bal>0?'var(--green)':bal<0?'var(--rose)':'var(--text2)')+'">₹'+fmt(bal)+'</div></div>';}).join('');strip.innerHTML+='<div class="bchip" style="border-color:var(--gold)"><div class="bchip-name">📊 Total</div><div class="bchip-bal" style="color:var(--gold)">₹'+fmt(tot)+'</div></div>';}
@@ -858,18 +863,18 @@ function refreshBankDropdowns(){
 
 /* ══ TRANSFER ══ */
 function updateTransferNote(){
-  const fromId=document.getElementById('tfrFrom')?.value,toId=document.getElementById('tfrTo')?.value;
+  const fromId=document.getElementById('tfrFrom').value,toId=document.getElementById('tfrTo').value;
   const prev=document.getElementById('tfrPreview');if(!prev)return;
   const fromBank=bankCache.find(b=>b.id===fromId),toBank=bankCache.find(b=>b.id===toId);
   if(!fromBank||!toBank){prev.innerHTML='Select accounts to see preview';return;}
-  const amt=Number(document.getElementById('tfrAmt')?.value)||0;
+  const amt=Number((document.getElementById('tfrAmt')||{value:0}).value)||0;
   prev.innerHTML='<span style="color:var(--rose)">📤 '+fromBank.name+'</span>: ₹'+fmt(getBankBalance(fromId))+(amt?' → ₹'+fmt(getBankBalance(fromId)-amt):'')+'<br><span style="color:var(--green)">📥 '+toBank.name+'</span>: ₹'+fmt(getBankBalance(toId))+(amt?' → ₹'+fmt(getBankBalance(toId)+amt):'');
 }
 function applyTransferPreset(type){
   const cashBank=bankCache.find(b=>b.type==='cash'),salaryBank=bankCache.find(b=>b.type==='salary'),savingsBank=bankCache.find(b=>b.type==='savings'),walletBank=bankCache.find(b=>b.type==='wallet'),firstBank=bankCache[0];
   const tfrFrom=document.getElementById('tfrFrom'),tfrTo=document.getElementById('tfrTo');if(!tfrFrom||!tfrTo)return;
-  if(type==='atm'){const fromB=salaryBank||savingsBank||firstBank;const toB=cashBank||bankCache.find(b=>b.id!==fromB?.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='ATM Withdrawal';}
-  else if(type==='upi2cash'){const fromB=walletBank||firstBank;const toB=cashBank||bankCache.find(b=>b.id!==fromB?.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='UPI to Cash';}
+  if(type==='atm'){const fromB=salaryBank||savingsBank||firstBank;const toB=cashBank||bankCache.find(b=>!fromB||b.id!==fromB.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='ATM Withdrawal';}
+  else if(type==='upi2cash'){const fromB=walletBank||firstBank;const toB=cashBank||bankCache.find(b=>!fromB||b.id!==fromB.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='UPI to Cash';}
   else if(type==='bank2bank'){const fromB=salaryBank||firstBank;const toB=savingsBank||bankCache.find(b=>b.id!==fromB?.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='Bank to Bank Transfer';}
   updateTransferNote();
 }
@@ -907,7 +912,7 @@ function setTyp(t){
   const sb=document.getElementById('addSaveBtn');
   if(sb){sb.style.display=t==='transfer'?'none':'block';if(t==='expense'){sb.style.background='var(--gold)';sb.style.color='#000';sb.textContent='💸 Save Expense';}else if(t==='income'){sb.style.background='var(--green)';sb.style.color='#000';sb.textContent='💵 Save Income';}}
 }
-function setIS(s){curIS=s;['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>document.getElementById(id)?.classList.remove('on'));const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};if(map[s])document.getElementById(map[s])?.classList.add('on');}
+function setIS(s){curIS=s;['isSal','isRentBtn','isLoanBtn','isOtherBtn'].forEach(id=>const el_=document.getElementById(id);if(el_)el_.classList.remove('on'));const map={salary:'isSal',rent:'isRentBtn',loan_received:'isLoanBtn',other_income:'isOtherBtn'};if(map[s])const ms_=document.getElementById(map[s]);if(ms_)ms_.classList.add('on');}
 function buildCatGrid(){
   const g=document.getElementById('catGrid');if(!g)return;g.innerHTML='';
   activeCats().forEach(c=>{const b=document.createElement('button');b.className='cbtn'+(c.id===curCat?' on':'');b.innerHTML='<span class="ci">'+c.i+'</span><span class="cn">'+c.en+'</span>';b.onclick=()=>{curCat=c.id;buildCatGrid();};g.appendChild(b);});
@@ -967,10 +972,10 @@ function openEditModal(id){
   document.getElementById('editId').value=id;document.getElementById('editAmt').value=tx.amount;
   document.getElementById('editWho').value=tx.who||'';document.getElementById('editDate').value=tx.date||'';
   document.getElementById('editTxType').value=tx.txType||'';document.getElementById('editBankAcc').value=tx.bankAccountId||'';
-  document.getElementById('editNote').value=tx.note||'';document.getElementById('editCat').value=tx.category?.replace('Income_','')||'Other';
+  document.getElementById('editNote').value=tx.note||'';document.getElementById('editCat').value=(tx.category||'').replace('Income_','')||'Other';
   setEditTyp(tx.type||'expense');document.getElementById('editModal').classList.add('open');
 }
-function setEditTyp(t){editType=t;document.getElementById('editBtnExp')?.classList.toggle('active-exp',t==='expense');document.getElementById('editBtnInc')?.classList.toggle('active-inc',t==='income');}
+function setEditTyp(t){editType=t;const ebe=document.getElementById('editBtnExp');if(ebe)ebe.classList.toggle('active-exp',t==='expense');const ebi=document.getElementById('editBtnInc');if(ebi)ebi.classList.toggle('active-inc',t==='income');}
 function closeEditModal(){document.getElementById('editModal').classList.remove('open');}
 async function doUpdateTx(){
   const id=document.getElementById('editId').value;const amt=Number(document.getElementById('editAmt').value);
@@ -1140,7 +1145,7 @@ function drawBarChart(canvas,labels,data,colors){
 /* ══ SETTINGS ══ */
 function renderSettings(){
   const role=getUserRole(curUser);const admin=role==='Admin';
-  const av=memberCache.find(m=>m.id===curUser)?.avatar||'👤';
+  const av=(memberCache.find(m=>m.id===curUser)||{avatar:'👤'}).avatar||'👤';
   const suAv=document.getElementById('setUserAv');if(suAv)suAv.textContent=av;
   const suN=document.getElementById('setUserName');if(suN)suN.textContent=curUser;
   const suR=document.getElementById('setUserRole');if(suR)suR.textContent=role+' · '+(admin?'Full Access':'Can add & edit, cannot delete');
@@ -1206,7 +1211,7 @@ async function saveMember(){
 }
 async function deleteMember(id){
   if(!requireAdmin('delete members'))return;if(id===curUser){showToast("Can't delete yourself",true);return;}
-  const m=memberCache.find(x=>x.id===id);if(!confirm('Delete '+(m?.name||id)+'?'))return;
+  const m=memberCache.find(x=>x.id===id);if(!confirm('Delete '+((m&&m.name)||id)+'?'))return;
   try{await db.collection('users').doc(id).delete();memberCache=memberCache.filter(m=>m.id!==id);USERS=memberCache.map(m=>m.id);AVATARS=Object.fromEntries(memberCache.map(m=>[m.id,m.avatar||'👤']));ROLES=Object.fromEntries(memberCache.map(m=>[m.id,m.role||'Member']));buildLoginCards();buildWhoDropdowns();showToast('Member deleted');renderMemberList();}catch(e){showToast('Error: '+e.message,true);}
 }
 
@@ -1214,11 +1219,35 @@ async function deleteMember(id){
 function renderCategorySettings(){
   const el=document.getElementById('catSettingsList');if(!el)return;
   if(!CATS.length){el.innerHTML='<div style="color:var(--text2);font-size:13px">No categories. Add one below.</div>';return;}
-  el.innerHTML=CATS.map(c=>{const hidden=c.active===false;return '<div class="cat-manage-row"><span style="font-size:22px;width:28px;text-align:center;flex-shrink:0">'+c.i+'</span><span style="flex:1;font-size:14px;font-weight:600;color:'+(hidden?'var(--text3)':'var(--text)')+'">'+c.en+'</span><div style="display:flex;gap:6px;flex-shrink:0"><button class="cam-btn cam-show" onclick="toggleCat(\''+c.id+'\','+!hidden+')">'+(hidden?'👁️ Show':'🙈 Hide')+'</button><button class="cam-btn cam-edit" onclick="openEditCat(\''+c.id+'\')">✏️</button><button class="cam-btn cam-del" onclick="deleteCat(\''+c.id+'\')">🗑️</button></div></div>';}).join('');
+  el.innerHTML=CATS.map(c=>{
+    const hidden=c.active===false;
+    // hidden=true means currently hidden → button should SHOW (makeActive=true)
+    // hidden=false means currently visible → button should HIDE (makeActive=false)
+    const nextActive = hidden ? 'true' : 'false';
+    const btnLabel   = hidden ? '👁️' : '🙈';
+    const nameStyle  = hidden ? 'color:var(--text3);text-decoration:line-through' : 'color:var(--text)';
+    return '<div class="cat-manage-row">'
+      +'<span style="font-size:22px;width:28px;text-align:center;flex-shrink:0">'+c.i+'</span>'
+      +'<span style="flex:1;font-size:14px;font-weight:600;'+nameStyle+'">'+c.en+(hidden?' <span style="font-size:10px">(hidden)</span>':'')+'</span>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0">'
+        +'<button class="cam-btn '+(hidden?'cam-show':'cam-edit')+'" onclick="toggleCat(\''+c.id+'\','+nextActive+')">'+btnLabel+'</button>'
+        +'<button class="cam-btn cam-edit" onclick="openEditCat(\''+c.id+'\')">✏️</button>'
+        +'<button class="cam-btn cam-del" onclick="deleteCat(\''+c.id+'\')">🗑️</button>'
+      +'</div></div>';
+  }).join('');
 }
 async function toggleCat(id,makeActive){
   if(!requireAdmin('toggle categories'))return;
-  try{await db.collection('categories').doc(id).update({active:makeActive});const c=CATS.find(x=>x.id===id);if(c)c.active=makeActive;renderCategorySettings();buildCatGrid();showToast(makeActive?'✅ Shown':'Hidden');}catch(e){showToast('Error: '+e.message,true);}
+  // makeActive comes from HTML as string 'true'/'false' or boolean
+  const active = makeActive===true || makeActive==='true';
+  try{
+    await db.collection('categories').doc(id).update({active:active});
+    const c=CATS.find(x=>x.id===id);
+    if(c) c.active=active;
+    renderCategorySettings();
+    buildCatGrid();
+    showToast(active?'✅ Category shown':'Category hidden');
+  }catch(e){showToast('Error: '+e.message,true);}
 }
 async function deleteCat(id){
   if(!requireAdmin('delete categories'))return;if(!confirm('Delete this category?'))return;
@@ -1233,7 +1262,7 @@ async function saveCat(){
   if(!name){showToast('⚠️ Category name required',true);return;}
   const id=editId||(name.replace(/[^a-zA-Z0-9]/g,'_').substring(0,20)+'_'+Date.now());
   const existing=CATS.find(x=>x.id===editId);
-  const data={id,en:name,i:icon,c:color,lim:existing?.lim||0,active:true,order:existing?.order??CATS.length};
+  const data={id,en:name,i:icon,c:color,lim:(existing&&existing.lim)||0,active:true,order:existing&&existing.order!==undefined?existing.order:CATS.length};
   try{
     await db.collection('categories').doc(id).set(data,{merge:true});
     if(editId){const idx=CATS.findIndex(x=>x.id===editId);if(idx>=0)CATS[idx]={...CATS[idx],...data};}else CATS.push(data);
