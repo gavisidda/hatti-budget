@@ -15,7 +15,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="./manifest.json">
 
 <!-- Apple Touch Icons (inline SVG-based) -->
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -232,9 +232,6 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .budget-bar-fill{height:100%;border-radius:6px;transition:width .6s}
 .budget-bar-pct{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
 
-/* ── FLOATING ADD BUTTON ── */
-.fab{position:fixed;bottom:86px;right:16px;width:52px;height:52px;background:var(--gold);color:#000;border:none;border-radius:50%;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(240,180,41,.4);z-index:30;display:none;align-items:center;justify-content:center;transition:transform .15s}
-.fab:active{transform:scale(.9)}
 
 /* ── RECENT TX HEADER ── */
 .tx-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -629,7 +626,6 @@ service cloud.firestore {
   <div class="ad-msg" id="accessDeniedMsg">You don't have permission to perform this action. Only Admins can do this.</div>
   <button class="ad-btn" onclick="document.getElementById('accessDenied').classList.remove('show')">OK, Got it</button>
 </div>
-<button class="fab" id="fab" onclick="goPage('Add',document.querySelector('.ni[onclick*=\'Add\']'))">➕</button>
 
 <!-- PWA INSTALL BANNER -->
 <div id="pwaInstallBanner">
@@ -709,7 +705,7 @@ let pwaServiceWorker = null;
 function initPWA(){
   // Register service worker
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').then(function(reg){
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
       pwaServiceWorker = reg;
       // Check for updates
       reg.addEventListener('updatefound', function(){
@@ -965,7 +961,6 @@ function enterApp(){
   document.getElementById('fWho').value=curUser;
   buildCatGrid();buildEditCatSelect();buildWhoDropdowns();
   subscribeRT();renderSettings();saveSession();
-  const fabEl=document.getElementById('fab');if(fabEl)fabEl.style.display='flex';
 }
 function doLogout(){
   [unsubTx,unsubGoals,unsubBanks].forEach(u=>u&&u());
