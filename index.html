@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Hatti Family Budget</title>
+<title>Finance – Family Budget</title>
+
+<!-- PWA Meta -->
+<meta name="application-name" content="Finance">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Finance">
+<meta name="theme-color" content="#070b14">
+<meta name="description" content="Smart family budget tracker">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Apple Touch Icons (inline SVG-based) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- Preconnect -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#070b14;--s1:#0e1422;--s2:#141c30;--s3:#1c263e;--s4:#253050;--gold:#f0b429;--teal:#2dd4bf;--rose:#fb7185;--green:#4ade80;--violet:#a78bfa;--sky:#38bdf8;--orange:#fb923c;--text:#eef2ff;--text2:#8892b0;--text3:#4a5568;--font:'Baloo Tamma 2',sans-serif}
@@ -185,6 +203,64 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--s1);border:1px solid var(--green);color:var(--green);border-radius:20px;padding:9px 20px;font-size:13px;font-weight:700;z-index:999;opacity:0;pointer-events:none;transition:all .28s;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.err{border-color:var(--rose);color:var(--rose)}
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.search-inp{flex:1;background:var(--s2);color:var(--text);border:1.5px solid var(--s3);border-radius:12px;padding:11px 14px;font-family:var(--font);font-size:14px;outline:none;transition:border .2s}
+.search-inp:focus{border-color:var(--gold)}
+.search-inp::placeholder{color:var(--text3)}
+.search-clear{background:var(--s3);color:var(--text2);border:none;border-radius:10px;padding:11px 14px;font-family:var(--font);font-size:13px;cursor:pointer;white-space:nowrap}
+
+/* ── MONTH SUMMARY CARD ── */
+.month-hero{background:linear-gradient(135deg,#0d1f10,#071a08);border:1px solid rgba(74,222,128,.15);border-radius:20px;padding:16px;margin-bottom:14px}
+.month-hero .hlbl{color:rgba(255,255,255,.5)}
+.month-hero .hbal{font-size:32px}
+
+/* ── QUICK STATS ROW ── */
+.qstat-row{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.qstat-row::-webkit-scrollbar{display:none}
+.qstat{background:var(--s1);border:1px solid var(--s3);border-radius:14px;padding:12px 14px;flex-shrink:0;text-align:center;min-width:90px}
+.qstat-ico{font-size:20px;margin-bottom:4px}
+.qstat-val{font-size:16px;font-weight:800}
+.qstat-lbl{font-size:10px;color:var(--text2);margin-top:2px}
+
+/* ── BUDGET PROGRESS BARS ── */
+.budget-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.budget-bar-info{flex:1;min-width:0}
+.budget-bar-top{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px}
+.budget-bar-track{background:var(--s3);border-radius:6px;height:8px;overflow:hidden}
+.budget-bar-fill{height:100%;border-radius:6px;transition:width .6s}
+.budget-bar-pct{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+
+/* ── FLOATING ADD BUTTON ── */
+.fab{position:fixed;bottom:86px;right:16px;width:52px;height:52px;background:var(--gold);color:#000;border:none;border-radius:50%;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(240,180,41,.4);z-index:30;display:none;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.9)}
+
+/* ── RECENT TX HEADER ── */
+.tx-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tx-see-all{background:none;border:none;color:var(--gold);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer}
+
+/* ── NOTE TAG ── */
+.tx-note-tag{background:var(--s2);color:var(--text2);font-size:10px;padding:2px 6px;border-radius:5px;margin-top:3px;display:inline-block}
+
+/* ── EMPTY MONTH ── */
+.month-empty{text-align:center;padding:24px;color:var(--text2);font-size:13px}
+
+/* ── PWA INSTALL BANNER ── */
+#pwaInstallBanner{position:fixed;bottom:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#0e1422,#141c30);border-top:1px solid rgba(240,180,41,.3);padding:14px 16px 24px;display:none;animation:slideUp .35s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.pwa-banner-inner{display:flex;align-items:center;gap:12px}
+.pwa-app-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#1c263e,#0e1422);border:2px solid rgba(240,180,41,.4);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.pwa-banner-text{flex:1;min-width:0}
+.pwa-banner-title{font-size:15px;font-weight:800;color:var(--text)}
+.pwa-banner-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.pwa-install-btn{background:var(--gold);color:#000;border:none;border-radius:11px;padding:10px 18px;font-family:var(--font);font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pwa-dismiss-btn{background:transparent;color:var(--text3);border:none;font-size:20px;cursor:pointer;padding:4px;flex-shrink:0}
+/* ── PWA UPDATE BANNER ── */
+#pwaUpdateBanner{position:fixed;top:0;left:0;right:0;z-index:501;background:linear-gradient(135deg,rgba(45,212,191,.15),rgba(45,212,191,.08));border-bottom:1px solid rgba(45,212,191,.3);padding:10px 16px;display:none;align-items:center;gap:10px}
+.pwa-update-btn{background:var(--teal);color:#000;border:none;border-radius:8px;padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+/* ── OFFLINE INDICATOR ── */
+#offlineBar{position:fixed;bottom:76px;left:0;right:0;z-index:490;background:rgba(251,113,133,.15);border-top:1px solid rgba(251,113,133,.3);border-bottom:1px solid rgba(251,113,133,.3);padding:8px 16px;text-align:center;font-size:12px;font-weight:700;color:var(--rose);display:none}
 </style>
 </head>
 <body>
@@ -343,6 +419,10 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div class="page" id="pgHistory">
       <div class="ph">📜 History</div>
       <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
+      <div class="search-bar">
+        <input class="search-inp" id="searchInp" type="text" placeholder="🔍 Search transactions…" oninput="renderHistory()">
+        <button class="search-clear" onclick="document.getElementById('searchInp').value='';renderHistory()">Clear</button>
+      </div>
       <div class="frow" id="filterRow"></div>
       <div class="frow" id="bankFilterRow" style="display:none"></div>
       <div id="histList"></div>
@@ -549,6 +629,31 @@ service cloud.firestore {
   <div class="ad-msg" id="accessDeniedMsg">You don't have permission to perform this action. Only Admins can do this.</div>
   <button class="ad-btn" onclick="document.getElementById('accessDenied').classList.remove('show')">OK, Got it</button>
 </div>
+<button class="fab" id="fab" onclick="goPage('Add',document.querySelector('.ni[onclick*=\'Add\']'))">➕</button>
+
+<!-- PWA INSTALL BANNER -->
+<div id="pwaInstallBanner">
+  <div class="pwa-banner-inner">
+    <div class="pwa-app-icon">💰</div>
+    <div class="pwa-banner-text">
+      <div class="pwa-banner-title">Install Finance App</div>
+      <div class="pwa-banner-sub">Add to home screen for the best experience</div>
+    </div>
+    <button class="pwa-install-btn" onclick="pwaInstall()">Install</button>
+    <button class="pwa-dismiss-btn" onclick="pwaDismiss()" aria-label="Dismiss">✕</button>
+  </div>
+</div>
+
+<!-- PWA UPDATE BANNER -->
+<div id="pwaUpdateBanner" style="display:none">
+  <span style="font-size:13px;font-weight:700;color:var(--teal);flex:1">🔄 New update available!</span>
+  <button class="pwa-update-btn" onclick="pwaUpdate()">Update Now</button>
+  <button style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:0 4px" onclick="document.getElementById('pwaUpdateBanner').style.display='none'">✕</button>
+</div>
+
+<!-- OFFLINE BAR -->
+<div id="offlineBar">📡 You're offline — some features may not work</div>
+
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -595,6 +700,125 @@ let unsubTx,unsubGoals,unsubBanks;
 
 /* ══ HELPERS ══ */
 const L = en => en;
+
+
+/* ══ PWA ══ */
+let pwaInstallPrompt = null;
+let pwaServiceWorker = null;
+
+function initPWA(){
+  // Register service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      pwaServiceWorker = reg;
+      // Check for updates
+      reg.addEventListener('updatefound', function(){
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', function(){
+          if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+            document.getElementById('pwaUpdateBanner').style.display='flex';
+          }
+        });
+      });
+    }).catch(function(e){ console.log('SW reg failed:', e); });
+  }
+
+  // Listen for beforeinstallprompt (Android/Chrome)
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    pwaInstallPrompt = e;
+    // Show install banner after 3 seconds if not dismissed before
+    if(!localStorage.getItem('pwa_dismissed')){
+      setTimeout(function(){
+        const banner = document.getElementById('pwaInstallBanner');
+        if(banner) banner.style.display='block';
+      }, 3000);
+    }
+  });
+
+  // Handle successful install
+  window.addEventListener('appinstalled', function(){
+    const banner = document.getElementById('pwaInstallBanner');
+    if(banner) banner.style.display='none';
+    pwaInstallPrompt = null;
+    showToast('✅ Finance app installed!');
+    localStorage.setItem('pwa_installed','1');
+  });
+
+  // Detect online/offline
+  window.addEventListener('offline', function(){ document.getElementById('offlineBar').style.display='block'; });
+  window.addEventListener('online',  function(){ document.getElementById('offlineBar').style.display='none'; showToast('✅ Back online'); });
+  if(!navigator.onLine) document.getElementById('offlineBar').style.display='block';
+
+  // iOS Safari: no beforeinstallprompt — show manual instructions after delay
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = ('standalone' in navigator) && navigator.standalone;
+  if(isIOS && !isInStandalone && !localStorage.getItem('pwa_dismissed') && !localStorage.getItem('pwa_installed')){
+    setTimeout(function(){
+      const banner = document.getElementById('pwaInstallBanner');
+      const btn = banner.querySelector('.pwa-install-btn');
+      if(btn){ btn.textContent='How to Install'; btn.onclick=pwaIOSGuide; }
+      banner.querySelector('.pwa-banner-sub').textContent='Tap below for installation guide';
+      if(banner) banner.style.display='block';
+    }, 4000);
+  }
+}
+
+function pwaInstall(){
+  if(pwaInstallPrompt){
+    pwaInstallPrompt.prompt();
+    pwaInstallPrompt.userChoice.then(function(result){
+      if(result.outcome==='accepted'){ showToast('Installing Finance app…'); }
+      pwaInstallPrompt = null;
+      document.getElementById('pwaInstallBanner').style.display='none';
+    });
+  }
+}
+
+function pwaDismiss(){
+  document.getElementById('pwaInstallBanner').style.display='none';
+  localStorage.setItem('pwa_dismissed','1');
+}
+
+function pwaUpdate(){
+  if(pwaServiceWorker && pwaServiceWorker.waiting){
+    pwaServiceWorker.waiting.postMessage({type:'SKIP_WAITING'});
+  }
+  document.getElementById('pwaUpdateBanner').style.display='none';
+  setTimeout(function(){ location.reload(); }, 500);
+}
+
+function pwaIOSGuide(){
+  document.getElementById('pwaInstallBanner').style.display='none';
+  showToast('Tap Share → Add to Home Screen in Safari');
+  // Show detailed guide modal
+  const modal = document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px';
+  modal.innerHTML='<div style="background:var(--s1);border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center">'
+    +'<div style="font-size:40px;margin-bottom:12px">📱</div>'
+    +'<div style="font-size:18px;font-weight:800;margin-bottom:8px;color:var(--gold)">Install Finance App</div>'
+    +'<div style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:20px">'
+      +'<strong style="color:var(--text)">On Safari:</strong><br>'
+      +'1. Tap the <strong style="color:var(--sky)">Share</strong> button (□↑) at the bottom<br>'
+      +'2. Scroll and tap <strong style="color:var(--sky)">"Add to Home Screen"</strong><br>'
+      +'3. Tap <strong style="color:var(--gold)">Add</strong> in the top right<br><br>'
+      +'<strong style="color:var(--text)">On Chrome (Android):</strong><br>'
+      +'1. Tap <strong style="color:var(--sky)">⋮ menu</strong> in top right<br>'
+      +'2. Tap <strong style="color:var(--sky)">"Add to Home Screen"</strong><br>'
+    +'</div>'
+    +'<button onclick="this.parentElement.parentElement.remove()" style="background:var(--gold);color:#000;border:none;border-radius:12px;padding:12px 32px;font-family:var(--font);font-size:15px;font-weight:800;cursor:pointer;width:100%">Got it!</button>'
+  +'</div>';
+  document.body.appendChild(modal);
+  localStorage.setItem('pwa_dismissed','1');
+}
+
+// Call initPWA when DOM is ready
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', initPWA);
+} else {
+  initPWA();
+}
+
 function fmt(n){return Number(n||0).toLocaleString('en-IN');}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function showToast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2800);}
@@ -741,6 +965,7 @@ function enterApp(){
   document.getElementById('fWho').value=curUser;
   buildCatGrid();buildEditCatSelect();buildWhoDropdowns();
   subscribeRT();renderSettings();saveSession();
+  const fabEl=document.getElementById('fab');if(fabEl)fabEl.style.display='flex';
 }
 function doLogout(){
   [unsubTx,unsubGoals,unsubBanks].forEach(u=>u&&u());
@@ -874,7 +1099,7 @@ function applyTransferPreset(type){
   const tfrFrom=document.getElementById('tfrFrom'),tfrTo=document.getElementById('tfrTo');if(!tfrFrom||!tfrTo)return;
   if(type==='atm'){const fromB=salaryBank||savingsBank||firstBank;const toB=cashBank||bankCache.find(b=>!fromB||b.id!==fromB.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='ATM Withdrawal';}
   else if(type==='upi2cash'){const fromB=walletBank||firstBank;const toB=cashBank||bankCache.find(b=>!fromB||b.id!==fromB.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='UPI to Cash';}
-  else if(type==='bank2bank'){const fromB=salaryBank||firstBank;const toB=savingsBank||bankCache.find(b=>b.id!==fromB?.id);if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='Bank to Bank Transfer';}
+  else if(type==='bank2bank'){const fromB=salaryBank||firstBank;const toB=savingsBank||bankCache.find(function(b){return !fromB||b.id!==fromB.id;});if(fromB)tfrFrom.value=fromB.id;if(toB)tfrTo.value=toB.id;document.getElementById('tfrNote').value='Bank to Bank Transfer';}
   updateTransferNote();
 }
 async function doTransfer(){
