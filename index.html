@@ -1270,9 +1270,25 @@ function renderHistory(){
   const br=document.getElementById('bankFilterRow');
   if(br&&bankCache.length>0){br.innerHTML='<div class="fchip'+(filtBank==='All'?' on':'')+'" onclick="setBankFilt(\'All\')">🏦 All Accounts</div>'+bankCache.map(b=>'<div class="fchip'+(filtBank===b.id?' on':'')+'" onclick="setBankFilt(\''+b.id+'\')">'+(b.icon||'🏦')+' '+b.name+'</div>').join('');br.style.display='flex';}else if(br)br.style.display='none';
   let list=txCache.slice();
-  if(filtCat!=='All')list=list.filter(t=>t.category===filtCat||t.category==='Income_'+filtCat);
-  if(filtBank!=='All')list=list.filter(t=>t.bankAccountId===filtBank);
-  document.getElementById('histList').innerHTML=list.length?list.map(t=>txHTML(t,true)).join(''):'<div class="empty"><div class="big">📭</div><p>No transactions found</p></div>';
+  if(filtCat!=='All')list=list.filter(function(t){return t.category===filtCat||t.category==='Income_'+filtCat;});
+  if(filtBank!=='All')list=list.filter(function(t){return t.bankAccountId===filtBank;});
+  // Search filter
+  const si=document.getElementById('searchInp');
+  const sv=si?si.value.trim().toLowerCase():'';
+  if(sv){
+    list=list.filter(function(t){
+      const cat=C(t.category)||C((t.category||'').replace('Income_',''));
+      const bank=bankCache.find(function(b){return b.id===t.bankAccountId;});
+      return (t.note||'').toLowerCase().includes(sv)
+        ||(t.who||'').toLowerCase().includes(sv)
+        ||(cat?cat.en.toLowerCase():'').includes(sv)
+        ||(t.txType||'').toLowerCase().includes(sv)
+        ||(bank?bank.name.toLowerCase():'').includes(sv)
+        ||String(t.amount||'').includes(sv)
+        ||(t.date||'').includes(sv);
+    });
+  }
+  document.getElementById('histList').innerHTML=list.length?list.map(function(t){return txHTML(t,true);}).join(''):'<div class="empty"><div class="big">📭</div><p>No transactions found</p></div>';
 }
 function setFilt(f){filtCat=f;renderHistory();}
 function setBankFilt(id){filtBank=id;renderHistory();}
