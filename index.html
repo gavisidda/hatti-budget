@@ -637,7 +637,6 @@ service cloud.firestore {
       <option value="salary">💼 Salary Account</option><option value="fd">📈 Fixed Deposit</option>
       <option value="wallet">📱 Digital Wallet (Paytm/PhonePe)</option><option value="cash">💵 Cash in Hand</option>
       <option value="locked">🔒 Locked Savings (SSY / PPF / RD)</option>
-      <option value="locked">🔒 Locked Savings (SSY / PPF / RD)</option>
     </select>
     <label class="fl">Opening Balance (₹)</label><input class="fi" type="number" id="bankBalance" placeholder="0" inputmode="numeric">
     <label class="fl">Account Icon (emoji)</label><input class="fi" id="bankIcon" placeholder="🏦" maxlength="2">
@@ -1105,8 +1104,9 @@ function renderDash(){
     ?expCats.slice(0,10).map(c=>'<div class="cbrow" onclick="quickAddCat(\''+c.id+'\')" style="cursor:pointer"><div class="cblbl">'+c.i+' '+c.en+'</div><div class="cbtrack"><div class="cbfill" style="width:'+Math.round(c.amt/maxA*100)+'%;background:'+c.c+'"></div></div><div class="cbamt" style="color:'+c.c+'">₹'+fmt(c.amt)+'</div></div>').join('')
     :'<div style="color:var(--text2);font-size:13px;text-align:center">No expenses this month</div>';
   const strip=document.getElementById('dashBankStrip');
-  if(!bankCache.length){strip.innerHTML='<div style="color:var(--text2);font-size:12px;padding:8px">No accounts yet</div>';}
-  else{let tot=0;strip.innerHTML=bankCache.map(b=>{const bal=getBankBalance(b.id);tot+=bal;return '<div class="bchip"><div class="bchip-name">'+(b.icon||'🏦')+' '+b.name+'</div><div class="bchip-bal" style="color:'+(bal>0?'var(--green)':bal<0?'var(--rose)':'var(--text2)')+'">₹'+fmt(bal)+'</div></div>';}).join('');strip.innerHTML+='<div class="bchip" style="border-color:var(--gold)"><div class="bchip-name">📊 Total</div><div class="bchip-bal" style="color:var(--gold)">₹'+fmt(tot)+'</div></div>';}
+  const regularBanks=bankCache.filter(function(b){return b.type!=='locked';});
+  if(!regularBanks.length){strip.innerHTML='<div style="color:var(--text2);font-size:12px;padding:8px">No accounts yet</div>';}
+  else{let tot=0;strip.innerHTML=regularBanks.map(function(b){const bal=getBankBalance(b.id);tot+=bal;return '<div class="bchip"><div class="bchip-name">'+(b.icon||'🏦')+' '+b.name+'</div><div class="bchip-bal" style="color:'+(bal>0?'var(--green)':bal<0?'var(--rose)':'var(--text2)')+'">₹'+fmt(bal)+'</div></div>';}).join('');strip.innerHTML+='<div class="bchip" style="border-color:var(--gold)"><div class="bchip-name">📊 Total</div><div class="bchip-bal" style="color:var(--gold)">₹'+fmt(tot)+'</div></div>';}
   drawTrend();
   document.getElementById('recentTx').innerHTML=txCache.slice(0,6).map(t=>txHTML(t,false)).join('')||'<div class="empty"><div class="big">💸</div><p>No transactions yet</p></div>';
 }
@@ -1114,17 +1114,71 @@ function renderDash(){
 /* ══ BANKS ══ */
 function renderBanks(){
   const bl=document.getElementById('bankList');if(!bl)return;
-  let totalBal=0;
-  if(!bankCache.length){bl.innerHTML='<div class="empty"><div class="big">🏦</div><p>No bank accounts yet</p></div>';setText('totalBankBal','₹0');return;}
-  bl.innerHTML=bankCache.map(b=>{
-    const bal=getBankBalance(b.id);totalBal+=bal;
-    const bc=bal>0?'pos':bal<0?'neg':'zer';const cc=bal>0?'positive':bal<0?'negative':'zero';
-    const editBtn=isAdmin()?'<button class="bank-edit-btn" onclick="openBankEdit(\''+b.id+'\')">✏️ Edit</button>':'';
-    const delBtn=isAdmin()?'<button class="bank-del-btn" onclick="deleteBank(\''+b.id+'\')">🗑️</button>':'';
-    return '<div class="bank-card '+cc+'"><div class="bank-ico">'+(b.icon||'🏦')+'</div><div class="bank-info"><div class="bank-name">'+b.name+(b.accNo?' ····'+b.accNo:'')+'</div><div class="bank-type">'+(BANK_TYPE_LABELS[b.type]||b.type)+' · Opening: ₹'+fmt(b.balance)+'</div><div class="bank-bal '+bc+'">₹'+fmt(bal)+'</div></div><div class="bank-actions">'+editBtn+delBtn+'</div></div>';
-  }).join('');
-  setText('totalBankBal','₹'+fmt(totalBal));
-  if(bankCache.length>0){const labels=bankCache.map(b=>(b.icon||'🏦')+b.name.substring(0,6));const data=bankCache.map(b=>Math.max(0,getBankBalance(b.id)));const colors=bankCache.map((_,i)=>['#38bdf8','#4ade80','#a78bfa','#f0b429','#fb923c','#2dd4bf'][i%6]);drawBarChart(document.getElementById('bankChart'),labels,data,colors);}
+
+  const regular=bankCache.filter(function(b){return b.type!=='locked';});
+  const locked=bankCache.filter(function(b){return b.type==='locked';});
+
+  // ── REGULAR ACCOUNTS ──
+  if(!regular.length){
+    bl.innerHTML='<div class="empty"><div class="big">🏦</div><p>No bank accounts yet</p></div>';
+    setText('totalBankBal','₹0');
+  } else {
+    let totalBal=0;
+    bl.innerHTML=regular.map(function(b){
+      const bal=getBankBalance(b.id);totalBal+=bal;
+      const bc=bal>0?'pos':bal<0?'neg':'zer';
+      const cc=bal>0?'positive':bal<0?'negative':'';
+      const editBtn=isAdmin()?'<button class="bank-edit-btn" onclick="openBankEdit(\''+b.id+'\')">✏️</button>':'';
+      const delBtn=isAdmin()?'<button class="bank-del-btn" onclick="deleteBank(\''+b.id+'\')">🗑️</button>':'';
+      return '<div class="bank-card '+cc+'"><div class="bank-ico">'+(b.icon||'🏦')+'</div>'
+        +'<div class="bank-info"><div class="bank-name">'+b.name+(b.accNo?' ····'+b.accNo:'')+'</div>'
+        +'<div class="bank-type">'+(BANK_TYPE_LABELS[b.type]||b.type)+'</div>'
+        +'<div class="bank-bal '+bc+'">₹'+fmt(bal)+'</div></div>'
+        +'<div class="bank-actions">'+editBtn+delBtn+'</div></div>';
+    }).join('');
+    setText('totalBankBal','₹'+fmt(totalBal));
+    const labels=regular.map(function(b){return (b.icon||'🏦')+b.name.substring(0,6);});
+    const data=regular.map(function(b){return Math.max(0,getBankBalance(b.id));});
+    const colors=['#38bdf8','#4ade80','#f0b429','#fb923c','#2dd4bf','#a78bfa'];
+    if(regular.length>0) drawBarChart(document.getElementById('bankChart'),labels,data,colors);
+  }
+
+  // ── LOCKED / INVESTMENT ACCOUNTS ──
+  const lockedSec=document.getElementById('lockedSection');
+  const lockedList=document.getElementById('lockedList');
+  const lockedSummary=document.getElementById('lockedSummary');
+  if(!lockedSec||!lockedList) return;
+
+  if(locked.length>0){
+    lockedSec.style.display='block';
+    let lockedTotal=0;
+    lockedList.innerHTML=locked.map(function(b){
+      const bal=+b.balance||0;
+      lockedTotal+=bal;
+      const editBtn=isAdmin()?'<button class="bank-edit-btn" onclick="openBankEdit(\''+b.id+'\')">✏️</button>':'';
+      const delBtn=isAdmin()?'<button class="bank-del-btn" onclick="deleteBank(\''+b.id+'\')">🗑️</button>':'';
+      const lastDep=b.lastDeposit?'Last deposit: ₹'+fmt(b.lastDeposit)+'  ·  ':'';
+      return '<div class="locked-card">'
+        +'<div class="bank-ico">'+(b.icon||'🔒')+'</div>'
+        +'<div class="bank-info">'
+          +'<div class="bank-name">'+b.name+(b.accNo?' ····'+b.accNo:'')+'</div>'
+          +'<div class="bank-type">'+(BANK_TYPE_LABELS[b.type]||'Locked Savings')+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);margin-top:2px">'+lastDep+(b.depositCount||0)+' deposits</div>'
+          +'<div class="bank-bal">₹'+fmt(bal)+'</div>'
+        +'</div>'
+        +'<div class="locked-actions">'
+          +'<button class="deposit-btn" onclick="openDepositModal(\''+b.id+'\')">+ Deposit</button>'
+          +editBtn+delBtn
+        +'</div>'
+      +'</div>';
+    }).join('');
+    if(lockedSummary){
+      lockedSummary.style.display='flex';
+      setText('lockedTotal','₹'+fmt(lockedTotal));
+    }
+  } else {
+    lockedSec.style.display='none';
+  }
 }
 
 /* ══ LOCKED ACCOUNT DEPOSITS ══ */
@@ -1183,7 +1237,9 @@ async function deleteBank(id){
 }
 function refreshBankDropdowns(){
   const noOpt='<option value="">-- Select Account --</option>';
-  const bankOpts=bankCache.map(b=>'<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+'</option>').join('');
+  // Exclude locked accounts from all transaction dropdowns
+  const txBanks=bankCache.filter(function(b){return b.type!=='locked';});
+  const bankOpts=txBanks.map(function(b){return '<option value="'+b.id+'">'+(b.icon||'🏦')+' '+b.name+'</option>';}).join('');
   const fAcc=document.getElementById('fBankAcc');if(fAcc&&fAcc.options.length<=1)fAcc.innerHTML=noOpt+bankOpts;
   const eAcc=document.getElementById('editBankAcc');if(eAcc)eAcc.innerHTML=noOpt+bankOpts;
   const tFrom=document.getElementById('tfrFrom');if(tFrom)tFrom.innerHTML=noOpt+bankOpts;
