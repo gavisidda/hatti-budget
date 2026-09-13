@@ -258,6 +258,21 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .pwa-update-btn{background:var(--teal);color:#000;border:none;border-radius:8px;padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
 /* ── OFFLINE INDICATOR ── */
 #offlineBar{position:fixed;bottom:76px;left:0;right:0;z-index:490;background:rgba(251,113,133,.15);border-top:1px solid rgba(251,113,133,.3);border-bottom:1px solid rgba(251,113,133,.3);padding:8px 16px;text-align:center;font-size:12px;font-weight:700;color:var(--rose);display:none}
+
+/* ── LOCKED / INVESTMENT ACCOUNTS ── */
+.locked-card{background:linear-gradient(135deg,#0d1a2e,#0a1520);border:1px solid rgba(167,139,250,.25);border-left:3px solid var(--violet);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.locked-card .bank-ico{font-size:28px;flex-shrink:0}
+.locked-card .bank-info{flex:1;min-width:0}
+.locked-card .bank-name{font-size:15px;font-weight:700;color:var(--text)}
+.locked-card .bank-type{font-size:11px;color:var(--violet);margin-bottom:2px}
+.locked-card .bank-bal{font-size:22px;font-weight:800;color:var(--violet)}
+.locked-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.deposit-btn{background:rgba(167,139,250,.15);color:var(--violet);border:1px solid rgba(167,139,250,.3);border-radius:8px;padding:7px 12px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.deposit-btn:active{opacity:.8}
+.locked-summary{background:linear-gradient(135deg,#130d20,#0d0a1a);border:1px solid rgba(167,139,250,.2);border-radius:16px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.locked-summary-lbl{font-size:12px;color:var(--violet);font-weight:700}
+.locked-summary-val{font-size:22px;font-weight:800;color:var(--violet)}
+.locked-tag{display:inline-block;font-size:9px;font-weight:700;background:rgba(167,139,250,.15);color:var(--violet);border:1px solid rgba(167,139,250,.3);border-radius:5px;padding:2px 6px;margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -403,6 +418,15 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <div class="ph">🏦 Bank Accounts</div>
       <div id="bankList"></div>
       <button class="add-bank-btn" onclick="openBankModal()">+ Add Bank Account</button>
+      <!-- LOCKED / INVESTMENT ACCOUNTS -->
+      <div id="lockedSection" style="display:none">
+        <div class="sh">🔒 Locked Savings <span style="font-size:10px;color:var(--text3);font-weight:400">(not included in main balance)</span></div>
+        <div id="lockedList"></div>
+        <div class="locked-summary" id="lockedSummary" style="display:none">
+          <div><div class="locked-summary-lbl">Total Locked Savings</div><div style="font-size:11px;color:var(--text3);margin-top:2px">SSY · PPF · RD · FD</div></div>
+          <div class="locked-summary-val" id="lockedTotal">₹0</div>
+        </div>
+      </div>
       <div class="sh">All Accounts Summary</div>
       <div class="cbox">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -517,6 +541,32 @@ service cloud.firestore {
     <div class="ni" onclick="goPage('Settings',this)"><div class="nico">⚙️</div><div class="nlbl">Settings</div></div>
   </div>
 </div>
+<!-- LOCKED DEPOSIT MODAL -->
+<div class="mo" id="lockedDepositModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeLockedDeposit()">✕</button>
+    <div class="mtitle" id="lockedDepTitle">Add Deposit</div>
+    <input type="hidden" id="lockedDepId">
+    <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:12px;margin-bottom:14px">
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">🔒 This is a <strong style="color:var(--violet)">Locked Savings</strong> account. Deposits are tracked separately and do <strong style="color:var(--rose)">NOT</strong> affect your main balance or expenses.</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:14px;background:var(--s2);border-radius:12px;padding:12px">
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text2)">Opening Balance</div><div style="font-size:18px;font-weight:800;color:var(--text)" id="lockedOpenBal">₹0</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text2)">Total Deposited</div><div style="font-size:18px;font-weight:800;color:var(--violet)" id="lockedTotalDep">₹0</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text2)">Current Balance</div><div style="font-size:18px;font-weight:800;color:var(--green)" id="lockedCurBal">₹0</div></div>
+    </div>
+    <label class="fl">Deposit Amount (₹)</label>
+    <input class="fi" type="number" id="lockedDepAmt" placeholder="e.g. 1000" inputmode="numeric">
+    <label class="fl">Deposit Date</label>
+    <input class="fi" type="date" id="lockedDepDate">
+    <label class="fl">Note (optional)</label>
+    <input class="fi" type="text" id="lockedDepNote" placeholder="e.g. April 2025 deposit">
+    <button class="sbtn" style="background:var(--violet);color:#fff" onclick="saveLockedDeposit()">✅ Add Deposit</button>
+    <!-- Deposit History -->
+    <div id="lockedDepHistory" style="margin-top:14px"></div>
+  </div>
+</div>
+
 <!-- CATEGORY MODAL -->
 <div class="mo" id="catModal">
   <div class="modal">
@@ -586,6 +636,8 @@ service cloud.firestore {
       <option value="savings">💰 Savings Account</option><option value="current">🏢 Current Account</option>
       <option value="salary">💼 Salary Account</option><option value="fd">📈 Fixed Deposit</option>
       <option value="wallet">📱 Digital Wallet (Paytm/PhonePe)</option><option value="cash">💵 Cash in Hand</option>
+      <option value="locked">🔒 Locked Savings (SSY / PPF / RD)</option>
+      <option value="locked">🔒 Locked Savings (SSY / PPF / RD)</option>
     </select>
     <label class="fl">Opening Balance (₹)</label><input class="fi" type="number" id="bankBalance" placeholder="0" inputmode="numeric">
     <label class="fl">Account Icon (emoji)</label><input class="fi" id="bankIcon" placeholder="🏦" maxlength="2">
@@ -650,6 +702,25 @@ service cloud.firestore {
 <!-- OFFLINE BAR -->
 <div id="offlineBar">📡 You're offline — some features may not work</div>
 
+<!-- LOCKED ACCOUNT DEPOSIT MODAL -->
+<div class="mo" id="depositModal">
+  <div class="modal">
+    <button class="mclose" onclick="closeDepositModal()">✕</button>
+    <div class="mtitle" id="depositModalTitle">💜 Add Deposit</div>
+    <input type="hidden" id="depositBankId">
+    <div style="background:var(--s2);border-radius:12px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.6">
+      <div id="depositCurrentBal" style="font-size:18px;font-weight:800;color:var(--violet);margin-bottom:4px"></div>
+      This account is <strong style="color:var(--violet)">locked</strong> — deposits are tracked separately and do <strong>not</strong> affect your main balance or expenses.
+    </div>
+    <label class="fl">Deposit Amount (₹) *</label>
+    <input class="fi" type="number" id="depositAmt" placeholder="e.g. 5000" inputmode="numeric">
+    <label class="fl">Date</label>
+    <input class="fi" type="date" id="depositDate">
+    <label class="fl">Note (optional)</label>
+    <input class="fi" type="text" id="depositNote" placeholder="e.g. Monthly SSY deposit">
+    <button class="sbtn" style="background:var(--violet);color:#fff" onclick="doDeposit()">💜 Add Deposit</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -682,7 +753,7 @@ const INC_SRCS = [
   {id:'salary',i:'💼',en:'Salary'},{id:'rent',i:'🏠',en:'Ginigera Rent'},
   {id:'loan_received',i:'💳',en:'Loan Received'},{id:'other_income',i:'📦',en:'Others'}
 ];
-const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash'};
+const BANK_TYPE_LABELS = {savings:'💰 Savings',current:'🏢 Current',salary:'💼 Salary',fd:'📈 FD',wallet:'📱 Wallet',cash:'💵 Cash',locked:'🔒 Locked Savings (SSY/PPF/RD)'};
 
 /* ══ STATE ══ */
 let curUser=null,curType='expense',curCat='Food',curIS='salary',editType='expense';
@@ -1055,6 +1126,45 @@ function renderBanks(){
   setText('totalBankBal','₹'+fmt(totalBal));
   if(bankCache.length>0){const labels=bankCache.map(b=>(b.icon||'🏦')+b.name.substring(0,6));const data=bankCache.map(b=>Math.max(0,getBankBalance(b.id)));const colors=bankCache.map((_,i)=>['#38bdf8','#4ade80','#a78bfa','#f0b429','#fb923c','#2dd4bf'][i%6]);drawBarChart(document.getElementById('bankChart'),labels,data,colors);}
 }
+
+/* ══ LOCKED ACCOUNT DEPOSITS ══ */
+function openDepositModal(bankId){
+  const b=bankCache.find(function(x){return x.id===bankId;});if(!b)return;
+  document.getElementById('depositBankId').value=bankId;
+  document.getElementById('depositModalTitle').textContent='💜 Deposit to '+b.name;
+  document.getElementById('depositCurrentBal').textContent='Current Balance: ₹'+fmt(+b.balance||0);
+  document.getElementById('depositAmt').value='';
+  document.getElementById('depositDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('depositNote').value='';
+  document.getElementById('depositModal').classList.add('open');
+}
+function closeDepositModal(){document.getElementById('depositModal').classList.remove('open');}
+
+async function doDeposit(){
+  const bankId=document.getElementById('depositBankId').value;
+  const amt=+document.getElementById('depositAmt').value||0;
+  const date=document.getElementById('depositDate').value||new Date().toISOString().split('T')[0];
+  const note=document.getElementById('depositNote').value.trim();
+  if(!amt||amt<=0){showToast('⚠️ Enter deposit amount',true);return;}
+  const b=bankCache.find(function(x){return x.id===bankId;});if(!b)return;
+  const newBal=(+b.balance||0)+amt;
+  try{
+    await db.collection('bankAccounts').doc(bankId).update({
+      balance:newBal,
+      lastDeposit:amt,
+      lastDepositDate:date,
+      depositCount:(b.depositCount||0)+1,
+      updatedAt:Date.now()
+    });
+    // Log deposit in a sub-collection for history
+    await db.collection('bankAccounts').doc(bankId).collection('deposits').add({
+      amount:amt, date:date, note:note, addedBy:curUser, ts:Date.now()
+    });
+    closeDepositModal();
+    showToast('✅ Deposit of ₹'+fmt(amt)+' added to '+b.name+'!');
+  }catch(e){showToast('Error: '+e.message,true);}
+}
+
 function openBankModal(){document.getElementById('bankEditId').value='';document.getElementById('bankModalTitle').textContent='Add Bank Account';['bankName','bankBalance','bankIcon','bankAccNo'].forEach(id=>document.getElementById(id).value='');document.getElementById('bankType').value='savings';document.getElementById('bankModal').classList.add('open');}
 function openBankEdit(id){const b=bankCache.find(x=>x.id===id);if(!b)return;document.getElementById('bankEditId').value=id;document.getElementById('bankModalTitle').textContent='Edit Bank Account';document.getElementById('bankName').value=b.name||'';document.getElementById('bankType').value=b.type||'savings';document.getElementById('bankBalance').value=b.balance||0;document.getElementById('bankIcon').value=b.icon||'';document.getElementById('bankAccNo').value=b.accNo||'';document.getElementById('bankModal').classList.add('open');}
 function closeBankModal(){document.getElementById('bankModal').classList.remove('open');}
@@ -1448,6 +1558,54 @@ async function deleteMember(id){
   if(!requireAdmin('delete members'))return;if(id===curUser){showToast("Can't delete yourself",true);return;}
   const m=memberCache.find(x=>x.id===id);if(!confirm('Delete '+((m&&m.name)||id)+'?'))return;
   try{await db.collection('users').doc(id).delete();memberCache=memberCache.filter(m=>m.id!==id);USERS=memberCache.map(m=>m.id);AVATARS=Object.fromEntries(memberCache.map(m=>[m.id,m.avatar||'👤']));ROLES=Object.fromEntries(memberCache.map(m=>[m.id,m.role||'Member']));buildLoginCards();buildWhoDropdowns();showToast('Member deleted');renderMemberList();}catch(e){showToast('Error: '+e.message,true);}
+}
+
+
+/* ══ LOCKED SAVINGS DEPOSIT ══ */
+function openLockedDeposit(id){
+  const b=bankCache.find(function(x){return x.id===id;});if(!b)return;
+  document.getElementById('lockedDepId').value=id;
+  document.getElementById('lockedDepTitle').textContent='Deposit · '+b.name;
+  document.getElementById('lockedDepAmt').value='';
+  document.getElementById('lockedDepNote').value='';
+  document.getElementById('lockedDepDate').value=new Date().toISOString().split('T')[0];
+  const openBal=+b.balance||0;
+  const totalDep=+b.deposits||0;
+  document.getElementById('lockedOpenBal').textContent='₹'+fmt(openBal);
+  document.getElementById('lockedTotalDep').textContent='₹'+fmt(totalDep);
+  document.getElementById('lockedCurBal').textContent='₹'+fmt(openBal+totalDep);
+  // Show deposit log
+  const log=(b.depositLog||[]).slice().reverse();
+  const dh=document.getElementById('lockedDepHistory');
+  if(dh){
+    if(log.length){
+      dh.innerHTML='<div class="sh" style="margin-top:0">Deposit History</div>'
+        +log.map(function(d){return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--s2);font-size:13px"><span style="color:var(--text2)">'+d.date+(d.note?' · '+d.note:'')+'</span><span style="font-weight:700;color:var(--violet)">+₹'+fmt(d.amt)+'</span></div>';}).join('');
+    } else {
+      dh.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px">No deposits yet</div>';
+    }
+  }
+  document.getElementById('lockedDepositModal').classList.add('open');
+}
+
+function closeLockedDeposit(){
+  document.getElementById('lockedDepositModal').classList.remove('open');
+}
+
+async function saveLockedDeposit(){
+  const id=document.getElementById('lockedDepId').value;
+  const amt=Number(document.getElementById('lockedDepAmt').value);
+  const date=document.getElementById('lockedDepDate').value||new Date().toISOString().split('T')[0];
+  const note=document.getElementById('lockedDepNote').value.trim();
+  if(!amt||amt<=0){showToast('⚠️ Enter deposit amount',true);return;}
+  const b=bankCache.find(function(x){return x.id===id;});if(!b)return;
+  const newDeposits=(+b.deposits||0)+amt;
+  const newLog=(b.depositLog||[]).concat([{amt:amt,date:date,note:note,by:curUser,ts:Date.now()}]);
+  try{
+    await db.collection('bankAccounts').doc(id).update({deposits:newDeposits,depositLog:newLog});
+    showToast('✅ Deposit of ₹'+fmt(amt)+' added!');
+    closeLockedDeposit();
+  }catch(e){showToast('Error: '+e.message,true);}
 }
 
 /* ══ CATEGORY MANAGEMENT ══ */
